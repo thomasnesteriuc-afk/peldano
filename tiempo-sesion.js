@@ -13,7 +13,7 @@
  *  - Descanso entre series = el de la tarjeta (90 s, 2 min o 2:30 según el ejercicio); Nordic/Copenhagen 2 min.
  *  - Circuito de Piernas: 10 s de transición entre ejercicios y 75 s entre rondas (punto medio de 60-90 s).
  *  - Circuito de abdominales: 10 s de transición entre ejercicios y 60 s entre rondas (ENCARGO).
- *  - Entrada en calor: la suma de sus pasos (8-10 min). Finisher: 10 o 5 min. Vuelta a la calma: 3 min (ENCARGO: 2-3 min). OJO: la tarjeta
+ *  - Entrada en calor: la suma de sus pasos (criterios, orientativo 5-8 min); las 2 series de aproximación se suman a la fuerza. Finisher: 10 o 5 min. Vuelta a la calma: 3 min (ENCARGO: 2-3 min). OJO: la tarjeta
  *    actual "Estiramiento de cierre" (lista vieja) dice ~6-11 min; la Etapa 4 la reemplaza por la vuelta a la calma de 2-3 min.
  *
  * Depende de globals de index.html y entrada-calor.js: generateSession, buildBlocks, restSeconds, sessionTarget, isStatic,
@@ -41,15 +41,16 @@ function tsFuerzaSeg(full){ return buildBlocks(full).reduce((t, b) => t + tsSegB
 // Minutos de TODO el día: entrada en calor + fuerza (con el core en circuito) + finisher + vuelta a la calma.
 function tsDesglose(dia, full, finisher){
   const st = dayStretch(full).length;
-  return { calor: entradaCalorSegundosEstimado(dia) / 60, fuerza: tsFuerzaSeg(full) / 60, finisher, vuelta: st ? TS.VUELTA_MIN : 0 };
+  return { calor: entradaCalorSegundosEstimado(dia) / 60, fuerza: (tsFuerzaSeg(full) + 2 * EC_SERIE) / 60,   /* + 2 series de aproximación al inicio del primer ejercicio fuerte */ finisher, vuelta: st ? TS.VUELTA_MIN : 0 };
 }
 function tsTotal(d){ return d.calor + d.fuerza + d.finisher + d.vuelta; }
 
-// Único recorte posible: finisher 10 -> 5 min.
+// Único recorte posible: el finisher baja de su duración completa (10, o 9 en INTERVALOS) a la reducida (5, o 6 en AMRAP e INTERVALOS).
 function planTiempo(dia, full){
   if(!full) return generateSession(dia).plan;
-  let finisher = 10;
-  if(tsTotal(tsDesglose(dia, full, finisher)) > TS.MINUTOS) finisher = 5;
+  const dur = (typeof finisherDuraciones === 'function') ? finisherDuraciones() : { completo:10, reducido:5 };   // según el formato del bloque (finisher.js)
+  let finisher = dur.completo;
+  if(tsTotal(tsDesglose(dia, full, finisher)) > TS.MINUTOS) finisher = dur.reducido;
   const desglose = tsDesglose(dia, full, finisher);
   const estimadoMin = tsTotal(desglose);
   return { minutos:TS.MINUTOS, finisher, desglose, estimadoMin, alcanza: estimadoMin <= TS.MINUTOS };

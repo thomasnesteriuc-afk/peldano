@@ -121,7 +121,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
     margin:0; background:var(--bg); color:var(--text);
     font-family:'Inter',-apple-system,system-ui,sans-serif; line-height:1.55;
     padding-top:env(safe-area-inset-top, 0px);
-    padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px));
+    padding-bottom:calc(var(--barra-real, calc(64px + env(safe-area-inset-bottom, 0px))) + 24px);   /* alto REAL de la barra fija (JS) + aire */
     -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none;
   }
@@ -141,7 +141,21 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   /* Navegación inferior — deslizable horizontal (Encargo Final, pilar 1: con 9+ pestañas no entran fijas en mobile) */
   .tabbar{position:fixed; left:0; right:0; bottom:0; z-index:50; background:rgba(23,20,15,.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:1px solid var(--line);}
   .tabbar{position:fixed; left:0; right:0; bottom:0; z-index:50;}
-  .tabbar-fade{position:relative;}
+  .tabbar-fade{}   /* (antes: position:relative, que pisaba el position:fixed de .tabbar) */
+  /* ===== Barra de navegación FIJA abajo (28/10) =====
+     Antes `.tabbar-fade{position:relative}` pisaba a `.tabbar{position:fixed}` y la barra se movía con el contenido.
+     Queda fija con la zona segura del iPhone (indicador de inicio) y el contenido deja margen debajo (--barra-real, medida por JS). */
+  .tabbar, .tabbar.tabbar-fade{ position:fixed; left:0; right:0; bottom:0; z-index:50; transform:translateZ(0);
+    padding-left:env(safe-area-inset-left, 0px); padding-right:env(safe-area-inset-right, 0px); }
+  /* ===== Acordeón de Perfil ===== */
+  .acc{ margin:0 0 10px; }
+  .acc-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; min-height:56px; margin:0; padding:12px 16px;
+             font-family:inherit; font-size:16px; font-weight:700; line-height:1.3; text-align:left; background:var(--panel); color:var(--text);
+             border:2px solid var(--line); cursor:pointer; }
+  .acc-head[aria-expanded="true"]{ background:var(--text); color:var(--panel); }
+  .acc-signo{ flex:none; font-size:26px; font-weight:800; line-height:1; min-width:20px; text-align:center; }
+  .acc-body{ border:2px solid var(--line); border-top:none; padding:12px; }
+  .acc-body[hidden]{ display:none; }
   .tabbar-fade::before, .tabbar-fade::after{content:''; position:absolute; top:0; bottom:0; width:24px; z-index:2; pointer-events:none;}
   .tabbar-fade::before{left:0; background:linear-gradient(90deg, rgba(23,20,15,.92), rgba(23,20,15,0));}
   .tabbar-fade::after{right:0; background:linear-gradient(270deg, rgba(23,20,15,.92), rgba(23,20,15,0));}
@@ -491,6 +505,9 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   /* Barra inferior: blanca, el activo va relleno. */
   html[data-diseno="minimo"] .tabbar{ background:var(--blanco) !important; border-top:var(--borde) solid var(--negro) !important; }
   html[data-diseno="minimo"] .tab-btn{ min-width:76px; font-size:var(--fs-chico) !important; }
+  html[data-diseno="minimo"] .acc-head{ border:var(--borde) solid var(--negro) !important; background:var(--blanco); color:var(--negro); }
+  html[data-diseno="minimo"] .acc-head[aria-expanded="true"]{ background:var(--negro); color:var(--blanco); }
+  html[data-diseno="minimo"] .acc-body{ border:var(--borde) solid var(--negro) !important; border-top:none !important; background:var(--blanco); }
 
   /* Red de seguridad: colores puestos en línea desde JS (muestras de color de la Tienda, avisos de
      Nutrición, botones del Dashboard...) pasan a gris/negro. #fff queda como está (texto sobre negro). */
@@ -1189,7 +1206,7 @@ function bloqueVigente(){
   const vencido = b && (ahora - b.inicio >= BLOQUE_DIAS * 86400000) && (b.fuerzaSes || 0) >= BLOQUE_MIN_SESIONES;
   if(!b || vencido){
     const sel = elegirHabilidadesBloque(b ? b.tipoPrimero : null);
-    b = stats.bloque = { inicio: ahora, fuerzaSes: 0, skills: sel.skills, tipoPrimero: sel.tipoPrimero, tipoAnterior: b ? b.tipoPrimero : null };
+    b = stats.bloque = { inicio: ahora, fuerzaSes: 0, skills: sel.skills, tipoPrimero: sel.tipoPrimero, tipoAnterior: b ? b.tipoPrimero : null, finisherPrev: b ? (b.finisherFormato || null) : null };   // el finisher del bloque nuevo nunca repite el formato del anterior
     if(typeof saveState === 'function') saveState();
   } else if(!b.skills.length){                                                      // no había nada desbloqueado: reintentar
     const sel = elegirHabilidadesBloque(b.tipoAnterior || null);
@@ -1208,7 +1225,7 @@ function recalcularBloque(){
   const b = bloqueVigente();
   const sel = elegirHabilidadesBloque(b.tipoAnterior || null);
   b.skills = sel.skills; b.tipoPrimero = sel.tipoPrimero;
-  delete b.calor;   // la entrada en calor fijada del bloque se rearma con el equipo y las habilidades nuevas
+  delete b.calor;   // (ya no se guarda nada de la entrada en calor en el bloque: se arma por criterios en cada sesión)
   if(typeof saveState === 'function') saveState();
 }
 // Punto de partida POR ESCALERA (no un nivel global). k = peldaño en el que estás (0 = el primero; n = escalera completa).
@@ -1601,8 +1618,8 @@ function renderNivelZonas(){
   const cont = document.getElementById('nivel-zonas');
   if(!cont) return;
   const zonas = calcularNivelPorZona();
-  cont.innerHTML =
-    '<p class="section-label" style="margin:0 0 10px;">Tu nivel por zona</p>' +
+  const contenido = document.createElement('div');
+  contenido.innerHTML =
     '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">' +
       zonas.map(z => `
         <div class="summary-card" style="margin:0; padding:10px 12px;">
@@ -1615,23 +1632,73 @@ function renderNivelZonas(){
       `).join('') +
     '</div>' +
     '<p style="font-size:12px; color:var(--text-faint); margin:10px 0 0;">Movilidad todavía no tiene escalera propia, por eso no aparece acá.</p>';
+  renderAcordeon(cont, 'perfil', [{ id:'zonas', titulo:'Tu nivel por zona', contenido }]);
+}
+
+// ===== ACORDEÓN de Perfil (pedido del 28/10) =====
+// Las listas largas de Perfil van en secciones CERRADAS por defecto. Cada título muestra un resumen, tocarlo abre/cierra
+// esa sección y al abrir una se cierran las demás del mismo grupo. Áreas de toque de 48 px o más.
+// ACC_ABIERTO[grupo] = id de la sección abierta (null/undefined = todas cerradas). Se reinicia al entrar a Perfil.
+let ACC_ABIERTO = {};
+function accAplicar(grupo){
+  document.querySelectorAll('.acc[data-grupo="' + grupo + '"]').forEach(box => {
+    const abierto = ACC_ABIERTO[grupo] === box.dataset.id;
+    const head = box.querySelector('.acc-head'), body = box.querySelector('.acc-body');
+    head.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+    head.querySelector('.acc-signo').textContent = abierto ? '−' : '+';
+    body.hidden = !abierto;
+  });
+}
+// items: [{ id, titulo, contenido: Node }]. Dibuja en `cont` (reemplaza lo que había) y respeta lo que estaba abierto.
+function renderAcordeon(cont, grupo, items){
+  cont.innerHTML = '';
+  items.forEach(it => {
+    const box = document.createElement('div');
+    box.className = 'acc'; box.dataset.grupo = grupo; box.dataset.id = it.id;
+    const head = document.createElement('button');
+    head.type = 'button'; head.className = 'acc-head'; head.id = 'acc-h-' + grupo + '-' + it.id;
+    head.setAttribute('aria-controls', 'acc-b-' + grupo + '-' + it.id);
+    const t = document.createElement('span'); t.className = 'acc-titulo'; t.textContent = it.titulo;
+    const s = document.createElement('span'); s.className = 'acc-signo'; s.setAttribute('aria-hidden', 'true');
+    head.appendChild(t); head.appendChild(s);
+    const body = document.createElement('div');
+    body.className = 'acc-body'; body.id = 'acc-b-' + grupo + '-' + it.id; body.setAttribute('role', 'region'); body.setAttribute('aria-labelledby', head.id);
+    body.appendChild(it.contenido);
+    head.addEventListener('click', () => { ACC_ABIERTO[grupo] = (ACC_ABIERTO[grupo] === it.id) ? null : it.id; accAplicar(grupo); });
+    box.appendChild(head); box.appendChild(body); cont.appendChild(box);
+  });
+  accAplicar(grupo);
+}
+// Nombre del peldaño en el que estás en una escalera (el primero que todavía no dominaste y ya podés hacer).
+function peldanoActualNombre(pat){
+  const s = ladderStatus(pat);
+  if(s.allDone) return '✓ ' + s.rungs[s.rungs.length - 1].name;
+  return (s.current || s.rungs[0]).name;
+}
+const PERFIL_SECCIONES = [
+  { grupo:'Tirón', titulo:'Tirón' }, { grupo:'Empuje', titulo:'Empuje' }, { grupo:'Pierna y cadena posterior', titulo:'Piernas' },
+  { grupo:'Core', titulo:'Core' }, { grupo:'Habilidades', titulo:'Habilidades' }
+];
+// Resumen del título: "Empuje · Flexiones diamante" (la escalera principal de cada sección).
+function perfilResumen(sec, g){
+  let pat;
+  if(g.title === 'Empuje') pat = 'push_horiz';
+  else if(g.title === 'Tirón') pat = 'pull_vert';
+  else if(g.title === 'Core') pat = 'core_recto';
+  else if(g.title === 'Habilidades') pat = g.pats.slice().sort((a, b) => ladderStatus(b).mastered - ladderStatus(a).mastered)[0];   // la más avanzada
+  else pat = isUnlocked(exByName(LADDERS.squat_uni.rungs[0])) ? 'squat_uni' : 'squat';
+  return sec.titulo + ' · ' + (g.title === 'Habilidades' ? (LADDER_LABEL[pat] || pat) + ': ' : '') + peldanoActualNombre(pat);
 }
 
 function renderLadderBoard(){
   renderNivelZonas();
   const board = document.getElementById("ladder-board");
   if(!board) return;
-  board.innerHTML = "";
-  const groups = ZONA_GROUPS;
-  groups.forEach(g=>{
-    const h = document.createElement("p");
-    h.className = "section-label";
-    h.style.margin = "22px 0 10px";
-    h.textContent = g.title;
-    board.appendChild(h);
+  const items = PERFIL_SECCIONES.map(sec => {
+    const g = ZONA_GROUPS.find(z => z.title === sec.grupo);
+    const cont = document.createElement('div');
     g.pats.forEach(pat=>{
       const s = ladderStatus(pat);
-      const pct = Math.round((s.mastered / s.rungs.length) * 100);
       const cardEl = document.createElement("div");
       cardEl.className = "summary-card";
       cardEl.style.marginBottom = "10px";
@@ -1652,9 +1719,11 @@ function renderLadderBoard(){
         </div>
         <div style="display:flex; gap:4px; margin:11px 0;">${segs}</div>
         <select class="pp-sel" data-pat="${pat}" style="width:100%; font-family:inherit;">${opts}</select>`;
-      board.appendChild(cardEl);
+      cont.appendChild(cardEl);
     });
+    return { id: sec.titulo, titulo: perfilResumen(sec, g), contenido: cont };
   });
+  renderAcordeon(board, 'perfil', items);
   board.querySelectorAll('.pp-sel').forEach(sel => sel.addEventListener('change', () => {
     fijarPuntoDePartida(sel.dataset.pat, parseInt(sel.value, 10));
     recalcularBloque();                                              // la sesión siguiente se recalcula con el punto nuevo
@@ -4026,8 +4095,8 @@ const EQUIP_HELP = {
 const EQUIP_LABEL = { 'Suelo':'Suelo', 'Barra':'Barra', 'Paralelas':'Paralelas / parallettes', 'Anillas':'Anillas', 'Banda':'Bandas', 'Soga':'Soga', 'Poste vertical':'Poste vertical' };
 function renderEquip(){
   const el = document.getElementById('equip-picker'); if(!el) return;
-  let h = '<div class="summary-card">';
-  h += '<p style="font-weight:700; margin:0 0 2px;">🔧 Equipamiento</p>';
+  let h = '';
+
   h += '<p style="font-size:12.5px; color:var(--text-dim); margin:0 0 14px;">Marcá lo que tenés.</p>';
   h += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
   EQUIP_OPTIONS.forEach(eq => {
@@ -4042,8 +4111,9 @@ function renderEquip(){
   h += '</div>';
   const n = EQUIP_OPTIONS.filter(e => e==='Suelo' || myEquip.includes(e)).length;
   if(n <= 1) h += '<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>';
-  h += '</div>';
-  el.innerHTML = h;
+  const contenido = document.createElement('div');
+  contenido.innerHTML = h;
+  renderAcordeon(el, 'perfil', [{ id:'equip', titulo:'Equipamiento · ' + n + ' de ' + EQUIP_OPTIONS.length, contenido }]);
   el.querySelectorAll('.equip-btn').forEach(b => b.addEventListener('click', () => {
     const eq = b.dataset.eq;
     if(eq === 'Suelo') return;
@@ -4462,6 +4532,7 @@ function goalPathNames(){
 }
 function renderSessionBlocks(c, session){
   const blocks = buildBlocks(session);
+  const primerFuerte = (typeof ecPrimerFuerte === 'function') ? ecPrimerFuerte(session.dia || dayFocus, session) : null;   // acá van las series de aproximación
   const gp = goalPathNames();
   if(gp.label){
     const dgProx = skillsProximity().find(p => p.id === displayGoal());
@@ -4520,6 +4591,7 @@ function renderSessionBlocks(c, session){
       card.style.cssText = 'margin-bottom:8px;' + (b.tipo === 'super' ? ' border-left:3px solid var(--accent);' : '');
       card.innerHTML = (b.tipo === 'super' ? '<div style="font-size:12px; color:var(--accent); font-weight:800; letter-spacing:.1em; margin-bottom:6px;">' + (i===0?'A':'B') + '</div>' : '') + exCardHTML(ex);
       if(!b.circuito) card.insertAdjacentHTML('beforeend', serieBoxHTML(ex.name, b.rondas, 'Serie'));   // "Serie 2 de 4"
+      if(primerFuerte && ex.name === primerFuerte.name && typeof aproximacionHTML === 'function') card.insertAdjacentHTML('afterbegin', aproximacionHTML(ex));   // 1-2 series fáciles, marcadas (ya no van en la entrada en calor)
       wrap.appendChild(card);
       if(b.tipo === 'super' && i === 0){
         const plus = document.createElement('div');
@@ -4760,7 +4832,15 @@ function renderLadoDebil(){
   }));
 }
 // La configuración vive en la pestaña Perfil: se dibuja cada vez que se abre.
-document.querySelector('[data-tab="tab-nivel"]').addEventListener('click', () => { renderEquip(); renderLadoDebil(); renderLadderBoard(); renderOfflineEstado(); if(typeof renderRespaldo === "function") renderRespaldo(); });
+// Alto REAL de la barra fija (incluye la zona segura del iPhone) -> variable CSS --barra-real; el contenido deja ese margen abajo.
+function ajustarBarra(){
+  const nav = document.querySelector('.tabbar'); if(!nav) return;
+  document.documentElement.style.setProperty('--barra-real', nav.offsetHeight + 'px');
+}
+ajustarBarra();
+window.addEventListener('load', ajustarBarra); window.addEventListener('resize', ajustarBarra); window.addEventListener('orientationchange', ajustarBarra);
+if(window.ResizeObserver && document.querySelector('.tabbar')) new ResizeObserver(ajustarBarra).observe(document.querySelector('.tabbar'));
+document.querySelector('[data-tab="tab-nivel"]').addEventListener('click', () => { ACC_ABIERTO = {}; renderEquip(); renderLadoDebil(); renderLadderBoard(); renderOfflineEstado(); if(typeof renderRespaldo === "function") renderRespaldo(); });
 function renderOfflineEstado(){ const el = document.getElementById('offline-estado'); if(el && typeof offlineTexto === 'function') offlineTexto().then(t => { el.textContent = t; }); }
 
 const resetBtn = document.getElementById('reset-all');

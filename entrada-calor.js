@@ -1,49 +1,56 @@
 /**
- * ENTRADA-CALOR.JS — Entrada en calor guiada (ENCARGO.md, Etapa 3)
+ * ENTRADA-CALOR.JS — Entrada en calor guiada (ENCARGO, cambio de enfoque del 28/10: CRITERIOS, no números rígidos)
  *
- * 8–10 min al inicio de cada sesión, en 3 bloques, en formato REPRODUCTOR (nunca una lista):
- *   1. Movilidad articular (dinámica, de arriba hacia abajo: muñecas siempre, hombros, columna, cadera, rodillas, tobillos)
- *   2. Activación según el tipo de día (todos: retroversión pélvica + puente de glúteo)
- *   3. Calentamiento: soga (o saltitos) + 1–2 series fáciles de aproximación del primer ejercicio fuerte
- * Sin estáticos de más de 30 s. Fija por tipo de día durante el bloque mensual (stats.bloque.calor[dia]).
- * Avanza sola al terminar el timer; un toque para saltear el ejercicio; al terminar el bloque 3 arranca la sesión.
+ * ORDEN FIJO, en formato REPRODUCTOR (nunca una lista):  1. Movilidad  →  2. Activación  →  3. Pulsaciones.
+ * El motor decide y VARÍA entre sesiones (no es fuerza): rota los ejercicios del pool respetando estos criterios.
  *
- * Los textos de técnica salen de lo que ya tenía la app (CUES / MOVILIDAD) donde existía. Los marcados con
- * `revisado:"entrenador"` fueron revisados por el entrenador (no es fuente bibliográfica y no se inventa una).
- * Depende de globals de index.html: stats, profile, myEquip, generateSession, exByName, isStatic, isUnilateral,
- * hasEquip, equipmentOf, progState, tBase, bloqueVigente, HABILIDADES, saveState, DIA_LABEL.
+ * CRITERIOS
+ *  · Corta y ágil: orientativo 5–8 min. Pocos ejercicios, bien elegidos; si dos cubren lo mismo, va uno solo (`cubre`).
+ *  · Movilidad: las articulaciones que más trabajan ese día. Muñecas SIEMPRE (la calistenia las carga en casi todo).
+ *  · Activación: lo que se va a usar ese día (escápulas en Tirón, escápulas/muñecas en Empuje, glúteo y cadera en Piernas)
+ *    + control pélvico (retroversión o puente; uno solo, que cubren lo mismo).
+ *  · Pulsaciones: algo breve y dinámico (soga, jumping jacks o skipping).
+ *  · PROHIBIDO cualquier ejercicio de entrenamiento (dominadas, flexiones, habilidades, escalones de las escaleras, etc.).
+ *
+ * LAS SERIES DE APROXIMACIÓN YA NO VAN ACÁ: las propone la pantalla de la sesión, al inicio del primer ejercicio fuerte
+ * (aproximacionHTML), 1–2 series fáciles claramente marcadas.
+ *
+ * Los textos de técnica salen de lo que ya tenía la app donde existía. `revisado:"entrenador"` = revisado por el entrenador
+ * (no es fuente bibliográfica y no se inventa una). `revisado:"pendiente"` = texto de Claude a revisar por el entrenador.
+ * Depende de globals de index.html: stats, profile, myEquip, exByName, isStatic, isUnilateral, hasEquip, progState, tBase,
+ * HABILIDADES, DIA_LABEL.
  */
 
-// ---------- contenido ----------
-const EC_B1 = [
-  { n:'Círculos de muñeca',  seg:30, cue:'Manos entrelazadas o apoyadas: círculos controlados en las dos direcciones. Sumá flexión y extensión completa.' },
-  { n:'Círculos de brazo',   seg:30, cue:'Brazos extendidos a los costados: círculos grandes y controlados, hacia adelante y hacia atrás.' },
-  { n:'Gato-vaca',           seg:30, cue:'En cuadrupedia, arqueá la espalda hacia arriba y después hundila, siguiendo el movimiento con la cabeza. Lento, con la respiración.' },
-  { n:'Círculos de cadera',  seg:30, cue:'Llevá una rodilla al pecho y abrila hacia afuera en un círculo grande. Alterná las piernas. Rango completo, sin forzar.' },
-  { n:'Sentadilla lenta de rango completo', seg:40, cue:'Bajá lento lo más profundo que te permita la movilidad, talones apoyados y rodillas en la línea de los pies. Pausa 1 s abajo y subí.', revisado:'entrenador' },
-  { n:'Círculos de tobillo', seg:30, cue:'Apoyá la punta del pie y dibujá círculos con el tobillo. Cambiá de pie y de sentido.', revisado:'entrenador' }
+// `cubre` = qué prepara cada ejercicio: si dos cubren lo mismo, el plan usa uno solo. `equipo` = se omite si no lo tenés.
+const EC_MOV = [
+  { id:'muneca',  n:'Círculos de muñeca', seg:45, cubre:['muñeca'], cue:'Manos entrelazadas o apoyadas: círculos controlados en las dos direcciones. Sumá flexión y extensión completa.' },
+  { id:'muneca-apoyo', n:'Muñecas con apoyo', seg:45, cubre:['muñeca'], cue:'Palmas en el piso con los dedos hacia adelante: llevá el peso suavemente hacia adelante y atrás. Repetí con los dedos hacia los costados. En cuatro apoyos. Sumá una pasada suave con los dedos hacia atrás, sin dolor.', revisado:'entrenador' },
+  { id:'brazo',   n:'Círculos de brazo',  seg:45, cubre:['hombro'], cue:'Brazos extendidos a los costados: círculos grandes y controlados, hacia adelante y hacia atrás.' },
+  { id:'gato',    n:'Gato-vaca',          seg:45, cubre:['columna'], cue:'En cuadrupedia, arqueá la espalda hacia arriba y después hundila, siguiendo el movimiento con la cabeza. Lento, con la respiración.' },
+  { id:'cadera',  n:'Círculos de cadera', seg:45, cubre:['cadera'], cue:'Llevá una rodilla al pecho y abrila hacia afuera en un círculo grande. Alterná las piernas. Rango completo, sin forzar.' },
+  { id:'sentadilla-lenta', n:'Sentadilla lenta de rango completo', seg:40, cubre:['cadera', 'rodilla', 'tobillo'], cue:'Bajá lento lo más profundo que te permita la movilidad, talones apoyados y rodillas en la línea de los pies. Pausa 1 s abajo y subí.', revisado:'entrenador' },
+  { id:'tobillo-rodilla', n:'Tobillos: rodilla hacia adelante', seg:40, cubre:['rodilla', 'tobillo'], cue:'Con el pie apoyado y el talón en el piso, llevá la rodilla hacia adelante pasando la punta del pie. Volvé y repetí. Rodilla alineada con el segundo dedo del pie; el talón nunca se despega.', revisado:'entrenador' },
+  { id:'tobillo', n:'Círculos de tobillo', seg:40, cubre:['tobillo'], cue:'Apoyá la punta del pie y dibujá círculos con el tobillo. Cambiá de pie y de sentido.', revisado:'entrenador' }
 ];
-const EC_ACT_TODOS = [
-  { n:'Retroversión pélvica', seg:30, cue:'Acostado con las rodillas dobladas, aplastá la zona lumbar contra el piso llevando el pubis hacia el ombligo. Soltá y repetí, lento. Exhalá mientras aplanás la lumbar. Movés solo la pelvis: los glúteos no se despegan del piso.', revisado:'entrenador' },
-  { n:'Puente de glúteo',     seg:30, cue:'Empujá con los talones y subí la cadera hasta hacer una línea recta. Apretá el glúteo arriba un segundo y bajá controlado.' }
+const EC_ACT = [
+  { id:'retracciones', n:'Retracciones escapulares colgado', seg:50, cubre:['escápula'], dias:['tiron'], equipo:'Barra', cue:'Colgado de la barra, retraé las escápulas sin flexionar los brazos.' },
+  { id:'aperturas', n:'Aperturas con banda', seg:50, cubre:['escápula'], dias:['tiron'], equipo:'Banda', cue:'Con la banda tomada al frente y los brazos estirados, separá las manos llevando la banda hacia el pecho y juntando los omóplatos. Brazos a la altura de los hombros, sin subirlos hacia las orejas ni arquear la lumbar. Volvé controlando la banda.', revisado:'entrenador' },
+  { id:'flex-escapulares', n:'Flexiones escapulares', seg:50, cubre:['escápula'], dias:['empuje'], cue:'En posición de flexión con los brazos estirados, hundí y elevá el pecho moviendo solo los omóplatos. El movimiento es chiquito.' },
+  { id:'retroversion', n:'Retroversión pélvica', seg:40, cubre:['pelvis'], dias:['tiron', 'empuje'], cue:'Acostado con las rodillas dobladas, aplastá la zona lumbar contra el piso llevando el pubis hacia el ombligo. Soltá y repetí, lento. Exhalá mientras aplanás la lumbar. Movés solo la pelvis: los glúteos no se despegan del piso.', revisado:'entrenador' },
+  { id:'puente', n:'Puente de glúteo', seg:40, cubre:['pelvis', 'glúteo'], dias:['tiron', 'empuje', 'piernas'], cue:'Empujá con los talones y subí la cadera hasta hacer una línea recta. Apretá el glúteo arriba un segundo y bajá controlado.' }
 ];
-const EC_ACT_DIA = {
-  tiron: [
-    { n:'Retracciones escapulares colgado', seg:40, cue:'Colgado de la barra, retraé las escápulas sin flexionar los brazos.', equipo:'Barra' },
-    { n:'Aperturas con banda',              seg:40, cue:'Con la banda tomada al frente y los brazos estirados, separá las manos llevando la banda hacia el pecho y juntando los omóplatos. Brazos a la altura de los hombros, sin subirlos hacia las orejas ni arquear la lumbar. Volvé controlando la banda.', equipo:'Banda', revisado:'entrenador' }
-  ],
-  empuje: [
-    { n:'Flexiones escapulares', seg:40, cue:'En posición de flexión con los brazos estirados, hundí y elevá el pecho moviendo solo los omóplatos. El movimiento es chiquito.' },
-    { n:'Muñecas con apoyo',     seg:40, cue:'Palmas en el piso con los dedos hacia adelante: llevá el peso suavemente hacia adelante y atrás. Repetí con los dedos hacia los costados. En cuatro apoyos. Sumá una pasada suave con los dedos hacia atrás, sin dolor.', revisado:'entrenador' }
-  ],
-  piernas: [
-    { n:'Puente a una pierna',        seg:30, lados:true, cue:'Boca arriba, una rodilla doblada con el pie en el piso y la otra pierna estirada en el aire. Empujá con el talón y subí la cadera hasta hacer una línea recta.' },
-    { n:'Sentadilla profunda sostenida', seg:30, cue:'Bajá a la posición más profunda que puedas con los talones en el piso, empujando las rodillas hacia afuera con los codos. Es sostener, sin movimiento.' },
-    { n:'Tobillos: rodilla hacia adelante', seg:30, cue:'Con el pie apoyado y el talón en el piso, llevá la rodilla hacia adelante pasando la punta del pie. Volvé y repetí. Rodilla alineada con el segundo dedo del pie; el talón nunca se despega.', revisado:'entrenador' }
-  ]
-};
-const EC_SOGA = 100;        // segundos de soga / saltitos (1–2 min)
-const EC_SERIE = 55;        // segundos por serie de aproximación (serie + descanso)
+// Subir pulsaciones: breve y dinámico. Textos de Claude pendientes de revisión del entrenador.
+const EC_PULSO = [
+  { id:'soga', n:'Soga', seg:100, equipo:'Soga', cue:'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.', revisado:'pendiente' },
+  { id:'jacks', n:'Jumping jacks', seg:100, cue:'Ritmo parejo, brazos completos arriba, aterrizaje suave.', revisado:'pendiente' },
+  { id:'skipping', n:'Skipping', seg:100, cue:'Corrida en el lugar subiendo las rodillas a la cadera, ritmo alto.', revisado:'pendiente' }
+];
+// Articulaciones que más trabajan cada día, de arriba hacia abajo (las muñecas van SIEMPRE).
+const EC_DIA_ARTIC = { tiron:['muñeca', 'hombro', 'columna'], empuje:['muñeca', 'hombro', 'columna'], piernas:['muñeca', 'cadera', 'rodilla', 'tobillo'] };
+const EC_ORDEN_ARTIC = ['muñeca', 'hombro', 'columna', 'cadera', 'rodilla', 'tobillo'];
+const EC_MIN_TOTAL = 330, EC_MAX_PULSO = 150, EC_MIN_PULSO = 90;   // orientativo: ~5,5 a 8 min; las pulsaciones se ajustan para no quedar cortos
+const EC_SERIE = 55;        // segundos por serie de aproximación (serie + descanso): se cuenta en la parte de fuerza, no acá
+
 
 // ---------- armado ----------
 function ecLados(){
@@ -70,54 +77,69 @@ function ecPrimerFuerte(dia, ses){
   const zona = dia === 'tiron' ? 'tiron' : (dia === 'empuje' ? 'empuje' : 'piernas');
   return ses.find(e => zoneOf(e.pattern) === zona) || null;
 }
-// Fijo por tipo de día durante el bloque mensual: se calcula una vez y se guarda en stats.bloque.calor[dia].
-function ecAproxFija(dia){
-  const b = bloqueVigente();
-  if(!b.calor) b.calor = {};
-  let f = b.calor[dia];
-  if(f && (!exByName(f.nombre) || !hasEquip(exByName(f.nombre)))) f = null;   // si ya no se puede hacer, se rearma
-  if(!f){
-    const fuerte = ecPrimerFuerte(dia, generateSession(dia));
-    f = fuerte ? ecAproximacion(fuerte) : { vacio:true };
-    b.calor[dia] = f;
-    if(typeof saveState === 'function') saveState();
-  }
-  return f;
+
+// ---------- armado por CRITERIOS ----------
+// Semilla de variedad: cambia sola con cada sesión (y con "Cambiar ejercicios"), igual que el resto de la app.
+function ecSemilla(){ return (stats && stats.sessions || 0) + (stats && stats.varOffset || 0); }
+const ecTiene = it => !it.equipo || myEquip.includes(it.equipo);                     // sin el equipo, el ejercicio no entra
+function ecElegirRotando(lista, semilla, desfase){ return lista.length ? lista[(semilla + (desfase || 0)) % lista.length] : null; }
+// Devuelve los ejercicios ELEGIDOS (con su bloque), todavía sin las series de aproximación (que ya no van acá).
+function entradaCalorElegidos(dia, semilla){
+  const s = (typeof semilla === 'number') ? semilla : ecSemilla();
+  const necesarias = EC_DIA_ARTIC[dia] || EC_DIA_ARTIC.tiron;
+  // 1. MOVILIDAD: muñecas siempre; después las articulaciones del día; cada una se cubre UNA sola vez.
+  const cubiertas = new Set(), mov = [];
+  const agregar = it => { if(it && !mov.includes(it)){ mov.push(it); it.cubre.forEach(j => cubiertas.add(j)); } };
+  agregar(EC_MOV.find(it => it.id === (dia === 'empuje' ? 'muneca-apoyo' : 'muneca')));         // en Empuje las muñecas se preparan con apoyo
+  necesarias.forEach((j, i) => {
+    if(cubiertas.has(j) || mov.length >= 3) return;
+    const cand = EC_MOV.filter(it => ecTiene(it) && it.cubre.includes(j) && it.cubre.every(x => !cubiertas.has(x)) && it.id !== 'muneca' && it.id !== 'muneca-apoyo');
+    agregar(ecElegirRotando(cand, s, i));
+  });
+  // Si con lo mínimo la entrada en calor quedaría corta (< ~5,5 min aun con las pulsaciones al máximo), suma la columna (gato-vaca).
+  const restoMov = mov.reduce((t, x) => t + x.seg, 0) + 40 + 40;           // + activación escapular/pélvica aproximada
+  if(mov.length < 3 && !cubiertas.has('columna') && restoMov + EC_MAX_PULSO < EC_MIN_TOTAL) agregar(EC_MOV.find(it => it.id === 'gato'));
+  mov.sort((a, b) => Math.min.apply(null, a.cubre.map(j => EC_ORDEN_ARTIC.indexOf(j))) - Math.min.apply(null, b.cubre.map(j => EC_ORDEN_ARTIC.indexOf(j))));
+  // 2. ACTIVACIÓN: lo que se usa ese día + control pélvico (retroversión o puente: cubren lo mismo, va uno solo).
+  const act = [];
+  const esc = ecElegirRotando(EC_ACT.filter(it => it.dias.includes(dia) && it.cubre.includes('escápula') && ecTiene(it)), s);
+  if(esc) act.push(esc);
+  const pelv = dia === 'piernas' ? EC_ACT.find(it => it.id === 'puente')                         // Piernas: glúteo y cadera
+    : ecElegirRotando(EC_ACT.filter(it => it.dias.includes(dia) && it.cubre.includes('pelvis')), s, 1);
+  if(pelv) act.push(pelv);
+  // 3. PULSACIONES: breve y dinámico; dura lo justo para que la entrada en calor no quede corta.
+  const pulso = ecElegirRotando(EC_PULSO.filter(ecTiene), s, 2);
+  const resto = mov.concat(act).reduce((t, x) => t + x.seg, 0);
+  const durPulso = Math.max(EC_MIN_PULSO, Math.min(EC_MAX_PULSO, EC_MIN_TOTAL - resto));
+  return { mov, act, pulso: pulso ? Object.assign({}, pulso, { seg: durPulso }) : null };
 }
-// `sinAprox` solo sirve para estimar la duración sin tocar el bloque fijo (ver tiempo-sesion.js).
-function entradaCalorPlan(dia, sinAprox){
-  const eq = it => !it.equipo || myEquip.includes(it.equipo);                 // sin el equipo, el ejercicio se omite
-  const mapear = (lista, bloque, titulo) => {
-    const out = [];
-    lista.filter(eq).forEach(it => {
-      if(it.lados) ecLados().forEach((lado, k) => out.push({ bloque, titulo, n: it.n + ' · ' + lado, dur: it.seg, cue: it.cue, revisado: it.revisado }));
-      else out.push({ bloque, titulo, n: it.n, dur: it.seg, cue: it.cue, revisado: it.revisado });
-    });
-    return out;
-  };
-  const delDia = (EC_ACT_DIA[dia] || []);
-  const plan = [].concat(
-    mapear(EC_B1, 1, "Movilidad"),
-    mapear(EC_ACT_TODOS.concat(delDia), 2, "Activación")
-  );
-  // Bloque 3: soga (o saltitos) + 1–2 series fáciles de aproximación
-  const conSoga = myEquip.includes('Soga');
-  plan.push({ bloque:3, titulo:'Calentamiento', n: conSoga ? 'Soga' : 'Saltitos en el lugar', dur: EC_SOGA,
-              cue: conSoga ? 'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.' : 'Saltitos livianos en el lugar, aterrizando en la punta de los pies.' });
-  if(sinAprox) return plan;
-  const ap = ecAproxFija(dia);
-  if(!ap.vacio){
-    const dosis = ap.estatico ? ap.dosis + ' s' : ap.dosis + ' reps';
-    for(let s = 1; s <= 2; s++){
-      plan.push({ bloque:3, titulo:'Calentamiento', n: ap.nombre, dosis: dosis + (ap.uni ? ' por lado' : '') + ' · fácil', serie: 'Serie ' + s + ' de 2', dur: EC_SERIE,
-                  cue: ap.uni ? 'Arrancá por el lado débil. Sin llegar al esfuerzo: es para entrar en calor.' : 'Sin llegar al esfuerzo: es para entrar en calor.' });
-    }
-  }
+// El plan que consume el reproductor: pasos en ORDEN FIJO movilidad → activación → pulsaciones.
+function entradaCalorPlan(dia, semilla){
+  const e = entradaCalorElegidos(dia, semilla), plan = [];
+  const pasar = (lista, bloque, titulo) => lista.forEach(it => plan.push({ bloque, titulo, n: it.n, dur: it.seg, cue: it.cue, revisado: it.revisado, id: it.id, cubre: it.cubre }));
+  pasar(e.mov, 1, 'Movilidad'); pasar(e.act, 2, 'Activación');
+  if(e.pulso){ pasar([e.pulso], 3, 'Pulsaciones'); if(!myEquip.includes('Soga') && e.pulso.id === 'soga') plan[plan.length - 1].n = 'Saltitos en el lugar'; }
   return plan;
 }
 function entradaCalorSegundos(plan){ return plan.reduce((t, x) => t + x.dur, 0); }
-// Duración estimada sin armar la aproximación fija (evita pedir la sesión dentro del cálculo de la sesión): siempre 2 series.
-function entradaCalorSegundosEstimado(dia){ return entradaCalorSegundos(entradaCalorPlan(dia, true)) + 2 * EC_SERIE; }
+// Duración estimada de la entrada en calor (la usa el plan de 60 min). Las series de aproximación se cuentan en la fuerza.
+function entradaCalorSegundosEstimado(dia){ return entradaCalorSegundos(entradaCalorPlan(dia)); }
+
+// ---------- SERIES DE APROXIMACIÓN (ya NO van en la entrada en calor) ----------
+// Al inicio del primer ejercicio fuerte (la habilidad si hay; si no, la primera ancla) el motor propone 2 series fáciles:
+// la versión más simple (el peldaño anterior) con pocas reps. Claramente marcadas: no se registran ni cuentan.
+function aproximacionDe(ex){
+  const ap = ecAproximacion(ex);
+  return { nombre: ap.nombre, estatico: ap.estatico, dosis: ap.dosis, uni: ap.uni, series: 2 };
+}
+function aproximacionHTML(ex){
+  const a = aproximacionDe(ex), mismo = a.nombre === ex.name;
+  const dosis = a.estatico ? a.dosis + ' s' : a.dosis + ' reps';
+  return '<div class="aprox-box" style="border:2px dashed var(--line); padding:10px 12px; margin:0 0 12px;">' +
+    '<div style="font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;">Aproximación · ' + a.series + ' series fáciles · no cuentan</div>' +
+    '<div style="font-size:15px; font-weight:700; margin-top:4px;">' + a.nombre + ' · ' + dosis + (a.uni ? ' por lado' : '') + '</div>' +
+    '<div style="font-size:13px; color:var(--text-dim); margin-top:2px;">' + (mismo ? 'Mismo ejercicio, pocas reps y sin llegar al esfuerzo.' : 'Versión más simple, sin llegar al esfuerzo.') + ' Después empezá las series de verdad.</div></div>';
+}
 
 // ---------- reproductor ----------
 let ecT = null;

@@ -36,6 +36,7 @@ window.FEATURES = {
   movilidadVieja:false,    // MOVILIDAD / "Hacer movilidad hoy" / tarjeta dayWarmup dentro de la sesión
   guardian:false,          // avisos de "hace X días que no entrenás…" (el encargo: sin alertas ni indicadores de frecuencia)
   estancamiento:false,     // banner de estancamiento / deload
+  ladoDebil:false,         // selector de "lado débil" en Perfil y "arrancá por el lado débil" en las tarjetas (retirado a pedido, 31/10)
   homeCamino:false         // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
 };
 window.FEATURE_TABS = { entrenar:'tab-rutina', progreso:'tab-progreso', perfil:'tab-nivel', nutricion:'tab-nutricion', calentar:'tab-calentar',
@@ -508,6 +509,9 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   html[data-diseno="minimo"] .acc-head{ border:var(--borde) solid var(--negro) !important; background:var(--blanco); color:var(--negro); }
   html[data-diseno="minimo"] .acc-head[aria-expanded="true"]{ background:var(--negro); color:var(--blanco); }
   html[data-diseno="minimo"] .acc-body{ border:var(--borde) solid var(--negro) !important; border-top:none !important; background:var(--blanco); }
+  /* Feedback por serie: "Cumplí" (el caso normal) es el botón más grande. */
+  html[data-diseno="minimo"] .dser[data-m="cumpli"]{ min-height:64px !important; font-size:20px !important; font-weight:800 !important; }
+  html[data-diseno="minimo"] .dser[data-m="costo"], html[data-diseno="minimo"] .dser[data-m="sobro"]{ min-height:var(--tap) !important; }
 
   /* Red de seguridad: colores puestos en línea desde JS (muestras de color de la Tienda, avisos de
      Nutrición, botones del Dashboard...) pasan a gris/negro. #fff queda como está (texto sobre negro). */
@@ -896,21 +900,21 @@ const LEGS = [
   {name:"Sentadilla corta a una pierna", muscles:"Cuádriceps y glúteos", desc:"En equilibrio a la pata coja, repeticiones cortas bajando hasta los 45°.", dif:3},
   // ---- TREN INFERIOR dentro de las sesiones de calistenia (spec 23/9) ----
   // La fuerza de piernas vive acá. Unilateral, lado débil primero.
-  {name:"Sentadilla a una pierna a caja", muscles:"Cuádriceps y glúteos", desc:"Parado en una sola pierna frente a un banco o silla: bajá sentándote hasta tocar apenas y volvé a subir sin ayudarte con la otra pierna. Primer peldaño hacia la pistol.", dif:2, tips:["Una pierna apoyada; la otra estirada al frente, sin tocar el piso.", "Bajá lento hasta rozar el banco; no te dejes caer.", "La rodilla sigue la línea del pie, no se mete hacia adentro.", "Empezá siempre por el lado débil."]},
-  {name:"Pistol squat asistido", muscles:"Cuádriceps y glúteos", desc:"Sentadilla a una pierna hasta abajo de todo agarrándote de algo (anillas, marco de puerta o una banda) para ayudarte a subir lo justo.", dif:4, tips:["Agarrate de algo firme y usá la ayuda solo para subir.", "Pierna libre estirada al frente, talón del pie de apoyo pegado al piso.", "Bajá controlado hasta abajo; subí empujando el piso.", "Lado débil primero, y menos ayuda cada semana."]},
-  {name:"Pistol squat", muscles:"Cuádriceps, glúteos y equilibrio", desc:"Sentadilla completa a una sola pierna, con la otra estirada al frente sin tocar el piso. Fuerza, movilidad de tobillo y equilibrio.", dif:5, tips:["Brazos al frente para equilibrarte.", "Talón del pie de apoyo siempre en el piso.", "Bajá lento hasta abajo y subí sin rebotar.", "Lado débil primero; si se te va la rodilla hacia adentro, volvé al asistido."]},
+  {name:"Sentadilla a una pierna a caja", muscles:"Cuádriceps y glúteos", desc:"Parado en una sola pierna frente a un banco o silla: bajá sentándote hasta tocar apenas y volvé a subir sin ayudarte con la otra pierna. Primer peldaño hacia la pistol.", dif:2, tips:["Una pierna apoyada; la otra estirada al frente, sin tocar el piso.", "Bajá lento hasta rozar el banco; no te dejes caer.", "La rodilla sigue la línea del pie, no se mete hacia adentro."]},
+  {name:"Pistol squat asistido", muscles:"Cuádriceps y glúteos", desc:"Sentadilla a una pierna hasta abajo de todo agarrándote de algo (anillas, marco de puerta o una banda) para ayudarte a subir lo justo.", dif:4, tips:["Agarrate de algo firme y usá la ayuda solo para subir.", "Pierna libre estirada al frente, talón del pie de apoyo pegado al piso.", "Bajá controlado hasta abajo; subí empujando el piso.", "Cada semana, menos ayuda."]},
+  {name:"Pistol squat", muscles:"Cuádriceps, glúteos y equilibrio", desc:"Sentadilla completa a una sola pierna, con la otra estirada al frente sin tocar el piso. Fuerza, movilidad de tobillo y equilibrio.", dif:5, tips:["Brazos al frente para equilibrarte.", "Talón del pie de apoyo siempre en el piso.", "Bajá lento hasta abajo y subí sin rebotar.", "Si se te va la rodilla hacia adentro, volvé al asistido."]},
   // Bisagra de cadera a una pierna (peso muerto sin peso): isquios, glúteo y equilibrio.
   {name:"Bisagra de cadera (buenos días)", muscles:"Isquiotibiales y glúteos", desc:"De pie, manos detrás de la nuca o cruzadas en el pecho: llevás la cadera atrás con la espalda recta hasta sentir el isquio y volvés apretando el glúteo. Es el patrón base del peso muerto.", dif:2, tips:["La cadera va hacia atrás, no hacia abajo: es una bisagra, no una sentadilla.", "Espalda recta todo el tiempo, rodillas apenas flexionadas.", "Bajá hasta sentir el isquio estirado y volvé apretando el glúteo.", "Mirada al frente, cuello neutro."]},
-  {name:"Peso muerto a una pierna con apoyo", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera parado en una pierna, con la punta del otro pie apoyada atrás en el piso o una mano en la pared para no perder el equilibrio.", dif:3, tips:["Tocá el piso solo con la punta del pie de atrás; el peso va en la pierna de adelante.", "Cadera y hombros cuadrados: no abras la cadera hacia el costado.", "Espalda recta, pierna de apoyo con la rodilla apenas flexionada.", "Lado débil primero."]},
-  {name:"Peso muerto a una pierna", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera en una sola pierna, con la otra pierna estirada hacia atrás en el aire, cuerpo en línea de la cabeza al talón.", dif:4, tips:["Cuerpo en una línea: la pierna de atrás sube a la vez que el torso baja.", "Cadera cuadrada, sin abrirla hacia afuera.", "Apoyás toda la planta del pie; no te agarrés de nada.", "Lado débil primero."]},
+  {name:"Peso muerto a una pierna con apoyo", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera parado en una pierna, con la punta del otro pie apoyada atrás en el piso o una mano en la pared para no perder el equilibrio.", dif:3, tips:["Tocá el piso solo con la punta del pie de atrás; el peso va en la pierna de adelante.", "Cadera y hombros cuadrados: no abras la cadera hacia el costado.", "Espalda recta, pierna de apoyo con la rodilla apenas flexionada."]},
+  {name:"Peso muerto a una pierna", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera en una sola pierna, con la otra pierna estirada hacia atrás en el aire, cuerpo en línea de la cabeza al talón.", dif:4, tips:["Cuerpo en una línea: la pierna de atrás sube a la vez que el torso baja.", "Cadera cuadrada, sin abrirla hacia afuera.", "Apoyás toda la planta del pie; no te agarrés de nada."]},
   // Nordic hamstring: LO #1 para no desgarrarte el isquio. Bajo volumen, progresión propia.
   {name:"Nordic asistido", muscles:"Isquiotibiales", desc:"De rodillas con los talones fijos (debajo de un sillón, una barra baja o un compañero), bajá el torso hacia adelante lo más lento que puedas y frená el final con las manos. Empujá con las manos para volver.", dif:3, tips:["Talones bien anclados; almohadón o toalla abajo de las rodillas.", "Cuerpo en línea recta de las rodillas a la cabeza: no te dobles en la cadera.", "Bajá LENTO; las manos solo frenan el final, después te ayudás para subir.", "Es un ejercicio de bajo volumen: pocas reps, muy bien hechas."]},
   {name:"Nordic excéntrico", muscles:"Isquiotibiales", desc:"Igual que el Nordic asistido pero aguantás la bajada con los isquios hasta donde puedas antes de apoyar las manos, y subís con ayuda de los brazos.", dif:4, tips:["Bajá lo más lento que puedas: contá 4-5 segundos.", "Cuerpo recto, sin doblar la cadera.", "Las manos aparecen recién cuando ya no aguantás.", "Bajo volumen: 2 series y listo."]},
   {name:"Nordic completo", muscles:"Isquiotibiales", desc:"Bajás controlado y volvés a subir usando solo los isquios (con un empujón mínimo de las manos si hace falta). Es una de las mejores prevenciones de desgarros.", dif:5, tips:["Bajada lenta y subida con los isquios; manos solo si te falla.", "Cuerpo en línea recta todo el recorrido.", "Bajo volumen: pocas reps de calidad.", "Si te falla la bajada, volvé al excéntrico."]},
   // Copenhagen: aductores (ingle). Isométrico por lado; bajo volumen; progresión de palanca.
-  {name:"Copenhagen con rodilla apoyada", muscles:"Aductores (ingle)", desc:"De costado, antebrazo en el piso, la rodilla de arriba apoyada sobre un banco o silla y la pierna de abajo colgando: subí la cadera y sostené. Palanca corta = versión más fácil.", dif:2, tips:["Codo abajo del hombro, cuerpo en línea recta.", "Apoyás la RODILLA (no el pie) arriba del banco.", "Subí la cadera apretando la parte interna del muslo de arriba.", "Hacé un lado y después el otro: primero el más débil."]},
-  {name:"Copenhagen palanca corta", muscles:"Aductores (ingle)", desc:"Igual, pero apoyando el pie y la parte interna del tobillo arriba del banco con la pierna estirada. Más palanca, más trabajo para los aductores.", dif:3, tips:["Pierna de arriba estirada, apoyada por el borde interno del pie.", "Cuerpo en línea recta; la cadera no se cae.", "Sostené el tiempo indicado sin dejar caer la cadera.", "Lado débil primero."]},
-  {name:"Copenhagen completo", muscles:"Aductores (ingle)", desc:"Cuerpo horizontal con el pie de arriba apoyado en el banco y la pierna de abajo flotando o tocando el piso solo como ayuda: el trabajo fuerte para la ingle.", dif:4, tips:["Cuerpo horizontal, bien firme.", "Apoyá el pie completo arriba del banco, no la rodilla.", "Sostené sin que la cadera se hunda.", "Lado débil primero."]},
+  {name:"Copenhagen con rodilla apoyada", muscles:"Aductores (ingle)", desc:"De costado, antebrazo en el piso, la rodilla de arriba apoyada sobre un banco o silla y la pierna de abajo colgando: subí la cadera y sostené. Palanca corta = versión más fácil.", dif:2, tips:["Codo abajo del hombro, cuerpo en línea recta.", "Apoyás la RODILLA (no el pie) arriba del banco.", "Subí la cadera apretando la parte interna del muslo de arriba.", "Hacé un lado y después el otro."]},
+  {name:"Copenhagen palanca corta", muscles:"Aductores (ingle)", desc:"Igual, pero apoyando el pie y la parte interna del tobillo arriba del banco con la pierna estirada. Más palanca, más trabajo para los aductores.", dif:3, tips:["Pierna de arriba estirada, apoyada por el borde interno del pie.", "Cuerpo en línea recta; la cadera no se cae.", "Sostené el tiempo indicado sin dejar caer la cadera."]},
+  {name:"Copenhagen completo", muscles:"Aductores (ingle)", desc:"Cuerpo horizontal con el pie de arriba apoyado en el banco y la pierna de abajo flotando o tocando el piso solo como ayuda: el trabajo fuerte para la ingle.", dif:4, tips:["Cuerpo horizontal, bien firme.", "Apoyá el pie completo arriba del banco, no la rodilla.", "Sostené sin que la cadera se hunda."]},
   // Cadena posterior — Puentes (Paul Wade, Convict Conditioning). Rellena el hueco de columna/glúteo.
   {name:"Puente corto", muscles:"Glúteo, isquiotibiales y lumbar", desc:"Acostado boca arriba, rodillas flexionadas y pies en el suelo, elevar la cadera contrayendo glúteo hasta alinear tronco y muslos. Paso inicial y accesible de la serie de puentes.", dif:2, cite:"Paul Wade — Convict Conditioning (Big Six)"},
   {name:"Puente completo", muscles:"Lumbar, glúteo, hombros y cuádriceps", desc:"Puente de espalda completo (rueda): manos y pies en el suelo, empujar la cadera hacia arriba hasta extender caderas y hombros. Exige movilidad de columna y hombro.", dif:3, requires:"Puente corto", cite:"Paul Wade — Convict Conditioning (Big Six)"},
@@ -1144,26 +1148,47 @@ function skillStatus(id){
   stages.forEach((s, i) => { if(idx < 0 || i < idx) hecho += s.w; else if(i === idx) hecho += s.w * s.frac; });
   return { id, nombre:H.nombre, tipo:H.tipo, equilibrio:H.equilibrio, stages, cur: idx >= 0 ? stages[idx] : null, completa: idx < 0, pct: Math.round(100 * hecho / total) };
 }
-// Registro de una marca en un peldaño de habilidad: el requisito medible reemplaza la regla de 2 "Me sobró" / 3 "Cumplí".
-//  · Cumplí  -> la marca es el objetivo.   · Me sobró -> la marca es objetivo + 1 escalón y el objetivo sube.
-//  · Me costó -> no hay marca; 2 seguidas bajan el objetivo un escalón.
-function registerSkillMark(ex, mark){
-  const R = SKILL_REQ[ex.name];
-  const st = ensureProg(ex);
-  const step = skillStep(ex);
-  st.marks.push(mark);
+// ===== PROGRESIÓN POR SERIE (cambio del 29/10, FEEDBACK_ENTRENAMIENTO.md ítem 3) =====
+// En cada serie se marca Costó · Cumplí · Sobró. La próxima vez sale de las marcas de TODAS las series de la sesión:
+//  · todas Cumplí o Sobró, con al menos la mitad Sobró   -> SUBE: +1 rep (+5 s en isométricos)
+//  · todas Cumplí (o mezcla sin Costó)                    -> IGUAL: mismo objetivo
+//  · solo la ÚLTIMA serie costó (1 Costó, al final)       -> IGUAL: es fatiga normal, no es señal de bajar
+//  · 2 o más series Costó                                 -> IGUAL; si se repite en la sesión siguiente -> BAJA: -1 rep (-5 s)
+//  · al llegar al tope del rango con todas Cumplí/Sobró   -> SIGUIENTE PELDAÑO (el nuevo arranca en su piso)
+// Un solo Costó en el medio (no al final) cuenta como mezcla: IGUAL, sin señal.
+function evaluarSeries(marks){
+  const n = marks.length, c = marks.filter(m => m === 'costo').length, s = marks.filter(m => m === 'sobro').length;
+  if(!n) return { tipo:'nada', n, c, s };
+  if(c === 0) return { tipo: (s * 2 >= n) ? 'sube' : 'igual', n, c, s };
+  if(c === 1 && marks[n - 1] === 'costo') return { tipo:'ultima', n, c, s };
+  if(c >= 2) return { tipo:'costo2', n, c, s };
+  return { tipo:'igual', n, c, s };
+}
+// Marca de resumen de la sesión (para el historial y el volumen estimado).
+function marcaResumen(marks){ const e = evaluarSeries(marks); return e.tipo === 'sube' ? 'sobro' : (e.tipo === 'costo2' ? 'costo' : 'cumpli'); }
+
+// Habilidades: la MISMA lógica de series sobre la marca medible (5 s en isométricos, 1 rep en dinámicos).
+//  · SUBE -> marca = objetivo + escalón y el objetivo sube un escalón (hasta el requisito).
+//  · IGUAL / solo la última costó -> marca = objetivo (se cumplió).
+//  · 2 o más Costó -> no hay marca; si se repite la sesión siguiente baja el objetivo un escalón.
+//  · Etapa conquistada = requisito cumplido en 2 sesiones.
+function registerSkillSeries(ex, marks){
+  const R = SKILL_REQ[ex.name], st = ensureProg(ex), step = skillStep(ex), ev = evaluarSeries(marks);
+  if(ev.tipo === 'nada') return 'steady';
+  st.marks.push(marcaResumen(marks));
+  st.sobro = 0; st.cumpli = 0; st.costo = 0;
   let event = 'steady';
   if(!st.mastered){
-    if(mark === 'costo'){
-      st.costo = (st.costo || 0) + 1; st.sobro = 0; st.cumpli = 0;
-      if(st.costo >= 2){ if(st.target - step >= step) st.target -= step; st.costo = 0; event = 'lowered'; }
+    if(ev.tipo === 'costo2'){
+      st.costoSeg = (st.costoSeg || 0) + 1;
+      if(st.costoSeg >= 2){ if(st.target - step >= step) st.target -= step; st.costoSeg = 0; event = 'lowered'; }
     } else {
-      st.costo = 0;
+      st.costoSeg = 0;
       let marca = st.target;
-      if(mark === 'sobro'){
-        marca = st.target + step; st.sobro = (st.sobro || 0) + 1; st.cumpli = 0;
+      if(ev.tipo === 'sube'){
+        marca = st.target + step;
         if(st.target < R.v){ st.target = Math.min(R.v, st.target + step); event = 'raised'; }
-      } else { st.cumpli = (st.cumpli || 0) + 1; st.sobro = 0; }
+      }
       st.best = Math.max(st.best || 0, marca);
       if(marca >= R.v) st.reqSes = (st.reqSes || 0) + 1;
       if(st.reqSes >= 2){ st.mastered = true; event = 'mastered'; }
@@ -1172,6 +1197,7 @@ function registerSkillMark(ex, mark){
   if(typeof saveState === 'function') saveState();
   return event;
 }
+function registerSkillMark(ex, mark){ return registerSkillSeries(ex, [mark, mark, mark]); }   // compat: una marca para todas las series
 
 // ===== BLOQUE MENSUAL: 4 semanas; se extiende si hubo menos de 8 sesiones de fuerza =====
 const BLOQUE_DIAS = 28, BLOQUE_MIN_SESIONES = 8;
@@ -1243,6 +1269,69 @@ function fijarPuntoDePartida(pat, k){
     }
   });
   if(typeof saveState === 'function') saveState();
+}
+// ===== PUNTO DE PARTIDA CON NÚMERO (FEEDBACK_ENTRENAMIENTO.md, ítem 2) =====
+// Por cada escalera se pregunta el MÁXIMO actual de un ejercicio de REFERENCIA ("¿Cuántas dominadas seguidas hacés?") y el motor
+// lo traduce al peldaño de partida y al objetivo inicial. Sin "No sé": la primera opción es 0 (empezar abajo es lo seguro).
+// TABLA DE TRADUCCIÓN (N = lo que contestó; piso y tope = rango de reps/segundos del peldaño de referencia; en las
+// habilidades el tope es el requisito medible y el piso es un escalón: 1 rep o 5 s):
+//   N = 0                      -> primer peldaño de la escalera, objetivo = su piso
+//   0 < N < piso de la ref.    -> UN peldaño más abajo que la referencia, objetivo = su piso (si la ref. es el 1.º, ese mismo)
+//   piso <= N < tope de la ref.-> la referencia, objetivo = N
+//   N >= tope de la ref.       -> la referencia queda dominada: peldaño siguiente, objetivo = su piso (o escalera completa)
+// Los peldaños de abajo del de partida quedan dominados. "10+" cuenta como 10 y "60+" como 60.
+const PP_OPC_REPS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, '10+'];
+const PP_OPC_SEG = [0, 5, 10, 15, 20, 30, 45, '60+'];
+// ref = índice del peldaño de referencia en LADDERS[pat].rungs; u = 'reps' | 'seg'.
+const PP_REF = {
+  push_horiz:   { ref:2, u:'reps', q:'¿Cuántas flexiones seguidas hacés?' },
+  dips:         { ref:1, u:'reps', q:'¿Cuántos fondos en paralelas seguidos hacés?' },
+  push_vert:    { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás el pino contra la pared?' },
+  triceps:      { ref:0, u:'reps', q:'¿Cuántas flexiones esfinge seguidas hacés?' },
+  pull_vert:    { ref:2, u:'reps', q:'¿Cuántas dominadas seguidas hacés?' },
+  pull_horiz:   { ref:2, u:'reps', q:'¿Cuántas australianas (remo con el pecho a la barra baja) seguidas hacés?' },
+  pull_activ:   { ref:0, u:'reps', q:'¿Cuántas retracciones escapulares colgado seguidas hacés?' },
+  ring_support: { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el soporte en anillas?' },
+  squat:        { ref:1, u:'reps', q:'¿Cuántas sentadillas seguidas hacés?' },
+  squat_uni:    { ref:1, u:'reps', q:'¿Cuántas sentadillas búlgaras por pierna hacés?' },
+  lunge:        { ref:0, u:'reps', q:'¿Cuántas zancadas por pierna seguidas hacés?' },
+  power_legs:   { ref:0, u:'reps', q:'¿Cuántos saltos con sentadilla seguidos hacés?' },
+  hinge:        { ref:0, u:'reps', q:'¿Cuántos puentes cortos seguidos hacés?' },
+  hinge_uni:    { ref:1, u:'reps', q:'¿Cuántos pesos muertos a una pierna con apoyo hacés por pierna?' },
+  nordic:       { ref:0, u:'reps', q:'¿Cuántos Nordic asistidos seguidos hacés?' },
+  copenhagen:   { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el Copenhagen con rodilla apoyada, por lado?' },
+  core_recto:   { ref:1, u:'reps', q:'¿Cuántas elevaciones de piernas en el suelo seguidas hacés?' },
+  core_oblicuo: { ref:0, u:'reps', q:'¿Cuántos lateral kicks seguidos hacés?' },
+  core_lumbar:  { ref:0, u:'reps', q:'¿Cuántos puentes a una pierna hacés por pierna?' },
+  core_estab:   { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la plancha?' },
+  core_antiext: { ref:0, u:'reps', q:'¿Cuántos dead bugs seguidos hacés?' },
+  muscleup:     { ref:3, u:'reps', q:'¿Cuántos muscle-ups seguidos hacés?' },
+  front_lever:  { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el front lever agrupado (tucked)?' },
+  planche:      { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la pseudo plancha?' }
+};
+function ppValor(op){ return (typeof op === 'number') ? op : (parseInt(op, 10) || 0); }          // '10+' -> 10, '60+' -> 60
+function puntoDePartidaNumero(pat, N){
+  const L = LADDERS[pat], r0 = PP_REF[pat].ref, n = L.rungs.length, rung = i => exByName(L.rungs[i]);
+  const piso = i => SKILL_REQ[L.rungs[i]] ? skillStep(rung(i)) : getCeilings(rung(i)).bajo;
+  const tope = i => SKILL_REQ[L.rungs[i]] ? SKILL_REQ[L.rungs[i]].v : getCeilings(rung(i)).medio;
+  if(N <= 0) return { k:0, objetivo:piso(0), regla:'cero' };
+  if(N >= tope(r0)) return (r0 + 1 >= n) ? { k:n, objetivo:null, regla:'completa' } : { k:r0 + 1, objetivo:piso(r0 + 1), regla:'dominada' };
+  if(N < piso(r0)) return r0 > 0 ? { k:r0 - 1, objetivo:piso(r0 - 1), regla:'debajo' } : { k:0, objetivo:piso(0), regla:'debajo' };
+  return { k:r0, objetivo:N, regla:'exacto' };
+}
+// Aplica la respuesta: deja dominado lo de abajo, pone el objetivo inicial en el peldaño de partida y recuerda la respuesta.
+function aplicarPuntoNumero(pat, opcion){
+  const N = ppValor(opcion), p = puntoDePartidaNumero(pat, N);
+  fijarPuntoDePartida(pat, p.k);
+  const L = LADDERS[pat];
+  if(p.k < L.rungs.length){
+    const ex = exByName(L.rungs[p.k]), st = ensureProg(ex);
+    st.target = p.objetivo; st.costoSeg = 0;
+    if(SKILL_REQ[ex.name]){ st.best = (p.regla === 'exacto') ? Math.max(st.best || 0, N) : (st.best || 0); st.reqSes = 0; }
+  }
+  profile.ppNumero = profile.ppNumero || {}; profile.ppNumero[pat] = opcion;
+  if(typeof saveState === 'function') saveState();
+  return p;
 }
 // Ejercicios de habilidad de ESTA sesión: la etapa actual de cada habilidad del bloque.
 // Equilibrio (Handstand, Human Flag): TODAS las sesiones del bloque. El resto: en el día de su tipo (tirón, empuje o piernas).
@@ -1708,24 +1797,28 @@ function renderLadderBoard(){
         else if(i === s.mastered && !s.allDone){ bg = "var(--accent-dim)"; border = "box-shadow:inset 0 0 0 1.5px var(--accent);"; }
         return `<div style="flex:1; height:9px; border-radius:3px; background:${bg}; ${border}"></div>`;
       }).join("");
-      // PUNTO DE PARTIDA POR ESCALERA: en qué peldaño estás. Editable cuando quieras; no pierde historial.
-      const actual = masteredMaxIdx(pat) + 1;                       // 0 = primer peldaño … n = escalera completa
-      const opts = s.rungs.map((r, i) => `<option value="${i}"${i === actual ? ' selected' : ''}>Estoy en: ${r.name}</option>`).join('') +
-        `<option value="${s.rungs.length}"${actual >= s.rungs.length ? ' selected' : ''}>Escalera completa</option>`;
+      // PUNTO DE PARTIDA CON NÚMERO: se pregunta el máximo del ejercicio de referencia y el motor lo traduce (ver PP_REF).
+      // Sin "No sé": la primera opción es 0. Cambiarlo no pierde historial.
+      const pp = PP_REF[pat], opcs = (pp.u === 'seg' ? PP_OPC_SEG : PP_OPC_REPS);
+      let dado = 0; try{ if(profile && profile.ppNumero && profile.ppNumero[pat] !== undefined) dado = profile.ppNumero[pat]; }catch(e){ /* `profile` todavía no existe durante la carga inicial */ }
+      const opts = opcs.map(o => `<option value="${o}"${String(o) === String(dado) ? ' selected' : ''}>${o}${pp.u === 'seg' && typeof o === 'number' ? ' s' : (pp.u === 'seg' ? ' s' : '')}</option>`).join('');
+      const ahora = peldanoActualNombre(pat), exAhora = (s.current || s.rungs[0]);
       cardEl.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;">
           <p style="font-weight:600; font-size:15px; margin:0;">${LADDER_LABEL[pat] || pat}</p>
           <span style="font-size:12px; color:var(--text-dim);">${s.mastered}/${s.rungs.length}</span>
         </div>
         <div style="display:flex; gap:4px; margin:11px 0;">${segs}</div>
-        <select class="pp-sel" data-pat="${pat}" style="width:100%; font-family:inherit;">${opts}</select>`;
+        <label for="pp-${pat}" style="display:block; font-size:14px; font-weight:700; margin:0 0 6px; line-height:1.3;">${pp.q}</label>
+        <select id="pp-${pat}" class="pp-num" data-pat="${pat}" style="width:100%; font-family:inherit;">${opts}</select>
+        <div class="pp-res" style="font-size:13px; margin-top:8px;">Arrancás en: <strong>${ahora}</strong>${s.allDone ? '' : ' · objetivo ' + targetText(exAhora)}</div>`;
       cont.appendChild(cardEl);
     });
     return { id: sec.titulo, titulo: perfilResumen(sec, g), contenido: cont };
   });
   renderAcordeon(board, 'perfil', items);
-  board.querySelectorAll('.pp-sel').forEach(sel => sel.addEventListener('change', () => {
-    fijarPuntoDePartida(sel.dataset.pat, parseInt(sel.value, 10));
+  board.querySelectorAll('.pp-num').forEach(sel => sel.addEventListener('change', () => {
+    aplicarPuntoNumero(sel.dataset.pat, /^\d+$/.test(sel.value) ? parseInt(sel.value, 10) : sel.value);
     recalcularBloque();                                              // la sesión siguiente se recalcula con el punto nuevo
     renderLadderBoard(); renderProgress(); renderDay();
   }));
@@ -2510,14 +2603,13 @@ function targetText(ex){
   const st = progState[ex.name];
   const t = st ? st.target : tBase(ex);
   if(isStatic(ex)) return t + 's';
-  if(isStrengthEx(ex)) return repRange(t) + ' reps';
-  return t + ' reps';
+  return t + ' reps';                                       // la app pide UN número de reps (o segundos) por ejercicio, no un rango
 }
-function tStep(ex){ return isStatic(ex) ? 5 : (isStrengthEx(ex) ? 4 : 2); }
-function tFloor(ex){ if(isStrengthEx(ex)) return getCeilings(ex).bajo; const m = minTarget(ex).match(/\d+/); return m ? parseInt(m[0]) : 3; }
+function tStep(ex){ return isStatic(ex) ? 5 : 1; }   // +1 rep (+5 s en isométricos) por cada mejora (feedback por serie)
+function tFloor(ex){ return getCeilings(ex).bajo; }   // el piso del rango
 function tBase(ex){
   if(SKILL_REQ[ex.name]) return SKILL_REQ[ex.name].v;     // habilidad: se arranca apuntando al requisito
-  return isStrengthEx(ex) ? getCeilings(ex).bajo : getCeilings(ex).medio;
+  return getCeilings(ex).bajo;                            // todo ejercicio arranca en el PISO de su rango
 }
 
 let progState = {}; // name -> {target, marks:[], sobro, costo, cumpli, mastered, rungSince}
@@ -2526,36 +2618,34 @@ function ensureProg(ex){
   return progState[ex.name];
 }
 
-// Devuelve el evento: "raised" | "mastered" | "lowered" | "steady"
-function registerMark(ex, mark){
-  if(SKILL_REQ[ex.name]) return registerSkillMark(ex, mark);   // peldaño de habilidad: manda el requisito medible
+// Devuelve el evento: "raised" | "mastered" | "lowered" | "steady". `marks` = marcas por serie de ESTA sesión (ver evaluarSeries).
+function registerSeries(ex, marks){
+  if(SKILL_REQ[ex.name]) return registerSkillSeries(ex, marks);   // peldaño de habilidad: manda el requisito medible
+  const ev = evaluarSeries(marks);
+  if(ev.tipo === 'nada') return 'steady';
   const st = ensureProg(ex);
-  st.marks.push(mark);
-  if(mark==="sobro"){ st.sobro++; st.costo=0; st.cumpli=0; }
-  else if(mark==="costo"){ st.costo++; st.sobro=0; st.cumpli=0; }
-  else { st.cumpli++; st.sobro=0; st.costo=0; }
-
-  let event = "steady";
-  const ceil = getCeilings(ex).medio;
-  if(st.sobro >= 2 || st.cumpli >= 3){
-    if(st.target < ceil){
-      st.target = Math.min(st.target + tStep(ex), ceil); // p.ej. 8 → 12
-      event = "raised";
-    } else {
-      st.mastered = true; // ya estás en el techo y te sobra/cumplís → dominado, a la variante
-      event = "mastered";
+  st.marks.push(marcaResumen(marks));
+  st.sobro = 0; st.cumpli = 0; st.costo = 0;                         // contadores viejos (por ejercicio): ya no se usan
+  let event = 'steady';
+  const ceil = getCeilings(ex).medio, paso = tStep(ex);
+  if(ev.c === 0 && st.target >= ceil){
+    st.mastered = true;                                              // tope del rango con todas Cumplí/Sobró -> siguiente peldaño
+    event = 'mastered'; st.costoSeg = 0;
+  } else if(ev.tipo === 'sube'){
+    st.target = Math.min(st.target + paso, ceil); event = 'raised'; st.costoSeg = 0;
+  } else if(ev.tipo === 'costo2'){
+    st.costoSeg = (st.costoSeg || 0) + 1;                            // 2 o más Costó: mismo objetivo; si se repite -> baja
+    if(st.costoSeg >= 2){
+      const piso = tFloor(ex);
+      if(st.target - paso >= piso) st.target -= paso;
+      if(st.mastered) st.mastered = false;                           // recalibración a la baja
+      st.costoSeg = 0; event = 'lowered';
     }
-    st.sobro = 0; st.cumpli = 0;
-  } else if(st.costo >= 2){
-    const floor = tFloor(ex);
-    if(st.target - tStep(ex) >= floor) st.target -= tStep(ex);
-    if(st.mastered) st.mastered = false; // recalibración a la baja
-    st.costo = 0;
-    if(ex.requires) st.regressed = true; // la próxima sesión te sirve la variante más fácil
-    event = "lowered";
+  } else {
+    st.costoSeg = 0;                                                 // igual / solo la última costó: sin señal de bajar
   }
   // Si cumplís/te sobra un ejercicio, cualquier ejercicio que había "bajado" hacia este vuelve a habilitarse para subir.
-  if(mark === "cumpli" || mark === "sobro"){
+  if(ev.c === 0){
     if(st.regressed) st.regressed = false;
     ALL_POOLS.forEach(x => { const xs = progState[x.name]; if(xs && xs.regressed && x.requires === ex.name) xs.regressed = false; });
   }
@@ -2563,6 +2653,8 @@ function registerMark(ex, mark){
   if(typeof saveState === "function") saveState();
   return event;
 }
+// Compat: una sola marca valía para todo el ejercicio. Se trata como las 3 series con esa marca.
+function registerMark(ex, mark){ return registerSeries(ex, [mark, mark, mark]); }
 
 function unlockedDependents(name){
   // Dominar un ejercicio de fuerza revela las SKILLS que dependían de él.
@@ -3249,7 +3341,8 @@ function proximoFocoAlternado(){
   return 'empuje'; // primera vez, sin historial: arrancamos por empuje
 }
 let dayMarks = {};
-let daySeries = {};   // series (o rondas) hechas hoy por ejercicio: { nombre: n }; no se guarda, como dayMarks
+let daySeries = {};   // marcas POR SERIE de hoy: { nombre: ['cumpli', 'sobro', ...] } (circuitos: 'ronda::N'); no se guarda
+// (dayMarks queda declarado por compatibilidad con tests viejos; el registro ahora sale de daySeries)
 let dayWarmOpen = false;
 let dayStretchOpen = false;
 let dayVueltaSaltada = false;   // la vuelta a la calma se saltea con un toque; se rearma al elegir otro día o al registrar
@@ -3644,11 +3737,22 @@ function guardarRPEDespuesDeSesion(){
   }
   // La sesión es SIEMPRE de 60 min y no se recorta nada, salvo que el finisher baje de 10 a 5 min si hace falta
   // (planTiempo en tiempo-sesion.js). El selector 60/45/30 y los demás recortes están archivados en _archivo/.
+  // CARGA POR ARTICULACIÓN (carga.js): se suma la carga de cada zona en el orden real de la sesión y se cambia o saca el ejercicio
+  // que haría pasar el tope (FEEDBACK_ENTRENAMIENTO.md, ítem 1). Habilidad y primera ancla no se tocan.
+  let cargaInfo = null;
+  if(typeof cargaAjustar === 'function'){
+    cargaInfo = cargaAjustar(ordenFinal, rol, { dia, descarga:esDescarga(dia), pushPats, pullPats, pushSec, pullSec });
+    ordenFinal = cargaInfo.orden;
+    if(dia !== 'piernas'){                                                 // los reemplazos pueden desordenar: de más difícil a más fácil dentro de cada grupo
+      const por = r => ordenFinal.filter(e => rol.get(e) === r);
+      ordenFinal = [].concat(por('skill'), por('ancla').sort(exig), por('acc').sort(exig), por('core'));
+    }
+  }
   const full = ordenFinal.map(x => Object.assign({}, x, { _rol: rol.get(x) }));   // copias: el rol no ensucia el catálogo
   full.dia = dia; full.descarga = esDescarga(dia);
   const plan = (typeof planTiempo === 'function') ? planTiempo(dia, full) : { finisher:10 };   // tiempo-sesion.js todavía no cargó
   const out = full.slice();
-  out.dia = dia; out.descarga = full.descarga; out.plan = plan;
+  out.dia = dia; out.descarga = full.descarga; out.plan = plan; out.cargaCambios = cargaInfo ? cargaInfo.cambios : [];
   return out;
 }
 function dayWarmup(focus){
@@ -4394,9 +4498,10 @@ function renderDay(){
   c.appendChild(warmCard);
   }
 
+  window.__sesionActual = session;                                          // commitDay registra contra ESTA sesión
   renderSessionBlocks(c, session);
-  c.querySelectorAll('.dmk').forEach(b => b.addEventListener('click', () => { const key = b.dataset.side ? (b.dataset.ex + '::' + b.dataset.side) : b.dataset.ex; dayMarks[key] = b.dataset.m; saveState(); renderDay(); }));
-  c.querySelectorAll('.dser').forEach(b => b.addEventListener('click', () => { const k = b.dataset.k, n = parseInt(b.dataset.n) || 1; daySeries[k] = Math.min(n, (daySeries[k] || 0) + 1); renderDay(); }));
+  c.querySelectorAll('.dser').forEach(b => b.addEventListener('click', () => { const k = b.dataset.k, n = parseInt(b.dataset.n) || 1; const a = daySeries[k] = daySeries[k] || []; if(a.length < n) a.push(b.dataset.m); renderDay(); }));
+  c.querySelectorAll('.dser-undo').forEach(b => b.addEventListener('click', () => { const a = daySeries[b.dataset.k]; if(a && a.length) a.pop(); renderDay(); }));
   c.querySelectorAll('.tm-open').forEach(b => b.addEventListener('click', () => {
     const ex = exByName(b.dataset.ex);
     if(ex) abrirTimer({ name: ex.name, work: workSeconds(ex), rest: restSeconds(ex) });
@@ -4449,7 +4554,7 @@ function buildBlocks(session){
       if(k === 'skill') B.push({tipo:'skill', titulo:'Habilidad', nota:'', exs:[], rondas:n});
       else if(k === 'ancla') B.push({tipo:'solo', titulo:TIT[dia] || 'Fuerza', nota:'De más difícil a más fácil. Descanso 2 min entre series.', exs:[], rondas:n});
       else if(k === 'acc') B.push({tipo:'solo', titulo:'Accesorios', nota:'Más livianos. Descanso de 60 a 90 s entre series.', exs:[], rondas:n});
-      else if(k === 'bajoA') B.push({tipo:'calidad', titulo:'Calidad: isquios e ingle', nota:'Descanso completo de 2 min entre series. Lado débil primero. Pocas repeticiones, muy bien hechas.', exs:[], rondas:n});
+      else if(k === 'bajoA') B.push({tipo:'calidad', titulo:'Calidad: isquios e ingle', nota:'Descanso completo de 2 min entre series. Pocas repeticiones, muy bien hechas.', exs:[], rondas:n});
       else if(k === 'circ') B.push({tipo:'circuito', circuito:true, titulo:'Circuito', nota:'Sin descanso entre ejercicios. Descanso de 60 a 90 s entre rondas.', exs:[], rondas:rondasCircuito(session)});
       else B.push({tipo:'core', circuito:true, titulo:'Abdominales', nota:'En circuito: el anti-extensión primero, sin descanso entre ejercicios. Descanso de 60 s entre rondas.', exs:[], rondas:n});
     }
@@ -4461,14 +4566,18 @@ function buildBlocks(session){
   return B;
 }
 
-// Caja "Serie 2 de 4" (ENCARGO 28/10): un toque registra la serie hecha. NO hay botones para sumar ni quitar series:
-// el total es fijo (anclas 4, accesorios 3, descarga 2). `palabra` = 'Serie' o 'Ronda'.
+// FEEDBACK POR SERIE (cambio del 29/10): en cada serie se toca Costó · Cumplí · Sobró (Cumplí, el caso normal, es el botón más grande).
+// El total de series es fijo (anclas 4, accesorios 3, descarga 2): no se suman ni se quitan. `palabra` = 'Serie' o 'Ronda'.
+// daySeries[key] = lista de marcas ya dadas ('costo' | 'cumpli' | 'sobro'); en los circuitos la clave es 'ronda::<bloque>'.
+const MARCA_TXT = { costo:'Costó', cumpli:'Cumplí', sobro:'Sobró' };
 function serieBoxHTML(key, n, palabra){
-  const hechas = Math.min(n, daySeries[key] || 0);
-  const completo = hechas >= n;
-  return '<div class="serie-box" style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0 0;">' +
-    '<div class="u-num" style="font-family:var(--font-display); font-size:19px;">' + (completo ? palabra + 's completas ✓ ' + n + ' de ' + n : palabra + ' ' + (hechas + 1) + ' de ' + n) + '</div>' +
-    (completo ? '' : '<button class="ghost dser" data-k="' + String(key).replace(/"/g, '&quot;') + '" data-n="' + n + '" style="margin:0; min-height:48px; padding:8px 14px;">' + palabra + ' hecha</button>') +
+  const marcas = (daySeries[key] || []).slice(0, n), hechas = marcas.length, completo = hechas >= n;
+  const k = String(key).replace(/"/g, '&quot;');
+  const bt = m => '<button class="ghost dser" data-k="' + k + '" data-n="' + n + '" data-m="' + m + '" style="margin:0; min-height:' + (m === 'cumpli' ? 64 : 48) + 'px; font-size:' + (m === 'cumpli' ? 20 : 16) + 'px; font-weight:' + (m === 'cumpli' ? 800 : 700) + ';">' + MARCA_TXT[m] + '</button>';
+  return '<div class="serie-box" style="margin:10px 0 0;">' +
+    '<div class="u-num" style="font-family:var(--font-display); font-size:19px; margin-bottom:8px;">' + (completo ? palabra + 's completas ✓ ' + n + ' de ' + n : palabra + ' ' + (hechas + 1) + ' de ' + n) + '</div>' +
+    (completo ? '' : '<div style="display:grid; grid-template-columns:1fr 2fr 1fr; gap:8px; align-items:stretch;">' + bt('costo') + bt('cumpli') + bt('sobro') + '</div>') +
+    (hechas ? '<div style="font-size:13px; margin-top:8px; display:flex; justify-content:space-between; align-items:center; gap:8px;"><span class="serie-marcas">' + marcas.map((m, i) => (i + 1) + ': ' + MARCA_TXT[m]).join(' · ') + '</span><button class="ghost dser-undo" data-k="' + k + '" style="margin:0; min-height:48px; padding:6px 12px; font-size:13px;">Deshacer última</button></div>' : '') +
     '</div>';
 }
 function exCardHTML(ex){
@@ -4486,7 +4595,6 @@ function exCardHTML(ex){
   const lp = { total: rungs.length || 1, mastered: masteredMaxIdx(ex.pattern) + 1, idx: myIdx };
   const coach = coachMsg(ex);
   const regSrc = regressionSourceOf(ex);
-  const marked = dayMarks[ex.name];
   const onPath = (typeof goalPathNames === 'function') ? goalPathNames() : {set:new Set(), label:null};
   const pathTag = (onPath.label && onPath.set.has(ex.name))
     ? '<div style="display:inline-block; background:var(--glow); color:#fff; font-size:11px; font-weight:700; letter-spacing:.03em; border-radius:999px; padding:3px 10px; margin:0 0 8px;">🪜 Suma ' + conA(onPath.label) + '</div>'
@@ -4510,19 +4618,7 @@ function exCardHTML(ex){
     '</details>' +
     (regSrc ? '<div style="border-left:3px solid var(--accent); background:var(--accent-dim); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">Bajamos desde <strong>' + regSrc + '</strong> porque te venía costando. Consolidá acá con buena técnica; cuando cumplas, volvemos a subir.</div>' : '') +
     (!regSrc && coach ? '<div style="border-left:3px solid ' + (coach.tone==='ok' ? 'var(--accent)' : 'var(--warn)') + '; background:var(--panel-2); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">' + coach.text + '</div>' : '') +
-    (isUnilateral(ex)
-      ? '<div style="font-size:12px; color:var(--text-faint); margin-bottom:6px;">¿Cómo te fue de cada lado? <strong>Arrancá por el ' + (profile.ladoDebil ? ('lado ' + profile.ladoDebil + ' (el débil)') : 'más débil') + '.</strong></div>' +
-        (function(){ const rs = [['Izquierdo','L',dayMarks[ex.name+'::L']],['Derecho','R',dayMarks[ex.name+'::R']]]; return profile.ladoDebil === 'derecho' ? rs.reverse() : rs; })().map(function(row){
-          return '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">' +
-            '<span style="font-size:12px; color:var(--text-dim); width:62px; flex:none;">' + row[0] + '</span>' +
-            '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; flex:1;">' +
-              ['costo','cumpli','sobro'].map(function(m){ return '<button class="ghost dmk ' + (row[2]===m ? 'mk-on' : '') + '" data-ex="' + ex.name + '" data-side="' + row[1] + '" data-m="' + m + '" style="margin:0; padding:9px 4px; font-size:12px;">' + ({costo:'Me costó',cumpli:'Cumplí',sobro:'Me sobró'})[m] + '</button>'; }).join('') +
-            '</div></div>';
-        }).join('')
-      : '<div style="font-size:12px; color:var(--text-faint); margin-bottom:6px;">¿Cómo te fue en <strong>este</strong> ejercicio?</div>' +
-        '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">' +
-          ['costo','cumpli','sobro'].map(m => '<button class="ghost dmk ' + (marked===m ? 'mk-on' : '') + '" data-ex="' + ex.name + '" data-m="' + m + '" style="margin:0;">' + ({costo:'Me costó',cumpli:'Cumplí',sobro:'Me sobró'})[m] + '</button>').join('') +
-        '</div>');
+    (isUnilateral(ex) ? '<div style="font-size:12.5px; margin-bottom:6px;"><strong>Cada serie incluye los dos lados.</strong> Marcá cómo te fue en la serie completa.</div>' : '');
 }
 
 // Nombres de ejercicios que están en el camino de la habilidad mostrada.
@@ -4611,27 +4707,21 @@ function renderSessionBlocks(c, session){
 }
 
 function commitDay(){
+  // Las marcas son POR SERIE (daySeries). Cada ejercicio con series marcadas entra con su lista de marcas; en los circuitos
+  // la marca de cada ronda vale para todos los ejercicios con seguimiento del bloque.
   const items = [];
-  const RANK = {costo:0, cumpli:1, sobro:2};
-  const bilat = {}, uni = {};
-  Object.keys(dayMarks).forEach(key => {
-    const sep = key.indexOf('::');
-    if(sep >= 0){ const nm = key.slice(0, sep), side = key.slice(sep+2); (uni[nm] = uni[nm] || {})[side] = dayMarks[key]; }
-    else bilat[key] = dayMarks[key];
-  });
-  Object.keys(bilat).forEach(name => { const ex = exByName(name); if(ex) items.push({ex, mark:bilat[name]}); });
-  Object.keys(uni).forEach(name => {
-    const ex = exByName(name); if(!ex) return;
-    const marks = [uni[name].L, uni[name].R].filter(Boolean);
-    if(!marks.length) return;
-    // La progresión la manda el PEOR lado: así el objetivo se ancla al lado débil y no se despega.
-    const mark = marks.reduce((a,b) => RANK[b] < RANK[a] ? b : a);
-    items.push({ex, mark});
+  const ses = window.__sesionActual || generateSession(dayFocus);          // la misma sesión que se dibujó
+  buildBlocks(ses).forEach((b, bi) => {
+    b.exs.forEach(ex => {
+      if(ex._libre || ex.pattern === 'power_legs') return;                    // dosis fija (salto, soga): sin marcas
+      const marcas = ((b.circuito ? daySeries['ronda::' + bi] : daySeries[ex.name]) || []).slice(0, b.rondas);
+      if(marcas.length) items.push({ ex, marks: marcas, mark: marcaResumen(marcas) });
+    });
   });
   const res = document.getElementById('day-result');
-  if(items.length === 0){ res.innerHTML = '<p style="color:var(--warn); font-size:14px;">Marcá al menos un ejercicio para registrar.</p>'; return; }
+  if(items.length === 0){ res.innerHTML = '<p style="color:var(--warn); font-size:14px;">Marcá al menos una serie para registrar.</p>'; return; }
   const nivelAntes = nivelInfo().nivel;
-  const events = items.map(it => ({ex:it.ex, ev:registerMark(it.ex, it.mark)}));
+  const events = items.map(it => ({ex:it.ex, ev:registerSeries(it.ex, it.marks)}));
   const nivelNuevo = nivelInfo().nivel;
   const subioRango = nivelNuevo > nivelAntes;
   // (la alternancia empuje/tirón de antes se reemplazó por el ciclo de 3 días elegidos a mano)
@@ -4819,6 +4909,7 @@ function commitDay(){
 // ===== CONFIGURACIÓN (se abre desde Entrenar; Perfil todavía no existe) =====
 // Lado débil: los ejercicios de un solo lado arrancan siempre por ese lado y los botones se ordenan así.
 function renderLadoDebil(){
+  if(window.FEATURES.ladoDebil === false){ const e0 = document.getElementById('lado-debil'); if(e0){ e0.innerHTML = ''; e0.style.display = 'none'; } return; }   // stand-by (31/10)
   const el = document.getElementById('lado-debil'); if(!el) return;
   const lado = profile.ladoDebil || null;
   let h = '<div class="summary-card"><p style="font-weight:700; margin:0 0 10px;">Lado débil (se entrena primero)</p><div style="display:flex; gap:8px;">';
@@ -5906,6 +5997,7 @@ console.log('Ejercicios totales:', Object.values(bibliotecaCalistenia).reduce((s
 <script src="finisher.js"></script>
 <script src="entrada-calor.js"></script>
 <script src="tiempo-sesion.js"></script>
+<script src="carga.js"></script>
 <script src="offline.js"></script>
 <script src="respaldo.js"></script>
 <div class="onboarding-ov" id="onboarding-welcome"></div>

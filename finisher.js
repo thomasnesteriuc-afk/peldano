@@ -191,16 +191,19 @@ function finisherCerrarSesion(){
   finCerrarOverlay();
 }
 
-// ¿Están marcados todos los ejercicios de fuerza de la sesión? (los unilaterales, los dos lados)
+// ¿Están marcadas TODAS las series (o rondas) de la sesión? Arranca el finisher al marcar la última.
 function finisherFuerzaCompleta(session){
   if(!session || !session.length) return false;
-  // Solo cuentan los ejercicios que de verdad se dibujan (los que tienen botones de "cómo te fue").
-  // Los de dosis fija (salto, soga) no tienen botones de marca: no cuentan.
-  const visibles = buildBlocks(session).reduce((acc, b) => acc.concat(b.exs), []).filter(ex => !ex._libre && ex.pattern !== 'power_legs');
-  if(!visibles.length) return false;
-  return visibles.every(ex => (typeof isUnilateral === 'function' && isUnilateral(ex))
-    ? (dayMarks[ex.name + '::L'] && dayMarks[ex.name + '::R'])
-    : dayMarks[ex.name]);
+  // Cuenta cada serie (o ronda de circuito) de los ejercicios que de verdad se marcan; salto y soga (dosis fija) no tienen marcas.
+  const bloques = buildBlocks(session); let hayMarcables = false;
+  for(let bi = 0; bi < bloques.length; bi++){
+    const b = bloques[bi], marcables = b.exs.filter(ex => !ex._libre && ex.pattern !== 'power_legs');
+    if(!marcables.length) continue;
+    hayMarcables = true;
+    if(b.circuito){ if(((daySeries['ronda::' + bi]) || []).length < b.rondas) return false; }
+    else if(marcables.some(ex => ((daySeries[ex.name]) || []).length < b.rondas)) return false;
+  }
+  return hayMarcables;
 }
 
 // ---- tarjeta dentro de la sesión ----

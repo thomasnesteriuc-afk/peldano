@@ -32,11 +32,11 @@ const FIN_EJ = {
   jumpsquat:  { n:'Sentadilla con salto', cat:'explosivo', tempo:2.0, impacto:true, unidad:'reps', cue:'Sentadilla y salto explosivo, aterrizaje blando con las rodillas en línea con los pies.', revisado:'pendiente' },
   sentadilla: { n:'Sentadilla', cat:'piernas', tempo:2.5, impacto:false, unidad:'reps', cue:'Bajá hasta que los muslos queden paralelos al suelo, espalda neutra y talones apoyados.', fuente:'Guía de Yerai Alonso (texto de la app)' },
   zancadas:   { n:'Zancadas', cat:'piernas', tempo:2.5, impacto:false, par:true, unidad:'reps', cue:'Adelantá una pierna y flexioná la rodilla a 90°, volvé y cambiá de pierna.', fuente:'Guía de Yerai Alonso (texto de la app)' },
-  skipping:   { n:'Skipping', cat:'cardio', tempo:0.6, impacto:true, par:true, unidad:'pasos', cue:'Corrida en el lugar subiendo las rodillas a la cadera, ritmo alto.', revisado:'pendiente' },
-  jacks:      { n:'Jumping jacks', cat:'cardio', tempo:1.1, impacto:true, unidad:'reps', cue:'Ritmo parejo, brazos completos arriba, aterrizaje suave.', revisado:'pendiente' },
-  soga:       { n:'Soga', cat:'cardio', tempo:0.55, impacto:true, unidad:'saltos', equipo:'Soga', cue:'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.', revisado:'pendiente' },
-  mountain:   { n:'Mountain climbers', cat:'core', tempo:1.0, impacto:false, par:true, unidad:'reps', cue:'Plancha alta, cadera baja, llevá una rodilla al pecho y alterná rápido.', revisado:'pendiente' },
-  plankjacks: { n:'Plank jacks', cat:'core', tempo:1.4, impacto:true, unidad:'reps', cue:'En plancha alta, abrí y cerrá los pies saltando como en un jumping jack, sin mover la cadera.', revisado:'pendiente' }
+  skipping:   { n:'Skipping', cat:'cardio', tempo:0.6, impacto:true, unidad:'s', cue:'Corrida en el lugar subiendo las rodillas a la cadera, ritmo alto.', revisado:'pendiente' },
+  jacks:      { n:'Jumping jacks', cat:'cardio', tempo:1.1, impacto:true, unidad:'s', cue:'Ritmo parejo, brazos completos arriba, aterrizaje suave.', revisado:'pendiente' },
+  soga:       { n:'Soga', cat:'cardio', tempo:0.55, impacto:true, unidad:'s', equipo:'Soga', cue:'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.', revisado:'pendiente' },
+  mountain:   { n:'Mountain climbers', cat:'core', tempo:1.0, impacto:false, unidad:'s', cue:'Plancha alta, cadera baja, llevá una rodilla al pecho y alterná rápido.', revisado:'pendiente' },
+  plankjacks: { n:'Plank jacks', cat:'core', tempo:1.4, impacto:true, unidad:'s', cue:'En plancha alta, abrí y cerrá los pies saltando como en un jumping jack, sin mover la cadera.', revisado:'pendiente' }
 };
 const FIN_TRANS = 3, FIN_DESC_VUELTAS = 30, FIN_PREP = 5;
 
@@ -105,45 +105,58 @@ function finNEjercicios(fmt, D){
 
 // ---------- calibración: más largo → menos reps por ejercicio ----------
 const finG = D => 1 + 0.06 * (D - 5);                                       // ritmo efectivo: 1,0 (5 min) a 1,3 (10 min)
-function finReps(e, segs, D){
-  let r = Math.max(3, Math.round(segs / (e.tempo * finG(D))));
-  if(e.par) r = Math.max(4, r - (r % 2));
-  return r;
+// Números que usaría un entrenador (CORRECCIONES iPhone 01/11, punto 3): nunca 9, 13, 27.
+const FIN_REPS_OK = [5, 8, 10, 12, 15, 20, 25, 30];                          // reps de un ejercicio sin lados
+const FIN_LADO_OK = [4, 5, 6, 8, 10, 12, 15];                                // reps POR LADO (unilaterales)
+const FIN_SEG_OK  = [15, 20, 30, 40, 45, 60];                                // segundos (cardio / desplazamiento: por tiempo)
+function finRedondear(v, lista, abajo){
+  if(abajo){ const m = lista.filter(x => x <= v); return m.length ? m[m.length - 1] : lista[0]; }
+  return lista.reduce((b, x) => Math.abs(x - v) < Math.abs(b - v) ? x : b, lista[0]);
+}
+// Dosis de un ejercicio para `segs` segundos de trabajo: { n, tipo:'reps'|'lado'|'seg', trab } (trab = segundos reales de trabajo).
+function finDosis(e, segs, D, abajo){
+  const g = finG(D);
+  if(e.unidad === 's'){ const n = finRedondear(segs, FIN_SEG_OK, abajo); return { n, tipo:'seg', trab:n }; }
+  if(e.par){ const n = finRedondear(segs / (e.tempo * g) / 2, FIN_LADO_OK, abajo); return { n, tipo:'lado', trab:2 * n * e.tempo * g }; }
+  const n = finRedondear(segs / (e.tempo * g), FIN_REPS_OK, abajo); return { n, tipo:'reps', trab:n * e.tempo * g };
 }
 function finCalibrar(fmt, D, ejs){
   const n = ejs.length;
   if(fmt === 'vueltas'){
     let mejor = null;
     for(let V = 3; V <= 6; V++){
-      const Tv = (D * 60 - FIN_DESC_VUELTAS * (V - 1)) / V, reps = ejs.map(e => finReps(e, Tv / n - FIN_TRANS, D));
-      const est = V * ejs.reduce((t, e, i) => t + reps[i] * e.tempo * finG(D) + FIN_TRANS, 0) + FIN_DESC_VUELTAS * (V - 1);
+      const Tv = (D * 60 - FIN_DESC_VUELTAS * (V - 1)) / V, dosis = ejs.map(e => finDosis(e, Tv / n - FIN_TRANS, D));
+      const est = V * dosis.reduce((t, d) => t + d.trab + FIN_TRANS, 0) + FIN_DESC_VUELTAS * (V - 1);
       const ok = est >= 300 && est <= 600, score = Math.abs(est - D * 60);
-      if(!mejor || (ok && (!mejor.ok || score < mejor.score)) || (!mejor.ok && !ok && score < mejor.score)) mejor = { V, reps, est, ok, score };
+      if(!mejor || (ok && (!mejor.ok || score < mejor.score)) || (!mejor.ok && !ok && score < mejor.score)) mejor = { V, dosis, est, ok, score };
     }
-    return { vueltas:mejor.V, descanso:FIN_DESC_VUELTAS, reps:mejor.reps, estSeg:Math.round(mejor.est) };
+    return { vueltas:mejor.V, descanso:FIN_DESC_VUELTAS, dosis:mejor.dosis, reps:mejor.dosis.map(d => d.n), estSeg:Math.round(mejor.est) };
   }
   if(fmt === 'emom'){
     const R = 15 + (D - 5);                                                  // descanso objetivo por minuto: 15 s (5 min) a 20 s (10 min)
-    const reps = ejs.map(e => { let r = Math.max(4, Math.floor((60 - R) / e.tempo)); if(e.par) r = Math.max(4, r - (r % 2)); return r; });
-    return { minutosEmom:D, reps, descansos:ejs.map((e, i) => Math.round(60 - reps[i] * e.tempo)), estSeg:D * 60 };
+    const dosis = ejs.map(e => finDosis(e, 60 - R, D, true));
+    return { minutosEmom:D, dosis, reps:dosis.map(d => d.n), descansos:dosis.map(d => Math.round(60 - d.trab)), estSeg:D * 60 };
   }
   if(fmt === 'amrap'){
-    const slot = 90 / n - FIN_TRANS, reps = ejs.map(e => finReps(e, slot, D));
-    const vuelta = ejs.reduce((t, e, i) => t + reps[i] * e.tempo * finG(D) + FIN_TRANS, 0);
-    return { reps, vueltaSeg:Math.round(vuelta), vueltasEsperadas:Math.max(1, Math.floor(D * 60 / vuelta)), estSeg:D * 60 };
+    const slot = 90 / n - FIN_TRANS, dosis = ejs.map(e => finDosis(e, slot, D));
+    const vuelta = dosis.reduce((t, d) => t + d.trab + FIN_TRANS, 0);
+    return { dosis, reps:dosis.map(d => d.n), vueltaSeg:Math.round(vuelta), vueltasEsperadas:Math.max(1, Math.floor(D * 60 / vuelta)), estSeg:D * 60 };
   }
-  return { trabajo:30, descanso:30, intervalos:D, reps:ejs.map(() => null), estSeg:D * 60 };      // intervalos: 30 s / 30 s
+  return { trabajo:30, descanso:30, intervalos:D, dosis:ejs.map(() => null), reps:ejs.map(() => null), estSeg:D * 60 };      // intervalos: 30 s / 30 s
 }
-function finTxt(fmt, e, reps){
-  if(fmt === 'intervalos') return '30 s';
-  return reps + ' ' + e.unidad + (e.par ? ' (' + (reps / 2) + ' por lado)' : '');
+// Texto corto: "10 reps" · "10 por lado" · "30 s" (nunca el total de un unilateral).
+function finTxt(fmt, e, d){
+  if(fmt === 'intervalos' || !d) return '30 s';
+  if(d.tipo === 'seg') return d.n + ' s';
+  if(d.tipo === 'lado') return d.n + ' por lado';
+  return d.n + ' reps';
 }
 // El plan de hoy: { formato, nombre, minutos, ejercicios:[{k,n,cat,reps,txt,cue,revisado|fuente}], ... según formato }
 function finisherArmar(fmt, D, dia, semilla){
   const claves = finSeleccion(Math.min(finNEjercicios(fmt, D), finDisponibles(dia).length), dia, semilla);
   const ejs = claves.map(k => FIN_EJ[k]), cal = finCalibrar(fmt, D, ejs);
   const plan = Object.assign({ formato:fmt, nombre:FIN_NOMBRE[fmt], minutos:D, dia }, cal);
-  plan.ejercicios = claves.map((k, i) => ({ k, n:FIN_EJ[k].n, cat:FIN_EJ[k].cat, impacto:FIN_EJ[k].impacto, reps:cal.reps[i], txt:finTxt(fmt, FIN_EJ[k], cal.reps[i]), cue:FIN_EJ[k].cue, revisado:FIN_EJ[k].revisado, fuente:FIN_EJ[k].fuente }));
+  plan.ejercicios = claves.map((k, i) => ({ k, n:FIN_EJ[k].n, cat:FIN_EJ[k].cat, impacto:FIN_EJ[k].impacto, reps:cal.reps[i], dosis:cal.dosis[i], txt:finTxt(fmt, FIN_EJ[k], cal.dosis[i]), cue:FIN_EJ[k].cue, revisado:FIN_EJ[k].revisado, fuente:FIN_EJ[k].fuente }));
   return plan;
 }
 function finisherPlanHoy(){
@@ -207,19 +220,24 @@ function finisherFuerzaCompleta(session){
 }
 
 // ---- tarjeta dentro de la sesión ----
+// Nombre arriba, dosis DEBAJO (entra en 375 px); la técnica va en "Cómo se hace", cerrado por defecto.
+function finComoSeHace(e){
+  return '<details class="como-se-hace cs-lite" style="margin-top:2px;"><summary style="font-size:14px; font-weight:600; cursor:pointer;">Cómo se hace</summary>' +
+    '<div style="font-size:13px; color:var(--text-dim); margin:4px 0 2px;">' + e.cue + '</div></details>';
+}
 function finListaHTML(plan, grande){
-  return plan.ejercicios.map((e, i) => '<div style="margin:' + (grande ? '10px 0' : '8px 0') + ';">' +
-    '<div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;"><span style="font-weight:700; font-size:' + (grande ? 18 : 15) + 'px;">' + (i + 1) + '. ' + e.n + '</span>' +
-    '<span class="u-num" style="font-family:var(--font-display); font-size:' + (grande ? 22 : 17) + 'px; font-weight:800; white-space:nowrap;">' + e.txt + '</span></div>' +
-    '<div style="font-size:12.5px; color:var(--text-dim); margin-top:2px;">' + e.cue + '</div></div>').join('');
+  return plan.ejercicios.map((e, i) => '<div style="margin:' + (grande ? '12px 0' : '10px 0') + '; min-width:0;">' +
+    '<div style="font-weight:700; font-size:' + (grande ? 18 : 16) + 'px; overflow-wrap:anywhere;">' + (i + 1) + '. ' + e.n + '</div>' +
+    '<div class="u-num" style="font-family:var(--font-display); font-size:' + (grande ? 22 : 18) + 'px; font-weight:800; overflow-wrap:anywhere;">' + e.txt + '</div>' +
+    finComoSeHace(e) + '</div>').join('');
 }
+// Etiqueta corta con los datos del formato (nunca una frase).
 function finDescripcion(p){
-  if(p.formato === 'vueltas') return p.vueltas + ' vueltas de ' + p.ejercicios.length + ' ejercicios, ' + p.descanso + ' s de descanso entre vueltas. Tocá "Vuelta hecha" al terminar cada una.';
-  if(p.formato === 'emom') return 'Cada minuto, un ejercicio (se alternan). Hacé las reps y descansá lo que sobre (' + Math.min.apply(null, p.descansos) + '–' + Math.max.apply(null, p.descansos) + ' s).';
-  if(p.formato === 'amrap') return 'Todas las vueltas que puedas en ' + p.minutos + ' min, con las mismas reps. Al final decís cuántas hiciste.';
-  return '30 s de trabajo y 30 s de descanso, ' + p.minutos + ' intervalos. Mandan el timer y el ritmo parejo.';
+  if(p.formato === 'vueltas') return p.vueltas + ' vueltas · descanso ' + p.descanso + ' s';
+  if(p.formato === 'emom') return p.minutos + ' min · 1 ejercicio por minuto';
+  if(p.formato === 'amrap') return p.minutos + ' min · máximo de vueltas';
+  return p.minutos + ' intervalos · 30 s trabajo / 30 s descanso';
 }
-const FIN_RITMO = 'Ritmo parejo: que te canse y transpires, sin llegar al fallo.';
 function renderFinisher(c, session){
   const plan = finisherPlanHoy();
   const st = finEstadoHoy();
@@ -231,10 +249,10 @@ function renderFinisher(c, session){
   if(st.estado === 'hecho'){
     estadoHTML = '<div style="font-weight:700; color:var(--accent-strong);">✓ Finisher hecho</div>';
   } else if(st.estado === 'salteado'){
-    estadoHTML = '<div style="font-size:13.5px; color:var(--text-dim); margin-bottom:8px;">Lo salteaste: quedó registrado.</div>' +
+    estadoHTML = '<div style="font-weight:700; margin-bottom:8px;">Salteado</div>' +
       '<button class="ghost" id="fin-igual" style="width:100%; margin:0; min-height:48px;">Hacerlo igual</button>';
   } else {
-    estadoHTML = '<div style="font-size:12.5px; color:var(--text-faint); margin-bottom:8px;">Arranca solo cuando marques el último ejercicio de arriba.</div>' +
+    estadoHTML = '' +
       '<button class="primary" id="fin-start" style="width:100%; margin:0 0 8px; min-height:48px;">▶ Empezar finisher</button>' +
       '<button class="ghost" id="fin-skip" style="width:100%; margin:0; min-height:48px;">Saltear (queda registrado)</button>';
   }
@@ -242,7 +260,7 @@ function renderFinisher(c, session){
     '<div style="display:flex; justify-content:space-between; align-items:baseline;">' +
       '<span style="font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700;">Finisher · ' + finTitulo(plan) + '</span>' +
     '</div>' +
-    '<p style="font-size:13px; color:var(--text-dim); margin:6px 0 4px; line-height:1.45;">' + finDescripcion(plan) + ' ' + FIN_RITMO + '</p>' +
+    '<div style="font-size:14px; font-weight:600; margin:6px 0 4px;">' + finDescripcion(plan) + '</div>' +
     finListaHTML(plan, false) + estadoHTML;
   c.appendChild(card);
   const q = id => card.querySelector('#' + id);
@@ -351,7 +369,7 @@ function finPintar(){
           '<button class="ghost" id="fin-menos" style="margin:0; min-width:64px; min-height:64px; font-size:30px;" aria-label="Una vuelta menos">−</button>' +
           '<div class="t-timer" id="fin-vueltas" style="margin:0; min-width:90px;">' + t.vueltasAmrap + '</div>' +
           '<button class="ghost" id="fin-mas" style="margin:0; min-width:64px; min-height:64px; font-size:30px;" aria-label="Una vuelta más">+</button></div>' +
-        '<div style="font-size:13px; color:var(--text-dim);">Esperadas: ' + p.vueltasEsperadas + ' (orientativo)</div></div>' +
+        '<div style="font-size:14px; font-weight:600;">Esperadas: ' + p.vueltasEsperadas + '</div></div>' +
         boton('fin-ok', 'Listo, registrar', 'primary');
     } else {
       cuerpo = finEncabezado(t, 'Finisher terminado') +
@@ -363,8 +381,8 @@ function finPintar(){
     const enDesc = t.fase === 'descanso';
     cuerpo = finEncabezado(t, (enDesc ? 'Descanso · ' : '') + 'Vuelta ' + Math.min(t.vuelta, p.vueltas) + ' de ' + p.vueltas) +
       '<div style="flex:1;">' + grande(enDesc ? finFmt(t.leftSeg || FIN_DESC_VUELTAS) : finFmt(finElapsed())) +
-      '<div style="font-size:13px; text-align:center; color:var(--text-dim); margin:-8px 0 8px;">' + (enDesc ? 'Descanso: ya sigue la próxima vuelta' : 'Tiempo total (referencia)') + '</div>' +
-      finListaHTML(p, true) + '<p style="font-size:13px; color:var(--text-dim); margin:8px 0 0;">' + FIN_RITMO + '</p></div>' +
+      (enDesc ? '<div style="font-size:14px; text-align:center; font-weight:600; margin:-8px 0 8px;">Descanso</div>' : '') +
+      finListaHTML(p, true) + '</div>' +
       (enDesc ? '' : boton('fin-vuelta', 'Vuelta hecha', 'primary')) + boton('fin-pausa', t.corriendo ? 'Pausar' : 'Seguir') + secundarios;
   } else {
     const s = t.seg[t.idx || 0], enPrep = s.tipo === 'prep', enDesc = s.tipo === 'rest';
@@ -376,11 +394,11 @@ function finPintar(){
     let centro;
     if(p.formato === 'amrap') centro = finListaHTML(p, true);
     else if(enPrep) centro = '<div style="font-size:24px; font-weight:800; text-align:center;">' + s.ej.n + '</div>';
-    else if(p.formato === 'emom') centro = '<div style="text-align:center; font-size:26px; font-weight:800; line-height:1.15;">' + s.ej.n + '</div><div class="u-num" style="text-align:center; font-family:var(--font-display); font-size:32px; font-weight:800; margin:4px 0;">' + s.ej.txt + '</div><div style="font-size:13px; text-align:center; color:var(--text-dim);">' + s.ej.cue + '</div>' + (s.sig ? '<div style="font-size:14px; text-align:center; margin-top:10px;">Sigue: ' + s.sig.n + ' · ' + s.sig.txt + '</div>' : '');
-    else centro = '<div style="text-align:center; font-size:26px; font-weight:800; line-height:1.15;">' + (enDesc ? 'Siguiente: ' + s.ej.n : s.ej.n) + '</div>' + (enDesc ? '' : '<div style="font-size:13px; text-align:center; color:var(--text-dim);">' + s.ej.cue + '</div>');
+    else if(p.formato === 'emom') centro = '<div style="text-align:center; font-size:26px; font-weight:800; line-height:1.15;">' + s.ej.n + '</div><div class="u-num" style="text-align:center; font-family:var(--font-display); font-size:32px; font-weight:800; margin:4px 0;">' + s.ej.txt + '</div>' + finComoSeHace(s.ej) + (s.sig ? '<div style="font-size:14px; text-align:center; margin-top:10px;">Sigue: ' + s.sig.n + ' · ' + s.sig.txt + '</div>' : '');
+    else centro = '<div style="text-align:center; font-size:26px; font-weight:800; line-height:1.15;">' + (enDesc ? 'Siguiente: ' + s.ej.n : s.ej.n) + '</div>' + (enDesc ? '' : finComoSeHace(s.ej));
     cuerpo = finEncabezado(t, sub) +
       '<div style="flex:1; display:flex; flex-direction:column; justify-content:center;">' + grande(finFmt(t.leftSeg)) + centro +
-      (p.formato === 'amrap' ? '' : '<p style="font-size:13px; text-align:center; color:var(--text-dim); margin:10px 0 0;">' + FIN_RITMO + '</p>') +
+      '' +
       '<p id="fin-resta" style="font-size:14px; font-weight:600; text-align:center; margin:12px 0 0;">Restan ' + finFmt(t.total - finElapsed()) + '</p></div>' +
       boton('fin-pausa', t.corriendo ? 'Pausar' : 'Seguir', 'primary') + secundarios;
   }

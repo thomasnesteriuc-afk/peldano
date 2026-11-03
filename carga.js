@@ -77,7 +77,7 @@ function cargaSumar(acum, ex, series){ const p = cargaPuntos(ex, series); CARGA_
 function cargaDeSesion(ses){
   const acum = cargaVacia(), bl = buildBlocks(ses);
   const primer = (typeof ecPrimerFuerte === 'function') ? ecPrimerFuerte(ses.dia, ses) : null;
-  if(primer && typeof aproximacionDe === 'function'){ const ap = exByName(aproximacionDe(primer).nombre); if(ap) cargaSumar(acum, ap, 1); }
+  if(primer && typeof aproximacionDe === 'function' && aproximacionNecesaria(primer)){ const ap = exByName(aproximacionDe(primer).nombre); if(ap) cargaSumar(acum, ap, 1); }
   bl.forEach(b => b.exs.forEach(ex => { if(!ex._libre) cargaSumar(acum, ex, b.rondas); }));
   return acum;
 }
@@ -112,7 +112,7 @@ function cargaAjustar(orden, rol, ctx){
   const acum = cargaVacia(), out = [], cambios = [];
   const zonaDia = { tiron:'tiron', empuje:'empuje', piernas:'piernas' }[ctx.dia];
   const primer = orden.find(e => e._skill) || orden.find(e => zoneOf(e.pattern) === zonaDia);
-  if(primer && typeof aproximacionDe === 'function'){ const ap = exByName(aproximacionDe(primer).nombre); if(ap) cargaSumar(acum, ap, 1); }   // la aproximación cuenta (1 serie)
+  if(primer && typeof aproximacionDe === 'function' && aproximacionNecesaria(primer)){ const ap = exByName(aproximacionDe(primer).nombre); if(ap) cargaSumar(acum, ap, 1); }   // la aproximación cuenta (1 serie)
   const serDe = r => (r === 'circ') ? rondasCircuito({ descarga:ctx.descarga }) : seriesDeRol(r, { descarga:ctx.descarga });
   const usados = new Set(orden.map(e => e.pattern));
   let primeraAncla = null;

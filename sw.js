@@ -13,7 +13,7 @@
  *
  * Solo toca pedidos del propio sitio. Lo externo (los enlaces a YouTube) pasa directo y es opcional.
  */
-const VERSION = '31c8d3ced6e8';
+const VERSION = '092de23228cf';
 const CACHE = 'peldano-' + VERSION;
 const ASSETS = [
   './',

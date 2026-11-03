@@ -41,7 +41,7 @@ function tsFuerzaSeg(full){ return buildBlocks(full).reduce((t, b) => t + tsSegB
 // Minutos de TODO el día: entrada en calor + fuerza (con el core en circuito) + finisher + vuelta a la calma.
 function tsDesglose(dia, full, finisher){
   const st = dayStretch(full).length;
-  return { calor: entradaCalorSegundosEstimado(dia) / 60, fuerza: (tsFuerzaSeg(full) + 2 * EC_SERIE) / 60,   /* + 2 series de aproximación al inicio del primer ejercicio fuerte */ finisher, vuelta: st ? TS.VUELTA_MIN : 0 };
+  return { calor: entradaCalorSegundosEstimado(dia) / 60, fuerza: (tsFuerzaSeg(full) + (aproximacionNecesaria(ecPrimerFuerte(dia, full)) ? 2 * EC_SERIE : 0)) / 60,   /* + 2 series de aproximación al inicio del primer ejercicio fuerte */ finisher, vuelta: st ? TS.VUELTA_MIN : 0 };
 }
 function tsTotal(d){ return d.calor + d.fuerza + d.finisher + d.vuelta; }
 

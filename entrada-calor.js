@@ -52,6 +52,14 @@ const EC_MIN_TOTAL = 330, EC_MAX_PULSO = 150, EC_MIN_PULSO = 90;   // orientativ
 const EC_SERIE = 55;        // segundos por serie de aproximación (serie + descanso): se cuenta en la parte de fuerza, no acá
 
 
+// ¿Hace falta aproximación? SOLO si el primer ejercicio fuerte es exigente: una habilidad, o un ancla con carga ALTA (3) en hombro, codo o muñeca.
+// Si es fácil (ej.: australiana) se empieza directo (CORRECCIONES iPhone 01/11, punto 5).
+function aproximacionNecesaria(ex){
+  if(!ex) return false;
+  if(ex._skill) return true;
+  const c = (typeof cargaDe === 'function') ? cargaDe(ex) : null;
+  return !!c && ['hombro', 'codo', 'muñeca'].some(z => c[z] >= 3);
+}
 // ---------- armado ----------
 function ecLados(){
   const l = profile.ladoDebil;                       // 'izquierdo' | 'derecho' | null
@@ -138,7 +146,7 @@ function aproximacionHTML(ex){
   return '<div class="aprox-box" style="border:2px dashed var(--line); padding:10px 12px; margin:0 0 12px;">' +
     '<div style="font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;">Aproximación · ' + a.series + ' series fáciles · no cuentan</div>' +
     '<div style="font-size:15px; font-weight:700; margin-top:4px;">' + a.nombre + ' · ' + dosis + (a.uni ? ' por lado' : '') + '</div>' +
-    '<div style="font-size:13px; color:var(--text-dim); margin-top:2px;">' + (mismo ? 'Mismo ejercicio, pocas reps y sin llegar al esfuerzo.' : 'Versión más simple, sin llegar al esfuerzo.') + ' Después empezá las series de verdad.</div></div>';
+    '</div>';
 }
 
 // ---------- reproductor ----------
@@ -198,7 +206,7 @@ function ecPintar(){
         '<div class="ec-nombre">' + it.n + '</div>' +
         (it.dosis ? '<div class="ec-dosis">' + (it.serie ? it.serie + ' · ' : '') + it.dosis + '</div>' : '') +
         '<div class="t-timer" id="ec-num">' + ecFmt(it.dur - ecTranscurrido()) + '</div>' +
-        '<p class="ec-cue">' + it.cue + '</p>' +
+        '<details class="como-se-hace cs-lite" style="margin-top:10px;"><summary style="font-size:15px; font-weight:600; justify-content:center;">Cómo se hace</summary><p class="ec-cue">' + it.cue + '</p></details>' +
       '</div>' +
       '<p class="ec-sigue">' + sigTxt + '</p>' +
       '<button class="primary" id="ec-saltear" style="width:100%; margin:0 0 8px;">Saltear</button>' +

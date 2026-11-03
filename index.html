@@ -37,8 +37,11 @@ window.FEATURES = {
   guardian:false,          // avisos de "hace X días que no entrenás…" (el encargo: sin alertas ni indicadores de frecuencia)
   estancamiento:false,     // banner de estancamiento / deload
   ladoDebil:false,         // selector de "lado débil" en Perfil y "arrancá por el lado débil" en las tarjetas (retirado a pedido, 31/10)
-  homeCamino:false         // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
+  homeCamino:false,        // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
+  textoExplicativo:false   // frases explicativas / instrucciones en letra chica (CORRECCIONES iPhone 01/11, punto 7). Hoy en pantalla: SOLO datos; la técnica va en "Cómo se hace" (cerrado)
 };
+// txtExp(html): el texto explicativo solo se arma si el flag está prendido (hoy no: el código queda ahí, en stand-by).
+window.txtExp = function(html){ return window.FEATURES.textoExplicativo === true ? html : ''; };
 window.FEATURE_TABS = { entrenar:'tab-rutina', progreso:'tab-progreso', perfil:'tab-nivel', nutricion:'tab-nutricion', calentar:'tab-calentar',
   aprender:'tab-biblioteca', video:'tab-video', dashboard:'tab-dashboard', tienda:'tab-tienda' };
 window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (hoy ninguno)
@@ -117,7 +120,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
     --font-display:'Fraunces', Georgia, serif;
   }
   *{box-sizing:border-box;}
-  html{-webkit-text-size-adjust:100%;}
+  html{-webkit-text-size-adjust:100%; scroll-padding-top:calc(env(safe-area-inset-top, 0px) + 12px); overflow-x:hidden;}
   body{
     margin:0; background:var(--bg); color:var(--text);
     font-family:'Inter',-apple-system,system-ui,sans-serif; line-height:1.55;
@@ -305,6 +308,21 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
 
   .t-overlay{position:fixed; inset:0; background:var(--bg); z-index:100; display:none; overflow-y:auto;}
   .onboarding-ov{position:fixed; inset:0; background:var(--bg); z-index:200; display:none; overflow-y:auto; padding-top:env(safe-area-inset-top,0px);}
+  /* ZONA SEGURA SUPERIOR (iPhone, app instalada): el contenido scrollea por debajo de la hora/batería.
+     Esta franja fija tiene fondo propio y alto = safe-area-inset-top, y queda por encima de todo (también de los overlays). */
+  .zona-segura{ position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top, 0px); background:var(--bg); z-index:9000; pointer-events:none; }
+  .t-overlay{ padding-top:env(safe-area-inset-top, 0px); }
+  /* Punto de partida con número: grilla compacta, botones de 48 px (mismo componente en Perfil y onboarding) */
+  .pp-grid{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+  .pp-op{ margin:0; min-height:48px; padding:0 4px; font-family:inherit; font-size:17px; font-weight:700; border:2px solid var(--line); background:var(--panel); color:var(--text); border-radius:10px; cursor:pointer; }
+  .pp-op[aria-pressed="true"]{ background:var(--text); color:var(--panel); border-color:var(--text); }
+  /* "Cómo se hace" liviano (finisher, entrada en calor, punto de partida): sin caja, solo el título tocable de 44 px */
+  html[data-diseno="minimo"] details.cs-lite, details.cs-lite{ border:none !important; padding:0 !important; box-shadow:none !important; background:none !important; }
+  details.cs-lite > summary{ min-height:44px !important; display:flex; align-items:center; gap:6px; }
+  details.cs-lite > summary{ list-style:none; }
+  details.cs-lite > summary::-webkit-details-marker{ display:none; }
+  details.cs-lite > summary::before{ content:'▸'; font-size:14px; }
+  details.cs-lite[open] > summary::before{ content:'▾'; }
   .onboarding-ov.open{display:block;}
   @keyframes celebPop { 0%{ transform:scale(.92); opacity:0; } 60%{ transform:scale(1.02); } 100%{ transform:scale(1); opacity:1; } }
   @keyframes celebShine { 0%{ background-position:-160% 0; } 100%{ background-position:260% 0; } }
@@ -539,6 +557,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
 </style>
 </head>
 <body>
+<div class="zona-segura" aria-hidden="true"></div>
 
 
 <div class="wrap">
@@ -548,7 +567,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   <section class="step">
     <p class="step-tag">Perfil</p>
     <h2>Configuración</h2>
-    <button class="primary" id="onboarding-open" style="margin-bottom:18px;">Contame qué podés hacer</button>
+    <button class="primary" id="onboarding-open" hidden style="margin-bottom:18px;">Contame qué podés hacer</button>   <!-- retirado (02/11): Perfil ya tiene equipamiento + punto de partida; el flujo queda en stand-by -->
     <div id="onboarding" style="margin-bottom:18px;"></div>
     <div id="equip-picker" style="margin-bottom:18px;"></div>
     <div id="lado-debil" style="margin-bottom:18px;"></div>
@@ -559,9 +578,9 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
     <div id="respaldo-box"></div>
     <p class="section-label" style="margin:22px 0 4px;">Uso sin conexión</p>
     <p id="offline-estado" style="font-size:15px; font-weight:600; margin:0;">…</p>
+    <details class="como-se-hace" style="margin-top:22px;"><summary style="font-size:14px; font-weight:600; min-height:32px; cursor:pointer;">Fuentes</summary><p style="font-size:13px; color:var(--text-dim); margin:6px 0 0;">Ejercicios, técnica, músculos y páginas según la Guía Completa de Calistenia y Street Workout (Yerai Alonso), con aportes citados de Paul Wade (Convict Conditioning) y Ross Enamait (Never Gymless).</p></details>
     <div style="margin-top:32px; padding-top:20px; border-top:1px solid var(--line);">
       <p style="font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-faint); font-weight:700; margin:0 0 8px;">Empezar de cero</p>
-      <p style="font-size:13.5px; color:var(--text-dim); margin:0 0 12px; line-height:1.5;">Borra todo tu progreso y arranca desde la bienvenida. No se puede deshacer.</p>
       <button class="ghost" id="reset-all" style="width:100%; color:var(--warn); border-color:var(--warn);">Borrar todo y empezar de nuevo</button>
     </div>
   </section>
@@ -673,7 +692,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   <section class="step">
     <p class="step-tag">Progreso</p>
     <h2>Tu evolución</h2>
-    <p class="sub">Tu constancia, semana a semana.</p>
+    <p class="sub" hidden>Tu constancia, semana a semana.</p>
 
     <div id="habilidades-view"></div>
     <div id="prog-stats"></div>
@@ -774,7 +793,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   </div>
 </nav>
 
-<footer>Ejercicios, técnica, músculos y páginas según la Guía Completa de Calistenia y Street Workout (Yerai Alonso), con aportes citados de Paul Wade (Convict Conditioning) y Ross Enamait (Never Gymless).<br><strong>Peldaño</strong></footer>
+<footer><strong>Peldaño</strong></footer>
 
 <script>
 /* ======================= DATOS ======================= */
@@ -867,9 +886,9 @@ const PULL = [
   {name:"Dominadas negativas", muscles:"Espalda y bíceps", desc:"Solo la bajada: partís arriba (con salto o banco) y bajás lo más lento posible. Construye la fuerza para la dominada completa.", dif:2, family:"dominada"},
   {name:"Retracciones escapulares", muscles:"Espalda superior y antebrazos", desc:"Colgado de la barra, retraer las escápulas sin flexionar los brazos.", dif:2, family:"activacion"},
   {name:"Remo en anillas (ring row)", muscles:"Espalda y bíceps", desc:"Anillas bajas, cuerpo inclinado hacia atrás con los pies en el suelo, tirar el pecho hacia las anillas.", dif:2, family:"remo"},
-  {name:"Australiana prona (barra baja)", muscles:"Espalda y bíceps", desc:"En barra baja, agarre prono, cuerpo inclinado con los pies en el suelo, tirar el pecho hacia la barra. Buena para sumar volumen de tirón después de dominadas duras, sin la exigencia total de agarre de la dominada.", dif:2, family:"remo"},
-  {name:"Australiana supina (barra baja)", muscles:"Espalda y bíceps", desc:"Igual que la prona pero con agarre supino (palmas hacia vos). Suma más bíceps. Se puede usar en el mismo día que dominadas, en un bloque distinto, como cierre de volumen.", dif:2, family:"remo"},
-  {name:"Australiana con pies elevados", muscles:"Espalda y bíceps", desc:"Igual que la australiana pero con los pies apoyados en un banco o superficie elevada: el cuerpo queda más horizontal y suma dificultad real, un paso intermedio antes del remo en barra completo.", dif:3, family:"remo"},
+  {name:"Australiana prona (barra baja)", muscles:"Espalda y bíceps", desc:"En barra baja, agarre prono, cuerpo inclinado con los pies en el suelo, tirar el pecho hacia la barra. Tirón horizontal con menos exigencia de agarre que la dominada.", dif:2, family:"remo"},
+  {name:"Australiana supina (barra baja)", muscles:"Espalda y bíceps", desc:"Igual que la prona pero con agarre supino (palmas hacia vos). Suma más bíceps.", dif:2, family:"remo"},
+  {name:"Australiana con pies elevados", muscles:"Espalda y bíceps", desc:"Igual que la australiana pero con los pies apoyados en un banco o superficie elevada: el cuerpo queda más horizontal y suma dificultad real.", dif:3, family:"remo"},
   {name:"Soporte en anillas (support hold)", muscles:"Tríceps, hombro y pectoral (estabilización)", desc:"Sostenerse con los brazos extendidos sobre las anillas sin balancearse.", dif:2, family:"soporte"},
   {name:"Dominadas pronas", muscles:"Espalda y bíceps", desc:"Agarre con palmas hacia adelante, subir hasta pasar la barbilla por la barra.", dif:3, family:"dominada"},
   {name:"Dominadas supinas", muscles:"Espalda y bíceps", desc:"Agarre con palmas hacia vos, subir hasta pasar la barbilla por la barra.", dif:3, family:"dominada"},
@@ -1289,7 +1308,7 @@ const PP_REF = {
   push_vert:    { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás el pino contra la pared?' },
   triceps:      { ref:0, u:'reps', q:'¿Cuántas flexiones esfinge seguidas hacés?' },
   pull_vert:    { ref:2, u:'reps', q:'¿Cuántas dominadas seguidas hacés?' },
-  pull_horiz:   { ref:2, u:'reps', q:'¿Cuántas australianas (remo con el pecho a la barra baja) seguidas hacés?' },
+  pull_horiz:   { ref:2, u:'reps', q:'¿Cuántas australianas seguidas hacés?' },
   pull_activ:   { ref:0, u:'reps', q:'¿Cuántas retracciones escapulares colgado seguidas hacés?' },
   ring_support: { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el soporte en anillas?' },
   squat:        { ref:1, u:'reps', q:'¿Cuántas sentadillas seguidas hacés?' },
@@ -1720,7 +1739,7 @@ function renderNivelZonas(){
         </div>
       `).join('') +
     '</div>' +
-    '<p style="font-size:12px; color:var(--text-faint); margin:10px 0 0;">Movilidad todavía no tiene escalera propia, por eso no aparece acá.</p>';
+    txtExp('<p style="font-size:12px; color:var(--text-faint); margin:10px 0 0;">Movilidad todavía no tiene escalera propia, por eso no aparece acá.</p>');
   renderAcordeon(cont, 'perfil', [{ id:'zonas', titulo:'Tu nivel por zona', contenido }]);
 }
 
@@ -1779,49 +1798,66 @@ function perfilResumen(sec, g){
   return sec.titulo + ' · ' + (g.title === 'Habilidades' ? (LADDER_LABEL[pat] || pat) + ': ' : '') + peldanoActualNombre(pat);
 }
 
+// ===== PUNTO DE PARTIDA: UN SOLO COMPONENTE compartido por Perfil y onboarding (CORRECCIONES iPhone 01/11, puntos 8 y 9) =====
+// Por escalera: la pregunta del ejercicio de referencia + una grilla de botones con el número (0 · 1 · … · 10 · 10+, o segundos
+// 0 · 5 · 10 · 15 · 20 · 30 · 45 · 60+). Sin "No sé" (equivale a 0). Cada toque aplica el punto de partida (ver PP_REF) y avisa con `alCambiar`.
+function ppDado(pat){ try{ if(profile && profile.ppNumero && profile.ppNumero[pat] !== undefined) return profile.ppNumero[pat]; }catch(e){ /* `profile` todavía no existe durante la carga inicial */ } return 0; }
+function ppTarjeta(pat){
+  const s = ladderStatus(pat), pp = PP_REF[pat], opcs = (pp.u === 'seg' ? PP_OPC_SEG : PP_OPC_REPS), dado = ppDado(pat);
+  const cardEl = document.createElement('div');
+  cardEl.className = 'summary-card pp-card';
+  cardEl.style.marginBottom = '10px';
+  const segs = s.rungs.map((_, i) => {
+    let bg = 'var(--panel-2)', border = '';
+    if(i < s.mastered) bg = 'var(--accent)';
+    else if(i === s.mastered && !s.allDone){ bg = 'var(--accent-dim)'; border = 'box-shadow:inset 0 0 0 1.5px var(--accent);'; }
+    return `<div style="flex:1; height:9px; border-radius:3px; background:${bg}; ${border}"></div>`;
+  }).join('');
+  const botones = opcs.map(o => `<button type="button" class="pp-op" data-pat="${pat}" data-v="${o}" aria-pressed="${String(o) === String(dado)}">${o}</button>`).join('');
+  const exAhora = (s.current || s.rungs[0]);
+  cardEl.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;">
+      <p style="font-weight:600; font-size:15px; margin:0;">${LADDER_LABEL[pat] || pat}</p>
+      <span style="font-size:12px; color:var(--text-dim);">${s.mastered}/${s.rungs.length}</span>
+    </div>
+    <div style="display:flex; gap:4px; margin:11px 0;">${segs}</div>
+    <p class="pp-q" style="display:block; font-size:14px; font-weight:700; margin:0 0 8px; line-height:1.3;">${pp.q}</p>
+    <div class="pp-grid">${botones}</div>
+    <details class="como-se-hace cs-lite pp-que" data-pat="${pat}" style="margin-top:4px;"><summary style="font-size:14px; font-weight:600; cursor:pointer;">¿Qué es?</summary><div class="pp-que-txt" style="font-size:13px; color:var(--text-dim);"></div></details>
+    <div class="pp-res" style="font-size:13px; margin-top:8px;">Arrancás en: <strong>${peldanoActualNombre(pat)}</strong>${s.allDone ? '' : ' · ' + targetText(exAhora)}</div>`;
+  return cardEl;
+}
+// Secciones del acordeón (Tirón, Empuje, Piernas, Core, Habilidades), con el peldaño actual en el título.
+function ppItems(){
+  return PERFIL_SECCIONES.map(sec => {
+    const g = ZONA_GROUPS.find(z => z.title === sec.grupo);
+    const cont = document.createElement('div');
+    g.pats.forEach(pat => cont.appendChild(ppTarjeta(pat)));
+    return { id: sec.titulo, titulo: perfilResumen(sec, g), contenido: cont };
+  });
+}
+// Dibuja el componente en `box` (acordeón cerrado por defecto) y lo vuelve a dibujar tras cada toque.
+function ppRender(box, grupo, alCambiar){
+  renderAcordeon(box, grupo, ppItems());
+  box.querySelectorAll('.pp-op').forEach(b => b.addEventListener('click', () => {
+    aplicarPuntoNumero(b.dataset.pat, /^\d+$/.test(b.dataset.v) ? parseInt(b.dataset.v, 10) : b.dataset.v);
+    recalcularBloque();                                              // la sesión siguiente se recalcula con el punto nuevo
+    if(alCambiar) alCambiar();
+    ppRender(box, grupo, alCambiar);
+  }));
+  // "¿Qué es?": cerrado; la técnica del ejercicio de referencia se arma recién al abrirlo (CUES se define más abajo en la carga).
+  box.querySelectorAll('details.pp-que').forEach(d => d.addEventListener('toggle', () => {
+    const t = d.querySelector('.pp-que-txt'); if(!d.open || !t || t.dataset.listo) return;
+    const pat = d.dataset.pat, ex = exByName(LADDERS[pat].rungs[PP_REF[pat].ref]);
+    t.innerHTML = ex ? tipsFor(ex).map(x => '<div style="margin-top:4px;">' + x + '</div>').join('') : '';
+    t.dataset.listo = '1';
+  }));
+}
 function renderLadderBoard(){
   renderNivelZonas();
   const board = document.getElementById("ladder-board");
   if(!board) return;
-  const items = PERFIL_SECCIONES.map(sec => {
-    const g = ZONA_GROUPS.find(z => z.title === sec.grupo);
-    const cont = document.createElement('div');
-    g.pats.forEach(pat=>{
-      const s = ladderStatus(pat);
-      const cardEl = document.createElement("div");
-      cardEl.className = "summary-card";
-      cardEl.style.marginBottom = "10px";
-      const segs = s.rungs.map((_, i)=>{
-        let bg = "var(--panel-2)", border = "";
-        if(i < s.mastered) bg = "var(--accent)";
-        else if(i === s.mastered && !s.allDone){ bg = "var(--accent-dim)"; border = "box-shadow:inset 0 0 0 1.5px var(--accent);"; }
-        return `<div style="flex:1; height:9px; border-radius:3px; background:${bg}; ${border}"></div>`;
-      }).join("");
-      // PUNTO DE PARTIDA CON NÚMERO: se pregunta el máximo del ejercicio de referencia y el motor lo traduce (ver PP_REF).
-      // Sin "No sé": la primera opción es 0. Cambiarlo no pierde historial.
-      const pp = PP_REF[pat], opcs = (pp.u === 'seg' ? PP_OPC_SEG : PP_OPC_REPS);
-      let dado = 0; try{ if(profile && profile.ppNumero && profile.ppNumero[pat] !== undefined) dado = profile.ppNumero[pat]; }catch(e){ /* `profile` todavía no existe durante la carga inicial */ }
-      const opts = opcs.map(o => `<option value="${o}"${String(o) === String(dado) ? ' selected' : ''}>${o}${pp.u === 'seg' && typeof o === 'number' ? ' s' : (pp.u === 'seg' ? ' s' : '')}</option>`).join('');
-      const ahora = peldanoActualNombre(pat), exAhora = (s.current || s.rungs[0]);
-      cardEl.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px;">
-          <p style="font-weight:600; font-size:15px; margin:0;">${LADDER_LABEL[pat] || pat}</p>
-          <span style="font-size:12px; color:var(--text-dim);">${s.mastered}/${s.rungs.length}</span>
-        </div>
-        <div style="display:flex; gap:4px; margin:11px 0;">${segs}</div>
-        <label for="pp-${pat}" style="display:block; font-size:14px; font-weight:700; margin:0 0 6px; line-height:1.3;">${pp.q}</label>
-        <select id="pp-${pat}" class="pp-num" data-pat="${pat}" style="width:100%; font-family:inherit;">${opts}</select>
-        <div class="pp-res" style="font-size:13px; margin-top:8px;">Arrancás en: <strong>${ahora}</strong>${s.allDone ? '' : ' · objetivo ' + targetText(exAhora)}</div>`;
-      cont.appendChild(cardEl);
-    });
-    return { id: sec.titulo, titulo: perfilResumen(sec, g), contenido: cont };
-  });
-  renderAcordeon(board, 'perfil', items);
-  board.querySelectorAll('.pp-num').forEach(sel => sel.addEventListener('change', () => {
-    aplicarPuntoNumero(sel.dataset.pat, /^\d+$/.test(sel.value) ? parseInt(sel.value, 10) : sel.value);
-    recalcularBloque();                                              // la sesión siguiente se recalcula con el punto nuevo
-    renderLadderBoard(); renderProgress(); renderDay();
-  }));
+  ppRender(board, 'perfil', () => { renderNivelZonas(); renderProgress(); renderDay(); });
 }
 
 /* ======================= DESBLOQUEO ======================= */
@@ -2919,76 +2955,12 @@ function onbDone(msg){
   box.querySelector(".summary-card").appendChild(b);
 }
 
-// ===== UNA SOLA forma de configurar el nivel: cuántas repeticiones hacés de cada básico.
-// Con botones (no se escribe): así no hay dedazos tipo 88 en vez de 8.
-// Los índices apuntan al peldaño MÁS ALTO que ya dominás en esa escalera.
-const NIVEL_TEST = [
-  {lad:'push_horiz', equip:null, q:'¿Cuántas flexiones seguidas hacés con buena técnica?',
-   opts:[['No sé qué es / no la sé hacer',-1], ['Ninguna todavía',-1], ['1 a 9',1], ['10 o más',2]]},
-  {lad:'pull_vert',  equip:'Barra', q:'¿Cuántas dominadas seguidas hacés?',
-   opts:[['No sé qué es / no la sé hacer',-1], ['Ninguna todavía',-1], ['1 a 4',0], ['5 a 9',1], ['10 o más',2]]},
-  {lad:'dips',       equip:'Paralelas', q:'¿Cuántos fondos en paralelas hacés?',
-   opts:[['No sé qué es / no lo sé hacer',-1], ['Ninguno todavía',-1], ['1 a 7',0], ['8 o más',1]]},
-  {lad:'squat',      equip:null, q:'¿Cuántas sentadillas seguidas hacés?',
-   opts:[['Menos de 10',0], ['10 a 24',1], ['25 o más',2]]}
-];
-
-// Dibuja el test en un contenedor. Al terminar llama a onDone().
-function renderNivelTest(box, onDone, respuestas){
-  const R = respuestas || {};
-  // Solo preguntamos por lo que tu equipo permite: sin barra no preguntamos dominadas,
-  // sin paralelas no preguntamos fondos. Guardamos el índice original para no mezclar respuestas.
-  const preguntas = NIVEL_TEST.map((t, idx) => ({ t, idx })).filter(p => !p.t.equip || (myEquip && myEquip.includes(p.t.equip)));
-  box.innerHTML = '';
-  const card = document.createElement('div');
-  card.className = 'summary-card';
-  let h = '<p style="font-weight:700; margin:0 0 4px;">¿Desde dónde arrancás?</p>' +
-          '<p style="font-size:13px; color:var(--text-dim); margin:0 0 16px; line-height:1.5;">Contame qué podés hacer hoy.</p>';
-  preguntas.forEach(p => {
-    const t = p.t, i = p.idx;
-    const explica = { push_horiz:'La flexión (o "lagartija"): boca abajo, empujás el piso con los brazos.', pull_vert:'La dominada: colgado de una barra, tirás para subir la pera por encima.', dips:'El fondo: apoyado en dos barras paralelas, bajás y subís con los brazos.', squat:'La sentadilla: parado, bajás como para sentarte y volvés a subir.' }[t.lad];
-    h += '<div style="padding-top:14px; margin-top:14px; border-top:1px solid var(--line);">';
-    h += '<p style="font-size:14px; font-weight:600; margin:0 0 3px;">' + t.q + '</p>';
-    if(explica) h += '<p style="font-size:12px; color:var(--text-faint); margin:0 0 10px; line-height:1.4;">' + explica + '</p>';
-    h += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
-    t.opts.forEach((o, j) => {
-      const on = R[i] === j;
-      h += '<button class="nvt" data-q="' + i + '" data-o="' + j + '" style="border:1.5px solid ' + (on?'var(--accent)':'var(--line)') + '; background:' + (on?'var(--accent)':'var(--panel)') + '; color:' + (on?'#fff':'var(--text)') + '; border-radius:999px; padding:9px 15px; font-size:13.5px; font-weight:600; font-family:inherit; cursor:pointer;">' + (on?'✓ ':'') + o[0] + '</button>';
-    });
-    h += '</div></div>';
-  });
-  card.innerHTML = h;
-  box.appendChild(card);
-
-  const contestadas = preguntas.filter(p => R[p.idx] !== undefined).length;
-  const faltan = preguntas.length - contestadas;
-  const btn = document.createElement('button');
-  btn.className = 'primary';
-  btn.style.cssText = 'width:100%; margin-top:12px;' + (faltan ? ' opacity:.5;' : '');
-  btn.textContent = faltan ? ('Faltan ' + faltan + (faltan===1?' respuesta':' respuestas')) : 'Listo, calculá mi nivel';
-  if(!faltan) btn.addEventListener('click', () => {
-    preguntas.forEach(p => {
-      const idx = p.t.opts[R[p.idx]][1];
-      if(idx >= 0) masterUpTo(p.t.lad, Math.min(idx, LADDERS[p.t.lad].rungs.length - 1));
-    });
-    profile.nivelListo = true;
-    saveState();
-    onDone();
-  });
-  box.appendChild(btn);
-
-  box.querySelectorAll('.nvt').forEach(b => b.addEventListener('click', () => {
-    R[parseInt(b.dataset.q)] = parseInt(b.dataset.o);
-    renderNivelTest(box, onDone, R);
-  }));
-}
-
+// (NIVEL_TEST / renderNivelTest retirados: ver _archivo/codigo-retirado.js, sección 22.) Ahora el punto de partida es el componente
+// compartido ppRender (mismo en Perfil y onboarding).
 function renderOnboardingHome(){
   const box = onbox();
-  renderNivelTest(box, () => {
-    recalcularBloque(); renderEquip(); renderLadderBoard(); renderProgress(); renderDay();
-    onbDone('Listo.');
-  });
+  box.innerHTML = '';
+  ppRender(box, 'onboarding-home', () => { renderEquip(); renderProgress(); renderDay(); });
 }
 
 function renderAssess(){
@@ -3853,7 +3825,7 @@ function pintarTimer(){
       '<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">' +
         '<p style="font-size:13px; letter-spacing:.16em; text-transform:uppercase; font-weight:700; color:' + faseColor + '; margin:0;">' + faseLabel + (esChrono ? '' : (' · ronda ' + t.ronda)) + '</p>' +
         '<div class="t-timer" style="color:' + faseColor + ';">' + display + '</div>' +
-        (esChrono ? '<p style="font-size:13px; color:var(--text-dim); margin:0;">Contá el tiempo que quieras</p>'
+        (esChrono ? ''
                   : '<p style="font-size:13px; color:var(--text-dim); margin:0;">Trabajo ' + t.work + 's · Descanso ' + fmtT(t.rest) + '</p>') +
       '</div>' +
       '<button class="primary" id="tm-toggle" style="width:100%;">' + (t.corriendo ? 'Pausar' : (esChrono ? 'Arrancar' : 'Empezar')) + '</button>' +
@@ -4030,10 +4002,8 @@ function renderProgStatsChart(el){
   const lastMonth = stats.months[prevMonthKey(mk)] || 0;
   const diff = thisMonth - lastMonth;
   let cmp;
-  if(lastMonth === 0) cmp = 'Tu primer mes en marcha. El mes que viene ya vas a poder compararte con vos mismo.';
-  else if(diff > 0) cmp = '<span style="color:var(--accent-strong); font-weight:700;">&#8593; Vas mejor</span> que el mes pasado &mdash; ' + thisMonth + ' contra ' + lastMonth + '.';
-  else if(diff === 0) cmp = 'Vas parejo con el mes pasado &mdash; ' + thisMonth + ' y ' + lastMonth + '.';
-  else cmp = '<span style="color:var(--warn); font-weight:600;">Vas m&aacute;s tranquilo</span> que el mes pasado &mdash; ' + thisMonth + ' contra ' + lastMonth + '. Sin drama, retom&aacute; el ritmo.';
+  // Solo datos (CORRECCIONES iPhone 01/11, punto 7): antes eran frases ("Vas mejor que el mes pasado…", "Tu primer mes en marcha…").
+  cmp = lastMonth === 0 ? '' : ('<strong>' + thisMonth + '</strong> este mes · <strong>' + lastMonth + '</strong> el mes pasado');
 
   let h = '';
   // Lo que construiste (acumulados por familia de movimiento)
@@ -4043,7 +4013,7 @@ function renderProgStatsChart(el){
   if(fams.length){
     h += '<div class="summary-card" style="margin-bottom:14px;">';
     h += '<p style="font-weight:700; margin:0 0 2px;">&#128170; Lo que construiste</p>';
-    h += '<p style="font-size:12px; color:var(--text-faint); margin:0 0 16px;">Repeticiones acumuladas por movimiento. En verde, lo que sumaste esta semana.</p>';
+    h += txtExp('<p style="font-size:12px; color:var(--text-faint); margin:0 0 16px;">Repeticiones acumuladas por movimiento. En verde, lo que sumaste esta semana.</p>');
     h += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">';
     fams.slice(0,6).forEach(([f,v]) => {
       const wk = famWeek[f] || 0;
@@ -4053,10 +4023,9 @@ function renderProgStatsChart(el){
   }
   h += '<div class="summary-card" style="margin-bottom:18px;">';
   h += '<p style="font-weight:700; margin:0 0 4px;">&#128293; Racha de constancia</p>';
-  h += '<p style="font-size:14px; color:var(--text-dim); margin:0 0 4px;">' + (weeklyStreak()>0 ? ('<strong style="color:var(--accent-strong);">' + weeklyStreak() + (weeklyStreak()===1?' semana':' semanas') + ' seguidas</strong> cumpliendo tus ' + metaSemanal()) : ('Todav&iacute;a sin racha. Cumpl&iacute; ' + metaSemanal() + ' esta semana para arrancarla')) + '. Esta semana: <strong>' + currentWeekCount() + '/' + metaSemanal() + '</strong>.</p>';
-  h += '<p style="font-size:11.5px; color:var(--text-faint); margin:0 0 20px;">Cuenta semanas, no d&iacute;as: descansar no la rompe.</p>';
+  h += '<p style="font-size:14px; margin:0 0 20px;">' + (weeklyStreak()>0 ? ('<strong style="color:var(--accent-strong);">Racha ' + weeklyStreak() + (weeklyStreak()===1?' semana':' semanas') + '</strong>') : 'Racha 0 semanas') + ' · Esta semana <strong>' + currentWeekCount() + '/' + metaSemanal() + '</strong></p>';
   h += '<p style="font-weight:700; margin:0 0 4px;">&#128202; Tu constancia</p>';
-  h += '<p style="font-size:12px; color:var(--text-faint); margin:0 0 14px;">Entrenamientos por semana (&uacute;ltimas 6). La l&iacute;nea punteada es tu meta de ' + metaSemanal() + '.</p>';
+  h += '<p style="font-size:12px; color:var(--text-faint); margin:0 0 14px;">Por semana, últimas 6 · meta ' + metaSemanal() + '</p>';
   h += '<div style="position:relative; height:90px; display:flex; align-items:flex-end; gap:8px;">';
   h += '<div style="position:absolute; left:0; right:0; bottom:' + goalBottom + 'px; border-top:1.5px dashed var(--accent); opacity:.45;"></div>';
   counts.forEach((c,i) => {
@@ -4178,7 +4147,7 @@ function showMobility(){
   const el = document.getElementById('guardian'); if(!el) return;
   let h = '<div class="summary-card" style="border-left:4px solid var(--accent); margin-bottom:14px;">';
   h += '<p style="font-family:var(--font-display); font-size:19px; margin:0 0 4px;">Movilidad y prevención · ~10 min</p>';
-  h += '<p style="font-size:13px; color:var(--text-dim); margin:0 0 12px;">Sin apuro, rango cómodo.</p>';
+  h += txtExp('<p style="font-size:13px; color:var(--text-dim); margin:0 0 12px;">Sin apuro, rango cómodo.</p>');
   MOBILITY_ROUTINE.forEach(m => { h += '<div style="display:flex; align-items:center; gap:9px; padding:4px 0; font-size:14px;"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0;"></span>' + m + '</div>'; });
   h += '<button class="primary" id="mob-done" style="width:100%; margin-top:14px;">Ya la hice</button>';
   h += '</div>';
@@ -4201,7 +4170,7 @@ function renderEquip(){
   const el = document.getElementById('equip-picker'); if(!el) return;
   let h = '';
 
-  h += '<p style="font-size:12.5px; color:var(--text-dim); margin:0 0 14px;">Marcá lo que tenés.</p>';
+  h += txtExp('<p style="font-size:12.5px; color:var(--text-dim); margin:0 0 14px;">Marcá lo que tenés.</p>');
   h += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
   EQUIP_OPTIONS.forEach(eq => {
     const on = eq === 'Suelo' || myEquip.includes(eq);
@@ -4210,11 +4179,11 @@ function renderEquip(){
          ' style="border:none; cursor:'+(fixed?'default':'pointer')+'; text-align:left; padding:10px 14px; border-radius:12px; font-family:inherit; font-size:13.5px; font-weight:600;' +
          ' background:'+(on?'var(--accent)':'var(--panel-2)')+'; color:'+(on?'#fff':'var(--text-dim)')+'; opacity:'+(fixed?'.75':'1')+';">' +
          (on?'✓ ':'') + (EQUIP_LABEL[eq] || eq) +
-         '<span style="display:block; font-weight:400; font-size:11px; opacity:.85; margin-top:2px;">'+EQUIP_HELP[eq]+'</span></button>';
+         txtExp('<span style="display:block; font-weight:400; font-size:11px; opacity:.85; margin-top:2px;">'+EQUIP_HELP[eq]+'</span>') + '</button>';
   });
   h += '</div>';
   const n = EQUIP_OPTIONS.filter(e => e==='Suelo' || myEquip.includes(e)).length;
-  if(n <= 1) h += '<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>';
+  if(n <= 1) h += txtExp('<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>');
   const contenido = document.createElement('div');
   contenido.innerHTML = h;
   renderAcordeon(el, 'perfil', [{ id:'equip', titulo:'Equipamiento · ' + n + ' de ' + EQUIP_OPTIONS.length, contenido }]);
@@ -4517,7 +4486,7 @@ function renderDay(){
     stCard.className = 'summary-card';
     stCard.style.cssText = 'margin:10px 0;';
     stCard.innerHTML = '<div id="stretch-head" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;"><span style="font-weight:600;">Estiramiento de cierre · ' + stretch.length + ' · ~' + Math.max(4, Math.round(stretch.length * 1.2)) + ' min</span><span style="color:var(--text-dim);">' + (dayStretchOpen ? '▾' : '▸') + '</span></div>' +
-      '<div style="font-size:12px; color:var(--text-faint); margin-top:4px;">Los músculos que trabajaste hoy, mientras están calientes.</div>' +
+      txtExp('<div style="font-size:12px; color:var(--text-faint); margin-top:4px;">Los músculos que trabajaste hoy, mientras están calientes.</div>') +
       (dayStretchOpen ? '<div style="margin-top:10px;">' + stretch.map(s => '<div style="padding:6px 0; border-top:1px solid var(--line);"><div style="font-size:14px; font-weight:600;">' + s.n + '</div><div style="font-size:13px; color:var(--text-dim); margin-top:1px;">' + s.d + '</div></div>').join('') + '</div>' : '');
     stCard.querySelector('#stretch-head').addEventListener('click', () => { dayStretchOpen = !dayStretchOpen; renderDay(); });
     const sk = document.createElement('button'); sk.className = 'ghost'; sk.id = 'stretch-skip'; sk.style.cssText = 'width:100%; min-height:48px; margin:10px 0 0;'; sk.textContent = 'Saltear vuelta a la calma';
@@ -4585,10 +4554,11 @@ function exCardHTML(ex){
   if(ex._libre || ex.pattern === 'power_legs'){
     const dosis = ex._dosis || (SALTO_REPS + ' reps por ronda');
     const tips = ex.pattern === 'power_legs' ? (ex.tips || ['Aterrizaje suave, sin golpear el piso.', 'La rodilla alineada con la punta del pie.']) : [];
+    const detalle = (ex.desc ? '<div style="margin-top:8px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
+      tips.map(t => '<div style="display:flex; gap:8px; margin-top:6px; font-size:13.5px;"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('');
     return '<div style="font-weight:700; font-size:16px;">' + ex.name + '</div>' +
       '<div class="u-num" style="font-family:var(--font-display); font-size:19px; margin:8px 0;">' + dosis + '</div>' +
-      (ex.desc ? '<div style="font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
-      tips.map(t => '<div style="display:flex; gap:8px; margin-top:6px; font-size:13.5px;"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('');
+      (detalle ? '<details class="como-se-hace" style="margin-bottom:8px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;"><summary style="font-size:14px; font-weight:600; cursor:pointer; min-height:32px;">Cómo se hace</summary>' + detalle + '</details>' : '');
   }
   const rungs = LADDERS[ex.pattern] ? LADDERS[ex.pattern].rungs : [];
   const myIdx = rungs.indexOf(ex.name);               // el peldaño de ESTE ejercicio
@@ -4602,23 +4572,23 @@ function exCardHTML(ex){
   // Icono + compactado (Encargo Final, pilar 5A/5C): menos texto siempre-visible,
   // el "cómo se hace" sigue colapsado por default (no se toca, es la parte de mentor).
   const icono = isStatic(ex) ? '🛡️' : '💪';
+  const uni = isUnilateral(ex);
+  const comoSeHace = (ex.desc ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
+    (uni ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim);">Cada serie incluye los dos lados.</div>' : '') +
+    '<div style="margin-top:10px;">' + tipsFor(ex).map(t => '<div style="display:flex; gap:8px; margin-bottom:6px; font-size:13.5px; color:var(--text);"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('') + '</div>' +
+    '<a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-size:13px; color:var(--accent); font-weight:600; text-decoration:none;">▶ Ver en YouTube cómo se hace</a>';
   return pathTag +
-    '<div style="font-weight:700; font-size:16px;">' + icono + ' ' + ex.name + '</div>' +
-    '<div style="display:flex; gap:16px; margin:8px 0;">' +
-      '<div class="u-num" style="font-family:var(--font-display); font-size:19px; color:var(--accent-strong);">' + targetText(ex) + '</div>' +
+    '<div style="font-weight:700; font-size:16px; overflow-wrap:anywhere;">' + icono + ' ' + ex.name + '</div>' +
+    '<div style="display:flex; flex-wrap:wrap; gap:4px 16px; margin:8px 0;">' +
+      '<div class="u-num" style="font-family:var(--font-display); font-size:19px; color:var(--accent-strong);">' + targetText(ex) + (uni ? ' por lado' : '') + '</div>' +
       ((ex._rol === 'circ' || ex._rol === 'core') ? '' : '<div class="u-num" style="font-family:var(--font-display); font-size:19px;">' + restText(ex) + '</div>') +   // en el circuito no hay descanso entre ejercicios
     '</div>' +
     (isStatic(ex) ? '<button class="ghost tm-open" data-ex="' + ex.name + '" style="width:100%; margin:0 0 12px;">▶ Cronometrar (trabajo + descanso)</button>' : '') +
-    (isUnilateral(ex) ? '<div style="display:flex; gap:8px; align-items:flex-start; background:var(--accent-dim); border-radius:8px; padding:8px 10px; margin-bottom:10px; font-size:12.5px; color:var(--accent-strong);"><span>&#8644;</span><span><strong>Es de a un lado:</strong> 1 repetición = derecha + izquierda. O sea, ' + targetText(ex) + ' de cada lado.</span></div>' : '') +
-    segBar(lp.mastered, lp.total) +
-    '<details' + (cargaNivel() === 1 ? ' open' : '') + ' style="margin-bottom:12px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;"><summary style="font-size:13px; color:var(--accent-strong); font-weight:600; cursor:pointer;">Cómo se hace' + (cargaNivel() === 1 ? '' : ' y tips') + '</summary>' +
-      (ex.desc ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
-      '<div style="margin-top:10px;">' + tipsFor(ex).map(t => '<div style="display:flex; gap:8px; margin-bottom:6px; font-size:13.5px; color:var(--text);"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('') + '</div>' +
-      '<a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-size:13px; color:var(--accent); font-weight:600; text-decoration:none;">▶ Ver en YouTube cómo se hace</a>' +
-    '</details>' +
-    (regSrc ? '<div style="border-left:3px solid var(--accent); background:var(--accent-dim); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">Bajamos desde <strong>' + regSrc + '</strong> porque te venía costando. Consolidá acá con buena técnica; cuando cumplas, volvemos a subir.</div>' : '') +
-    (!regSrc && coach ? '<div style="border-left:3px solid ' + (coach.tone==='ok' ? 'var(--accent)' : 'var(--warn)') + '; background:var(--panel-2); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">' + coach.text + '</div>' : '') +
-    (isUnilateral(ex) ? '<div style="font-size:12.5px; margin-bottom:6px;"><strong>Cada serie incluye los dos lados.</strong> Marcá cómo te fue en la serie completa.</div>' : '');
+    // Dato corto, no una frase: en qué peldaño de la escalera estás ("Peldaño 2 de 5"). Antes eran segmentos sin rótulo que se confundían con series.
+    '<div style="font-size:13px; font-weight:600; margin:0 0 10px;">Peldaño ' + (lp.idx >= 0 ? lp.idx + 1 : lp.mastered + 1) + ' de ' + lp.total + '</div>' +
+    '<details class="como-se-hace" style="margin-bottom:12px; border:1px solid var(--line); border-radius:10px; padding:10px 12px;"><summary style="font-size:14px; font-weight:600; cursor:pointer; min-height:32px;">Cómo se hace</summary>' + comoSeHace + '</details>' +
+    txtExp(regSrc ? '<div style="border-left:3px solid var(--accent); background:var(--accent-dim); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">Bajamos desde <strong>' + regSrc + '</strong> porque te venía costando. Consolidá acá con buena técnica; cuando cumplas, volvemos a subir.</div>' : '') +
+    txtExp(!regSrc && coach ? '<div style="border-left:3px solid ' + (coach.tone==='ok' ? 'var(--accent)' : 'var(--warn)') + '; background:var(--panel-2); border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:13px; color:var(--text-dim);">' + coach.text + '</div>' : '');
 }
 
 // Nombres de ejercicios que están en el camino de la habilidad mostrada.
@@ -4648,7 +4618,7 @@ function renderSessionBlocks(c, session){
     dl.id = 'aviso-descarga';
     dl.className = 'summary-card';
     dl.innerHTML = '<div class="u-num" style="font-family:var(--font-display); font-size:20px; font-weight:700;">Sesión de descarga</div>' +
-      '<div style="font-size:13.5px; color:var(--text-dim); margin-top:4px;">2 series por ejercicio, con la misma dificultad.</div>';
+      txtExp('<div style="font-size:13.5px; color:var(--text-dim); margin-top:4px;">2 series por ejercicio, con la misma dificultad.</div>');
     c.appendChild(dl);
   }
   const lbl = document.createElement('p');
@@ -4678,7 +4648,7 @@ function renderSessionBlocks(c, session){
     let head = '<div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">' +
       '<span style="font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700;">Bloque ' + (bi+1) + ' &middot; ' + b.titulo + '</span>' +
       '<span style="font-size:12.5px; color:var(--text-dim); font-weight:600;">' + rondasTxt + '</span></div>';
-    if(b.nota) head += '<p style="font-size:13px; color:var(--text-dim); margin:0 0 10px; line-height:1.45;">' + b.nota + '</p>';
+    if(b.nota) head += txtExp('<p style="font-size:13px; color:var(--text-dim); margin:0 0 10px; line-height:1.45;">' + b.nota + '</p>');
     wrap.innerHTML = head;
 
     b.exs.forEach((ex, i) => {
@@ -4687,7 +4657,7 @@ function renderSessionBlocks(c, session){
       card.style.cssText = 'margin-bottom:8px;' + (b.tipo === 'super' ? ' border-left:3px solid var(--accent);' : '');
       card.innerHTML = (b.tipo === 'super' ? '<div style="font-size:12px; color:var(--accent); font-weight:800; letter-spacing:.1em; margin-bottom:6px;">' + (i===0?'A':'B') + '</div>' : '') + exCardHTML(ex);
       if(!b.circuito) card.insertAdjacentHTML('beforeend', serieBoxHTML(ex.name, b.rondas, 'Serie'));   // "Serie 2 de 4"
-      if(primerFuerte && ex.name === primerFuerte.name && typeof aproximacionHTML === 'function') card.insertAdjacentHTML('afterbegin', aproximacionHTML(ex));   // 1-2 series fáciles, marcadas (ya no van en la entrada en calor)
+      if(primerFuerte && ex.name === primerFuerte.name && typeof aproximacionHTML === 'function' && aproximacionNecesaria(ex)) card.insertAdjacentHTML('afterbegin', aproximacionHTML(ex));   // 1-2 series fáciles, marcadas (ya no van en la entrada en calor)
       wrap.appendChild(card);
       if(b.tipo === 'super' && i === 0){
         const plus = document.createElement('div');
@@ -4761,7 +4731,7 @@ function commitDay(){
   let h = '<div class="summary-card reward-screen" style="margin-top:16px; border:1.5px solid var(--accent); background:linear-gradient(180deg,#2A2318 0%, var(--panel) 60%); text-align:center;">';
   const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   if(reduceMotion){
-    h += '<div class="rank-num" style="font-family:var(--font-display); font-size:48px; line-height:1; color:var(--glow); margin:6px 0 0;">' + sesionesAhora + '</div><div style="font-size:12.5px; color:var(--text-dim); margin:0 0 4px;">entrenamientos</div>';
+    h += '<div class="rank-num" style="font-family:var(--font-display); font-size:48px; line-height:1; color:var(--glow); margin:6px 0 0;">' + sesionesAhora + '</div><div style="font-size:12.5px; color:var(--text-dim); margin:0 0 4px;">' + (sesionesAhora === 1 ? 'entrenamiento' : 'entrenamientos') + '</div>';
   } else {
     // MOMENTO DE RECOMPENSA: el cuerpo del disco se llena de a poco y vibra, hace pum, saltan partículas y aparece el número.
     let parts = '';
@@ -4799,7 +4769,7 @@ function commitDay(){
     h += '</div>';
   }
   if(unlockedName) h += '<p style="font-size:14.5px; color:var(--glow); font-weight:700; margin:12px 0 0;">🔓 Desbloqueaste ' + unlockedName + '</p>';
-  h += '<p style="font-size:12.5px; color:var(--text-faint); margin:12px 0 0;">Y van ' + stats.sessions + ' ' + (stats.sessions===1?'entrenamiento':'entrenamientos') + '.</p>';
+  h += txtExp('<p style="font-size:12.5px; color:var(--text-faint); margin:12px 0 0;">Y van ' + stats.sessions + ' ' + (stats.sessions===1?'entrenamiento':'entrenamientos') + '.</p>');
 
   // La escalera que se enciende (si hay objetivo con camino)
   if(goal && GOALS[goal] && goalPath(GOALS[goal]).length){
@@ -4947,7 +4917,7 @@ if(resetBtn) resetBtn.addEventListener('click', () => {
   goal = null;
   myEquip = ['Suelo','Barra','Paralelas','Anillas','Banda','Soga'];
   onboarded = false;
-  onboardData = { goal:null, equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
+  onboardData = { equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
   stats = { lifetime:{}, week:{}, month:{}, sessions:0, weekSessions:0, monthSessions:0, records:{}, weekStart: Date.now(), monthStart: Date.now(), cycle:0, cycleStart: Date.now(), cycleJustAdvanced:false, lastZone:{}, weeks:{}, months:{}, coins:0, shields:0, shieldedWeeks:{}, lastRachaCheck:null };
   normalizeStats();
   sessionStarted = false;
@@ -5313,7 +5283,7 @@ function loadState(){
     const d = JSON.parse(raw);
     if(d.progState && typeof d.progState === 'object') progState = d.progState;
     if(d.stats && typeof d.stats === 'object'){ stats = d.stats; normalizeStats(); }
-    if(typeof d.goal !== 'undefined') goal = d.goal;
+    // (objetivo retirado 02/11: es fijo, ponerse más fuerte; si el guardado trae uno viejo se ignora)
     if(Array.isArray(d.myEquip)) myEquip = d.myEquip;
     if(typeof d.onboarded === 'boolean') onboarded = d.onboarded;
     if(d.profile && typeof d.profile === 'object') profile = Object.assign(profile, d.profile);
@@ -5341,16 +5311,13 @@ window.addEventListener('load', renderDay);
 window.addEventListener('load', restaurarUltimaTab);
 
 /* ======================= ONBOARDING DE BIENVENIDA (primera vez) ======================= */
-let onboardData = { goal:null, equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
+let onboardData = { equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
 let reconfigMode = false;
 // Reconfigurar nivel desde la Home: flujo enfocado (equipamiento + test juntos), sin saltar de pestaña.
 function reconfigurarNivel(){
   reconfigMode = true;
   onboardData.equip = myEquip.slice();                    // equipo actual pre-marcado
-  onboardData.experiencia = profile.experimentado ? 'recorrido' : 'nuevo';
-  onboardData.goal = goal || 'cero';                       // no tocamos tu objetivo
-  onboardData.nivelR = {};                                 // respuestas del test, en limpio
-  renderOnboarding(3);                                     // arranca en equipamiento
+  renderOnboarding(1);                                     // arranca en equipamiento
   const ov = document.getElementById('onboarding-welcome');
   if(ov && ov.scrollTo) ov.scrollTo({top:0});
 }
@@ -5366,103 +5333,40 @@ function applyStartingLevel(nivel){
   mains.forEach(p => { if(LADDERS[p]) masterUpTo(p, Math.min(upTo, LADDERS[p].rungs.length - 2)); });
 }
 
-const OB_GOALS = [
-  {id:'cero',      t:'Recién empiezo',        s:'Moverme, sentirme mejor y agarrar el hábito'},
-  {id:'dominada',  t:'Mi primera dominada',  s:'Colgarme de la barra y subir hasta pasar la pera'},
-  {id:'muscleup',  t:'Mi primer muscle-up',  s:'Subir de un envión hasta apoyarme arriba de la barra'},
-  {id:'handstand', t:'Pararme de manos',      s:'Lo que muchos llaman "handstand"'}
-];
-
+// Onboarding (CORRECCIONES iPhone 01/11): queda SOLO lo que el motor necesita, sin textos explicativos.
+//   0 · Bienvenida (sin texto, un botón)          1 · Equipamiento: "¿Con qué entrenás?" (Barra, Paralelas, Anillas, Banda, Soga)
+//   2 · Punto de partida: el MISMO componente que Perfil (ppRender): por escalera, el máximo del ejercicio de referencia con botones 0 … 10+.
+// El objetivo es fijo (ponerse más fuerte) y las habilidades se siguen solas: ya no se elige nada. Lado débil: retirado (stand-by).
 function obCard(inner){ return '<div style="max-width:520px; margin:0 auto; padding:32px 24px calc(40px + env(safe-area-inset-bottom,0px));">' + inner + '</div>'; }
-
-// Secuencia de pasos. Si sos nuevo: se saltea elegir habilidad (2) Y el test de nivel (5).
-// Al que recién empieza no le preguntamos "¿cuántas dominadas hacés?": arranca del peldaño más bajo.
-function obPasos(){
-  if(reconfigMode) return [3,5];   // reconfigurar = solo equipamiento + test, en un flujo enfocado
-  return onboardData.experiencia === 'nuevo' ? [1,3,4] : [1,2,3,4,5];
-}
+function obPasos(){ return [1, 2]; }
 function obPasoLabel(step){ const p = obPasos(); return 'Paso ' + (p.indexOf(step)+1) + ' de ' + p.length; }
 function obSiguiente(step){ const p = obPasos(); const i = p.indexOf(step); return (i >= 0 && i < p.length-1) ? p[i+1] : null; }
-// Objetivos de habilidad, solo para quien tiene recorrido.
-const OB_SKILLS = [
-  {id:'dominada',  t:'Mi primera dominada'},
-  {id:'muscleup',  t:'Mi primer muscle-up'},
-  {id:'handstand', t:'Pararme de manos'},
-  {id:'frontlever',t:'El front lever'},
-  {id:'planche',   t:'La planche'},
-  {id:'fuerza',    t:'Ponerme más fuerte'}
-];
-function obBtn(id, t, s, on){
-  return '<button class="ob-opt" data-v="' + id + '" style="display:block; width:100%; text-align:left; border:1.5px solid ' + (on?'var(--accent)':'var(--line)') + '; background:' + (on?'var(--accent-dim)':'var(--panel)') + '; color:var(--text); border-radius:14px; padding:16px 18px; margin-bottom:12px; cursor:pointer; font-family:inherit;">' +
-    '<div style="font-weight:700; font-size:16px;">' + (on?'✓ ':'') + t + '</div>' +
-    (s ? '<div style="font-size:13px; color:var(--text-dim); margin-top:3px;">' + s + '</div>' : '') + '</button>';
+function obBtn(id, t, on){
+  return '<button class="ob-opt" data-v="' + id + '" aria-pressed="' + (!!on) + '" style="display:block; width:100%; text-align:left; border:2px solid ' + (on?'var(--text)':'var(--line)') + '; background:' + (on?'var(--text)':'var(--panel)') + '; color:' + (on?'var(--panel)':'var(--text)') + '; border-radius:14px; padding:14px 18px; min-height:52px; margin-bottom:10px; cursor:pointer; font-family:inherit; font-weight:700; font-size:16px;">' + (on?'✓ ':'') + t + '</button>';
 }
 
 function renderOnboarding(step){
   const ov = document.getElementById('onboarding-welcome');
   if(!ov) return;
   ov.classList.add('open');
+  const etiqueta = '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(step) + '</p>';
+  const titulo = t => '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 16px;">' + t + '</h1>';
   let h = '';
   if(step === 0){
     h = obCard(
       '<div style="text-align:center; margin-top:40px;">' +
       '<svg viewBox="0 0 34 34" width="52" height="52" style="margin-bottom:20px;"><rect width="34" height="34" rx="9" fill="#E6F0E9"/><rect x="7" y="20" width="6.5" height="6" rx="2" fill="#2F7D5B"/><rect x="13.75" y="14" width="6.5" height="12" rx="2" fill="#2F7D5B"/><rect x="20.5" y="8.5" width="6.5" height="17.5" rx="2" fill="#2F7D5B"/></svg>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:32px; line-height:1.1; margin:0 0 14px;">Hola. Soy Peldaño.</h1>' +
-      '<p style="font-size:16px; color:var(--text-dim); line-height:1.55; margin:0 0 8px;">Esto no es una app de rutinas. Es aprender un oficio: dominar tu cuerpo, de a un peldaño.</p>' +
-      '<p style="font-size:16px; color:var(--text-dim); line-height:1.55; margin:0 0 32px;">Antes de arrancar, unas preguntas rápidas.</p>' +
-      '<button class="primary ob-next" style="width:100%; padding:16px; font-size:16px;">Empecemos</button>' +
+      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:32px; line-height:1.1; margin:0 0 32px;">Peldaño</h1>' +
+      '<button class="primary ob-next" style="width:100%; padding:16px; font-size:16px;">Empezar</button>' +
       '</div>');
   } else if(step === 1){
-    h = obCard(
-      '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(1) + '</p>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 6px;">¿Ya entrenás calistenia?</h1>' +
-      '<p style="font-size:14px; color:var(--text-dim); margin:0 0 22px;">Con esto sé cómo acompañarte. No hay respuesta mejor ni peor.</p>' +
-      obBtn('exp:nuevo', 'Soy nuevo en esto', 'Nunca entrené, o casi nada. Quiero moverme, sentirme mejor y agarrar el hábito.', onboardData.experiencia === 'nuevo') +
-      obBtn('exp:recorrido', 'Ya tengo recorrido', 'Entreno calistenia y quiero lograr una habilidad concreta.', onboardData.experiencia === 'recorrido') +
-      '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:8px; opacity:' + (onboardData.experiencia?'1':'.5') + ';"' + (onboardData.experiencia?'':' disabled') + '>Seguir</button>');
-  } else if(step === 2){
-    h = obCard(
-      '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(2) + '</p>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 6px;">¿Qué te gustaría lograr?</h1>' +
-      '<p style="font-size:14px; color:var(--text-dim); margin:0 0 22px;">Lo pongo en el centro de tu camino.</p>' +
-      OB_SKILLS.map(g => obBtn(g.id, g.t, (GOALS[g.id] && GOALS[g.id].plain) || null, onboardData.goal === g.id)).join('') +
-      '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:8px; opacity:' + (onboardData.goal && onboardData.goal !== 'cero' ?'1':'.5') + ';"' + (onboardData.goal && onboardData.goal !== 'cero' ?'':' disabled') + '>Seguir</button>');
-  } else if(step === 3){
     const opts = ['Barra','Paralelas','Anillas','Banda','Soga'];
-    h = obCard(
-      '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(3) + '</p>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 6px;">¿Con qué vas a entrenar?</h1>' +
-      '<p style="font-size:14px; color:var(--text-dim); margin:0 0 22px;">Marcá lo que tenés. Solo te voy a dar ejercicios que puedas hacer de verdad. El suelo ya cuenta.</p>' +
-      opts.map(eq => obBtn('eq:' + eq, eq, null, onboardData.equip.includes(eq))).join('') +
+    h = obCard(etiqueta + titulo('¿Con qué entrenás?') +
+      opts.map(eq => obBtn('eq:' + eq, eq, onboardData.equip.includes(eq))).join('') +
       '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:8px;">Seguir</button>');
-  } else if(step === 4){
-    const P = onboardData.perfil || (onboardData.perfil = {});
-    const grupo = (titulo, pref, opts, sel, hint) =>
-      '<p style="font-size:14px; font-weight:600; margin:18px 0 2px;">' + titulo + '</p>' +
-      (hint ? '<p style="font-size:12px; color:var(--text-faint); margin:0 0 10px; line-height:1.4;">' + hint + '</p>' : '<div style="height:8px;"></div>') +
-      '<div style="display:flex; flex-wrap:wrap; gap:8px;">' +
-      opts.map(o => '<button class="ob-opt" data-v="' + pref + ':' + o[1] + '" style="border:1.5px solid ' + (sel===o[1]?'var(--accent)':'var(--line)') + '; background:' + (sel===o[1]?'var(--accent)':'var(--panel)') + '; color:' + (sel===o[1]?'#fff':'var(--text)') + '; border-radius:999px; padding:9px 15px; font-size:13.5px; font-weight:600; font-family:inherit; cursor:pointer;">' + (sel===o[1]?'✓ ':'') + o[0] + '</button>').join('') +
-      '</div>';
-    const faltanP = [];
-    if(P.edad == null) faltanP.push('tu edad');
-    if(P.diasHoy == null) faltanP.push('cómo venís');
-    if(P.tiempo == null) faltanP.push('cuánto tiempo');
-    const listo = faltanP.length === 0;
-    const btnTxt = listo ? (obSiguiente(4) === null ? 'Empezar a entrenar' : 'Seguir') : ('Falta elegir ' + faltanP.join(' y '));
-    h = obCard(
-      '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(4) + '</p>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 6px;">Contame cómo venís</h1>' +
-      '<p style="font-size:14px; color:var(--text-dim); margin:0 0 4px;">Con esto ajusto el arranque, el descanso y la duración.</p>' +
-      grupo('¿Qué edad tenés?', 'ed', [['Menos de 30',25],['30 a 44',38],['45 a 57',50],['58 o más',62]], P.edad, null) +
-      grupo('¿Qué tan seguido venís entrenando?', 'dh', [['Nada',0],['1 día',1],['2 días',2],['3 o más',3]], P.diasHoy, 'Lo que hacés HOY, no lo que querés hacer. Si venís de poco, arrancamos suave y subimos.') +
-      grupo('¿Cuánto tiempo podés dedicarle a cada sesión?', 'tp', [['30 min',30],['45 min',45],['60 min',60]], P.tiempo, 'Lo que TENÉS disponible. Es el largo del entrenamiento que te armo.') +
-      '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:22px; opacity:' + (listo?'1':'.55') + ';"' + (listo?'':' disabled') + '>' + btnTxt + '</button>');
-  } else if(step === 5){
-    h = obCard(
-      '<p style="font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:8px 0 12px;">' + obPasoLabel(5) + '</p>' +
-      '<h1 style="font-family:var(--font-display); font-weight:500; font-size:27px; line-height:1.12; margin:0 0 6px;">¿Qué podés hacer hoy?</h1>' +
-      '<p style="font-size:14px; color:var(--text-dim); margin:0 0 4px;">Para no arrancar ni muy fácil ni imposible. Después me ajusto solo a lo que puedas.</p>' +
-      '<div id="ob-nivel"></div>');
+  } else if(step === 2){
+    h = obCard(etiqueta + titulo('Punto de partida') + '<div id="ob-pp"></div>' +
+      '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:12px;">' + (reconfigMode ? 'Listo' : 'Empezar a entrenar') + '</button>');
   }
   ov.innerHTML = h;
 
@@ -5474,11 +5378,9 @@ function renderOnboarding(step){
     const cxb = document.getElementById('reconfig-cancel');
     if(cxb) cxb.addEventListener('click', () => { reconfigMode = false; ov.classList.remove('open'); ov.innerHTML = ''; renderDay(); window.scrollTo({top:0}); });
   }
-  if(step === 5){
-    // el mismo test que en "Mis escaleras": una sola forma de configurar el nivel en toda la app
-    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));
-    if(onboardData.goal && !reconfigMode) goal = onboardData.goal;   // reconfigurar nunca toca el objetivo (ya no existe selector)
-    renderNivelTest(document.getElementById('ob-nivel'), () => finishOnboarding(), onboardData.nivelR || (onboardData.nivelR = {}));
+  if(step === 2){
+    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));      // el equipo ya elegido decide qué escaleras y ejercicios hay
+    ppRender(document.getElementById('ob-pp'), 'onboarding');                      // MISMO componente que Perfil
   }
 
   const nextBtn = ov.querySelector('.ob-next');
@@ -5492,20 +5394,9 @@ function renderOnboarding(step){
   ov.querySelectorAll('.ob-opt').forEach(b => b.addEventListener('click', () => {
     const v = b.dataset.v;
     if(step === 1){
-      onboardData.experiencia = v.slice(4); // 'exp:nuevo' -> 'nuevo'
-      if(onboardData.experiencia === 'nuevo'){ onboardData.goal = 'cero'; }
-      else if(onboardData.goal === 'cero'){ onboardData.goal = null; }
-    }
-    else if(step === 2){ onboardData.goal = v; }
-    else if(step === 3){
       const eq = v.slice(3);
       if(onboardData.equip.includes(eq)) onboardData.equip = onboardData.equip.filter(x => x !== eq);
       else onboardData.equip.push(eq);
-    }
-    else if(step === 4){
-      const P = onboardData.perfil || (onboardData.perfil = {});
-      const [pref, val] = v.split(':'); const n = parseInt(val);
-      if(pref === 'ed') P.edad = n; else if(pref === 'dh') P.diasHoy = n; else if(pref === 'tp') P.tiempo = n;
     }
     renderOnboarding(step);
   }));
@@ -5521,10 +5412,9 @@ function irAHoy(){
 }
 function finishOnboarding(){
   if(reconfigMode){
-    // Reconfiguración: aplicamos equipo (el test ya aplicó el nivel), cerramos y volvemos a Hoy.
+    // Reconfiguración: el punto de partida ya se aplicó al tocar cada número; acá solo el equipo. Cerramos y volvemos a Hoy.
     reconfigMode = false;
     myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));
-    calibrarCore();
     const ov = document.getElementById('onboarding-welcome');
     if(ov){ ov.classList.remove('open'); ov.innerHTML = ''; }
     saveState();
@@ -5534,15 +5424,7 @@ function finishOnboarding(){
     return;
   }
   myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));
-  if(onboardData.goal) goal = onboardData.goal;
-  profile.experimentado = (onboardData.experiencia === 'recorrido');
   profile.nivelListo = true; // completó la configuración de nivel (cualquier camino) — no vuelve a forzarse
-  if(onboardData.experiencia === 'recorrido') calibrarCore(); // core acorde al nivel, no crunches de principiante
-  if(onboardData.perfil){
-    profile.edad = onboardData.perfil.edad;
-    profile.diasHoy = onboardData.perfil.diasHoy;
-    profile.tiempoSesion = onboardData.perfil.tiempo;
-  }
   dayFocus = 'full';
   sessionStarted = false;
   onboarded = true;

@@ -32,10 +32,10 @@
   };
   window.offlineTexto = async function(){
     const s = await window.offlineEstado();
-    if(s.estado === 'lista' && nuevaVersion) return 'Hay una versión nueva (' + s.version.slice(0, 6) + '). Cerrá la app del todo y volvé a abrirla para usarla.';
+    if(s.estado === 'lista' && nuevaVersion) return 'Versión nueva (' + s.version.slice(0, 6) + ') · cerrá y abrí la app';
     if(s.estado === 'lista') return 'Sin conexión: lista ✓ (versión ' + s.version.slice(0, 6) + ')';
-    if(s.estado === 'preparando') return 'Sin conexión: preparando… Dejá la app abierta con internet unos segundos.';
-    return 'Sin conexión: no disponible acá. Abrí la app desde su dirección web (no como archivo).';
+    if(s.estado === 'preparando') return 'Sin conexión: preparando…';
+    return 'Sin conexión: no disponible';
   };
   if(soporta()){
     window.addEventListener('load', () => {

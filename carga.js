@@ -103,7 +103,8 @@ function cargaAlternativa(ex, r, s, acum, ctx, usados, yaEnSesion){
       cand.push(e);
     });
   });
-  cand.sort((a, b) => ((b.pattern === ex.pattern) - (a.pattern === ex.pattern)) || ((b.dif || 0) - (a.dif || 0)) || ((b.rung || 0) - (a.rung || 0)));
+  const excl = (secundario && ctx.excl) ? ctx.excl : null;                // accesorios del bloque anterior: van al final de la lista (solo entran si no hay otra opción)
+  cand.sort((a, b) => (excl ? ((excl.has(a.name) ? 1 : 0) - (excl.has(b.name) ? 1 : 0)) : 0) || ((b.pattern === ex.pattern) - (a.pattern === ex.pattern)) || ((b.dif || 0) - (a.dif || 0)) || ((b.rung || 0) - (a.rung || 0)));
   const ok = cand.find(e => cargaPermite(acum, e, s));
   return ok ? Object.assign({}, ok) : null;
 }

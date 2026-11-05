@@ -38,6 +38,8 @@ window.FEATURES = {
   estancamiento:false,     // banner de estancamiento / deload
   ladoDebil:false,         // selector de "lado débil" en Perfil y "arrancá por el lado débil" en las tarjetas (retirado a pedido, 31/10)
   homeCamino:false,        // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
+  plantillaFija:true,      // Etapa 4: cada tipo de día tiene una plantilla fija por bloque mensual (false = vuelve a armarse sola cada vez)
+  cambiarTodo:false,       // botón global "Cambiar ejercicios" (re-sorteaba toda la sesión): retirado en la Etapa 4, queda el cambio por ejercicio
   textoExplicativo:false   // frases explicativas / instrucciones en letra chica (CORRECCIONES iPhone 01/11, punto 7). Hoy en pantalla: SOLO datos; la técnica va en "Cómo se hace" (cerrado)
 };
 // txtExp(html): el texto explicativo solo se arma si el flag está prendido (hoy no: el código queda ahí, en stand-by).
@@ -1244,6 +1246,15 @@ function elegirHabilidadesBloque(tipoAnterior){
   if(segundo) elegidas.push(segundo);
   return { skills: elegidas.map(s => s.id), tipoPrimero: t1 };
 }
+// Accesorios que tuvo cada tipo de día en un bloque (de su plantilla fija): el bloque siguiente NO los repite (si hay alternativa).
+function accesoriosDeBloque(b){
+  const out = {};
+  Object.keys((b && b.plantilla) || {}).forEach(k => {
+    const dia = k.split(':')[0];
+    (b.plantilla[k].slots || []).forEach(s => { const nm = s.ultimo || s.name; if((s.rol === 'acc' || s.tope != null) && nm){ (out[dia] = out[dia] || []); if(!out[dia].includes(nm)) out[dia].push(nm); } });
+  });
+  return out;
+}
 function bloqueVigente(){
   const ahora = ahoraMs();
   let b = stats.bloque;
@@ -1251,7 +1262,7 @@ function bloqueVigente(){
   const vencido = b && (ahora - b.inicio >= BLOQUE_DIAS * 86400000) && (b.fuerzaSes || 0) >= BLOQUE_MIN_SESIONES;
   if(!b || vencido){
     const sel = elegirHabilidadesBloque(b ? b.tipoPrimero : null);
-    b = stats.bloque = { inicio: ahora, fuerzaSes: 0, skills: sel.skills, tipoPrimero: sel.tipoPrimero, tipoAnterior: b ? b.tipoPrimero : null, finisherPrev: b ? (b.finisherFormato || null) : null };   // el finisher del bloque nuevo nunca repite el formato del anterior
+    b = stats.bloque = { inicio: ahora, fuerzaSes: 0, skills: sel.skills, tipoPrimero: sel.tipoPrimero, tipoAnterior: b ? b.tipoPrimero : null, finisherPrev: b ? (b.finisherFormato || null) : null, accPrev: b ? accesoriosDeBloque(b) : {} };   // el finisher del bloque nuevo nunca repite el formato del anterior
     if(typeof saveState === 'function') saveState();
   } else if(!b.skills.length){                                                      // no había nada desbloqueado: reintentar
     const sel = elegirHabilidadesBloque(b.tipoAnterior || null);
@@ -1261,7 +1272,7 @@ function bloqueVigente(){
 }
 function registrarSesionBloque(dia){
   const b = bloqueVigente();
-  if(dia && esDescarga(dia)){ b.descargaHecha = b.descargaHecha || {}; b.descargaHecha[dia] = true; }   // esta sesión fue la descarga de su tipo
+  if(dia && descargaProgramada(dia)){ b.descargaHecha = b.descargaHecha || {}; b.descargaHecha[dia] = true; }   // esta sesión fue la descarga PROGRAMADA de su tipo (la liviana de hoy no la gasta)
   b.fuerzaSes = (b.fuerzaSes || 0) + 1;
 }
 // Cambió la configuración (equipo, punto de partida): se re-eligen las habilidades del bloque vigente SIN tocar
@@ -1271,6 +1282,7 @@ function recalcularBloque(){
   const sel = elegirHabilidadesBloque(b.tipoAnterior || null);
   b.skills = sel.skills; b.tipoPrimero = sel.tipoPrimero;
   delete b.calor;   // (ya no se guarda nada de la entrada en calor en el bloque: se arma por criterios en cada sesión)
+  delete b.plantilla;   // cambió la configuración: las plantillas fijas se arman de nuevo con lo que hay ahora (Etapa 4)
   if(typeof saveState === 'function') saveState();
 }
 // Punto de partida POR ESCALERA (no un nivel global). k = peldaño en el que estás (0 = el primero; n = escalera completa).
@@ -3265,14 +3277,22 @@ const SERIES_DESCARGA = 2;
 const TOPE_DIF_SEC = 2;
 // Saltos del circuito de Piernas: reps por ronda. Con 3-4 rondas = 30-40 contactos (tope ~40-60 por sesión al principio).
 const SALTO_REPS = 10;
-// DESCARGA provisoria hasta la plantilla fija de la Etapa 4: en la última semana del bloque mensual (día 21 en adelante, con
-// al menos 6 sesiones hechas), la PRIMERA sesión de cada tipo de día que todavía no tuvo su descarga es la descarga.
+// DESCARGA PROGRAMADA (Etapa 4): la última sesión de cada tipo de día del bloque mensual. Se la ubica en la última semana del bloque
+// (día 21 en adelante, con al menos 6 sesiones hechas): la PRIMERA sesión de cada tipo que todavía no tuvo su descarga es la descarga.
+// NO hay descarga adelantada automática (Thomás, 27/10): lo único que la adelanta es el botón "Hoy, sesión liviana".
 const DESCARGA_DESDE_DIA = 21, DESCARGA_MIN_SESIONES = 6;
-function esDescarga(dia){
+function descargaProgramada(dia){
   const b = stats && stats.bloque;
   if(!b || typeof b.inicio !== 'number') return false;
   return (ahoraMs() - b.inicio) / 86400000 >= DESCARGA_DESDE_DIA && (b.fuerzaSes || 0) >= DESCARGA_MIN_SESIONES && !(b.descargaHecha && b.descargaHecha[dia]);
 }
+// "Hoy, sesión liviana": un toque antes de elegir el día. Aplica la descarga SOLO hoy (2 series en anclas y accesorios, core 2 rondas,
+// misma dificultad). No gasta la descarga programada del bloque. Se apaga sola al registrar la sesión o al cambiar el día del calendario.
+function livianaHoy(){
+  const l = stats && stats.livianaHoy;
+  return !!l && l.fecha === new Date(ahoraMs()).toDateString();
+}
+function esDescarga(dia){ return descargaProgramada(dia) || livianaHoy(); }
 // Series de un bloque de la sesión. `ses` = la sesión (lleva .descarga y .plan). Reingreso: ~-30 %. Descarga: 2.
 function seriesDeRol(rol, ses){
   if(ses && ses.descarga) return SERIES_DESCARGA;
@@ -3305,6 +3325,14 @@ function renderElegirDia(){
       '<span class="dia-nombre">' + DIA_LABEL[d] + '</span>' + (bloq ? '<span class="dia-estado">' + candado + ' Bloqueado</span>' : '') + '</button>';
   }).join('') + '</div>';
   hero.querySelectorAll('.dia-btn').forEach(b => b.addEventListener('click', () => elegirDia(b.dataset.dia)));
+  // "Hoy, sesión liviana": un toque, antes de elegir el día. Aplica la descarga solo hoy (2 series, core 2 rondas, misma dificultad).
+  const on = livianaHoy();
+  const lv = document.createElement('button');
+  lv.className = 'ghost'; lv.id = 'liviana-btn'; lv.setAttribute('aria-pressed', on ? 'true' : 'false');
+  lv.style.cssText = 'width:100%; min-height:56px; margin:12px 0 0; font-weight:700;' + (on ? ' background:var(--text); color:var(--panel);' : '');
+  lv.textContent = (on ? '✓ ' : '') + 'Hoy, sesión liviana';
+  lv.addEventListener('click', () => { stats.livianaHoy = livianaHoy() ? null : { fecha: new Date(ahoraMs()).toDateString() }; saveState(); renderElegirDia(); });
+  hero.appendChild(lv);
 }
 function proximoFocoAlternado(){
   const ultimo = stats && stats.lastFocusEntrenado;
@@ -3490,6 +3518,115 @@ function tipsFor(ex){
   if(PATRONES_PIERNA.includes(p)) return ['Activá el abdomen; espalda neutra.', 'Rodillas siguiendo la línea de la punta de los pies.', 'Bajá controlado; subí empujando el piso con todo el pie.'];
   return ['Cuerpo firme: abdomen y glúteos activos.', 'Hombros lejos de las orejas.', 'Movimiento controlado en todo el rango.'];
 }
+// ================= PLANTILLA FIJA POR BLOQUE MENSUAL (Etapa 4) =================
+// Cada tipo de día (Tirón, Empuje, Piernas) tiene UNA plantilla por bloque: mismos ejercicios, mismo orden, todo el bloque.
+// La primera vez que se pide el día en el bloque, generateSession lo arma y guarda la plantilla en stats.bloque.plantilla[dia:variante].
+// Cada hueco guarda { name, pattern, rol, skill, libre, actual, tope, req }:
+//   · actual = el hueco sigue al peldaño actual de su escalera (anclas, habilidad, Nordic, Copenhagen, circuito…): si subís de peldaño
+//     a mitad de bloque, el hueco sube con vos y ese ejercicio arranca en el piso de su rango. Lo demás (hermanas, abdominales
+//     oblicuos, salto) queda con el MISMO nombre hasta fin de bloque.
+//   · Si algo ya no se puede armar (cambió el equipo, se desbloqueó/bloqueó algo, el ascenso rompe el tope de carga), la plantilla de
+//     ese día se arma de nuevo. Cambiar el equipo o el punto de partida la borra (recalcularBloque).
+// El botón "Cambiar ejercicio" (solo por dolor o falta de equipamiento) reemplaza un hueco por otro del mismo patrón y nivel,
+// transfiere el progreso y queda fijo hasta fin de bloque.
+// Archivado (no borrado): la variedad por semilla del día del año y el botón global "Cambiar ejercicios" (FEATURES.cambiarTodo).
+function topDelPatron(p, tope){
+  const l = LADDERS[p]; if(!l) return null;
+  const ok = e => e && isDoable(e) && (tope == null || (e.dif || 0) <= tope);
+  const u = l.rungs.map(exByName).filter(ok);
+  return u.length ? u[u.length - 1] : null;
+}
+function crearSoga(){
+  return { name: myEquip.includes('Soga') ? 'Soga' : 'Saltitos en el lugar', pattern: 'soga', dif: 0, _libre: true, _dosis: '45 s', muscles: 'Cardio',
+    desc: myEquip.includes('Soga') ? 'Saltar la soga 45 segundos, sin pausa.' : 'Sin soga: saltitos en el lugar 45 segundos, sin pausa.' };
+}
+function slotTope(e){ return (e._rol === 'acc' || (e._rol === 'circ' && /^(push|dips|triceps|pull)/.test(e.pattern || ''))) ? TOPE_DIF_SEC : null; }
+function slotActual(e){
+  if(e._libre || e._skill || !e.pattern || !LADDERS[e.pattern]) return false;
+  if(/^core_(oblicuo|estab|lumbar)$/.test(e.pattern)) return false;
+  const top = topDelPatron(e.pattern, slotTope(e));
+  return !!top && (e.name === top.name || e.name === applyRegression(top).name);
+}
+function claveDePlantilla(dia){ return dia + ':' + (stats.varOffset || 0); }
+function plantillaDe(dia){ const b = bloqueVigente(); return (b.plantilla && b.plantilla[claveDePlantilla(dia)]) || null; }
+function guardarPlantilla(dia, ses){
+  const b = bloqueVigente();
+  b.plantilla = b.plantilla || {};
+  b.plantilla[claveDePlantilla(dia)] = {
+    slots: ses.map(e => ({ name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
+    cambios: (ses.cargaCambios || []).slice()
+  };
+  try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
+}
+// Arma la sesión del día a partir de su plantilla. Devuelve null si ya no se puede (se arma de nuevo).
+function materializarPlantilla(tpl, dia){
+  const exig = (a, b) => ((b.dif || 0) - (a.dif || 0)) || ((b.rung || 0) - (a.rung || 0));
+  const habs = (cargaNivel() >= 2) ? habilidadesDeHoy(dia) : [];
+  const items = [];
+  for(const s of tpl.slots){
+    let ex = null;
+    if(s.libre) ex = crearSoga();
+    else if(s.skill) ex = habs.find(h => h._skill === s.skill) || null;
+    else {
+      const top = s.pattern ? topDelPatron(s.pattern, s.tope) : null;
+      if(s.actual && top) ex = applyRegression(top);
+      else if(!s.actual){
+        ex = exByName(s.name);
+        if(ex && !isDoable(ex)) ex = null;
+        // una hermana de ancla o accesorio: si la escalera subió de peldaño a mitad de bloque, el hueco pasa al peldaño actual
+        if(ex && ex.isSibling && s.topSnap && !s.fijo && top && top.name !== s.topSnap && (s.rol === 'ancla' || s.rol === 'acc')) ex = applyRegression(top);
+      }
+    }
+    if(!ex) return null;
+    if(items.some(x => x.name === ex.name)) return null;
+    s.ultimo = ex.name;
+    items.push(Object.assign({}, ex, { _rol:s.rol }));
+  }
+  const por = r => items.filter(e => e._rol === r);
+  const coreOrd = por('core').filter(e => e.pattern === 'core_antiext').concat(por('core').filter(e => e.pattern !== 'core_antiext').sort(exig));
+  let full;
+  if(dia === 'piernas') full = [].concat(por('skill'), por('bajoA'), por('circ'), coreOrd);
+  else full = [].concat(por('skill'), por('ancla').sort(exig), por('acc').sort(exig), coreOrd);
+  if(full.length !== items.length) return null;
+  full.dia = dia; full.descarga = esDescarga(dia); full.liviana = livianaHoy() && !descargaProgramada(dia);
+  if(typeof cargaDeSesion === 'function' && typeof CARGA_UMBRAL !== 'undefined'){
+    const tot = cargaDeSesion(full);
+    if(CARGA_ZONAS.some(z => tot[z] > CARGA_UMBRAL[z].max)) return null;          // un ascenso rompería el tope de carga: se arma de nuevo
+  }
+  const plan = (typeof planTiempo === 'function') ? planTiempo(dia, full) : { finisher:10 };
+  const out = full.slice();
+  out.dia = dia; out.descarga = full.descarga; out.liviana = full.liviana; out.plan = plan; out.cargaCambios = (tpl.cambios || []).slice();
+  return out;
+}
+// Alternativas para "Cambiar ejercicio": mismo patrón y mismo nivel (si no hay, del nivel de abajo), que se puedan hacer con el equipo marcado
+// y que no estén ya en la sesión. Las habilidades, la soga y el salto de dosis fija no se cambian por acá.
+function alternativasDe(ex, ses){
+  if(!ex || ex._skill || ex._libre || !ex.pattern) return [];
+  const en = new Set((ses || []).map(e => e.name));
+  const base = ALL_POOLS.filter(e => e.name !== ex.name && !en.has(e.name) && e.pattern === ex.pattern && isDoable(e) && !e._skill && !SKILL_REQ[e.name]);
+  const mismo = base.filter(e => (e.dif || 0) === (ex.dif || 0));
+  return mismo.length ? mismo : base.filter(e => (e.dif || 0) < (ex.dif || 0));
+}
+function cambiarEjercicio(viejo, nuevo, dia){
+  const tpl = plantillaDe(dia); if(!tpl) return false;
+  const nv = exByName(nuevo); if(!nv) return false;
+  const slot = tpl.slots.find(s => !s.skill && !s.libre && s.pattern === viejo.pattern && s.rol === viejo._rol && (s.ultimo || s.name) === viejo.name) ||
+               tpl.slots.find(s => !s.skill && !s.libre && s.pattern === viejo.pattern && s.rol === viejo._rol);
+  if(!slot) return false;
+  // transfiere el progreso: el nuevo hereda objetivo y marcas del que reemplaza (dentro de su propio rango)
+  const ps = progState[viejo.name];
+  if(ps && (!progState[nuevo] || !(progState[nuevo].marks || []).length)){
+    const st = ensureProg(nv), c = getCeilings(nv);
+    st.marks = (ps.marks || []).slice();                       // (si el nuevo ya estaba dominado, sigue dominado: no se rompe lo que desbloquea)
+    st.target = Math.max(c.bajo, Math.min(ps.target || c.bajo, c.medio));
+  }
+  slot.name = nuevo; slot.ultimo = nuevo; slot.actual = false; slot.fijo = true; slot.topSnap = null;
+  const b = bloqueVigente(); b.cambios = b.cambios || []; b.cambios.push({ dia, de:viejo.name, a:nuevo });
+  delete daySeries[viejo.name];
+  try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
+  return true;
+}
+
 function generateSession(focus){
   // Calcular RPE promedio de la sesión actual
 function calcularRPEDeSesion(){
@@ -3527,7 +3664,10 @@ function guardarRPEDespuesDeSesion(){
   // Semilla de VARIEDAD: cambia sola cada día (día del año) y se puede empujar a mano con
   // "Cambiar ejercicios" (stats.varOffset). Antes rotaba por sesiones completadas, que en un
   // prototipo nuevo arranca en cero → por eso tres prototipos daban SIEMPRE lo mismo. — fix CEO
-  const seed = (function(){ const d = new Date(); const doy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000); return doy + (stats.varOffset || 0); })();
+  // SEMILLA FIJA POR BLOQUE (Etapa 4): depende del inicio del bloque y del tipo de día, ya no del día del año. (stats.varOffset queda solo como
+  // variante de prueba: la app ya no lo mueve; ver FEATURES.cambiarTodo.) Las elecciones se congelan además en la plantilla del bloque.
+  const bloqueT = bloqueVigente();
+  const seed = (Math.floor(bloqueT.inicio / 86400000) * 7 + ({ tiron:0, empuje:1, piernas:2 }[(focus === 'tiron' || focus === 'piernas') ? focus : 'empuje']) * 3 + (stats.varOffset || 0)) % 100003;
   // Candidatos de un patrón para armar la sesión. FEEDBACK DIRECTO DEL USUARIO (14/9):
   // "estoy estancado, ya domino las australianas, no pasa nada, dámelas de 2 reps e
   // intercalá con variantes más difíciles, con menos reps" — es decir, antes esto rotaba
@@ -3557,15 +3697,28 @@ function guardarRPEDespuesDeSesion(){
     const pools = pats.map(p => poolFor(p, tope));
     let added = 0;
     // el orden de los patrones rota con la semilla, así no es siempre el mismo el que entra primero
-    const orden = pats.map((_, i) => i).sort((a, b) => ((a + seed) % pats.length) - ((b + seed) % pats.length));
-    for(let k = 0; k < orden.length && added < n; k++){
-      const i = orden[k], P = pools[i];
-      if(!P || patUsado(pats[i])) continue;
-      const r = (seed + i * 13) % 10;                                  // 0-9 estable por día
-      let ex = (r < 6 || !P.sibs.length) ? P.actual : P.sibs[(seed + i) % P.sibs.length];
-      const st = progState[ex.name];
-      if(st && st.regressed && ex.requires){ ex = applyRegression(ex); }   // baja por "Me costó": el ancla ES ese peldaño
-      if(ex && !exs.some(e => e.name === ex.name)){ exs.push(ex); added++; }
+    // (las ANCLAS, sin tope, van siempre en el mismo orden de patrones: se mantienen de un bloque al siguiente; solo los accesorios rotan con la semilla)
+    const orden = pats.map((_, i) => i).sort((a, b) => (tope == null) ? (a - b) : (((a + seed) % pats.length) - ((b + seed) % pats.length)));
+    // Accesorios (los que llevan tope): primero una pasada ESTRICTA que evita lo que ya hizo el bloque anterior; si no alcanza, otra sin esa limitación.
+    const estrictoPosible = (tope != null) && exclAcc.size > 0;
+    for(let pasada = estrictoPosible ? 0 : 1; pasada < 2 && added < n; pasada++){
+      for(let k = 0; k < orden.length && added < n; k++){
+        const i = orden[k], P = pools[i];
+        if(!P || patUsado(pats[i])) continue;
+        const r = (seed + i * 13) % 10;                                  // 0-9 estable por día
+        // ANCLAS (sin tope): siempre el peldaño actual, para que se mantengan de un bloque al siguiente salvo que hayas subido de peldaño (Etapa 4).
+        // ACCESORIOS (con tope): el peldaño actual o una hermana del mismo nivel; el bloque siguiente no repite los del anterior.
+        let ex = (tope == null || r < 6 || !P.sibs.length) ? P.actual : P.sibs[(seed + i) % P.sibs.length];
+        const st = progState[ex.name];
+        if(st && st.regressed && ex.requires){ ex = applyRegression(ex); }   // baja por "Me costó": el ancla ES ese peldaño
+        if(pasada === 0 && exclAcc.has(ex.name)){
+          // alternativa para no repetir el accesorio del bloque anterior: una hermana o un peldaño liviano ya dominado, el de dificultad más parecida
+          const alt = P.sibs.concat(P.anteriores || []).filter(s => !exclAcc.has(s.name) && !exs.some(e => e.name === s.name)).sort((a, b) => Math.abs((a.dif || 0) - (ex.dif || 0)) - Math.abs((b.dif || 0) - (ex.dif || 0)))[0];
+          if(!alt) continue;
+          ex = alt;
+        }
+        if(ex && !exs.some(e => e.name === ex.name)){ exs.push(ex); added++; }
+      }
     }
     return added;
   };
@@ -3583,6 +3736,16 @@ function guardarRPEDespuesDeSesion(){
   // incluye algo de los otros (inclina, no monopoliza). Tirón/Empuje: principal + 1–2 accesorios del otro + core.
   // Piernas: tren inferior + tirón y empuje livianos. El tren inferior vive SOLO en el día de Piernas.
   const dia = (focus === 'tiron' || focus === 'piernas') ? focus : 'empuje';
+  // PLANTILLA FIJA: si este tipo de día ya tiene plantilla en el bloque, la sesión sale de ahí (mismos ejercicios y orden todo el bloque).
+  if(window.FEATURES.plantillaFija !== false){
+    const tplT = plantillaDe(dia);
+    if(tplT){
+      const m = materializarPlantilla(tplT, dia);
+      if(m) return m;
+      delete bloqueT.plantilla[claveDePlantilla(dia)];                  // ya no se puede armar tal cual: se arma de nuevo (abajo)
+    }
+  }
+  const exclAcc = new Set((bloqueT.accPrev && bloqueT.accPrev[dia]) || []);   // accesorios del bloque anterior: no se repiten
   const carga = cargaNivel();
   const habit = isHabitMode();
   let nPush, nPull;
@@ -3677,10 +3840,7 @@ function guardarRPEDespuesDeSesion(){
   const salto = (dia === 'piernas' && carga >= 2)
     ? (() => { const c = ['Squat plío', 'Zancada con salto', 'Skater jumps'].map(exByName).filter(e => e && isDoable(e)); return c.length ? c[seed % c.length] : null; })()
     : null;
-  const soga = (dia === 'piernas')
-    ? { name: myEquip.includes('Soga') ? 'Soga' : 'Saltitos en el lugar', pattern: 'soga', dif: 0, _libre: true, _dosis: '45 s', muscles: 'Cardio',
-        desc: myEquip.includes('Soga') ? 'Saltar la soga 45 segundos, sin pausa.' : 'Sin soga: saltitos en el lugar 45 segundos, sin pausa.' }
-    : null;
+  const soga = (dia === 'piernas') ? crearSoga() : null;
   // ORDEN de TODA la sesión por exigencia de fuerza, de mayor a menor (corrección del 27/10):
   //   habilidad -> ancla más difícil -> segundo patrón -> accesorios livianos -> core -> (finisher, aparte).
   // Dentro de un mismo grupo, nunca un ejercicio más fácil antes que uno más difícil (por `dif`, y a igual `dif`
@@ -3713,7 +3873,7 @@ function guardarRPEDespuesDeSesion(){
   // que haría pasar el tope (FEEDBACK_ENTRENAMIENTO.md, ítem 1). Habilidad y primera ancla no se tocan.
   let cargaInfo = null;
   if(typeof cargaAjustar === 'function'){
-    cargaInfo = cargaAjustar(ordenFinal, rol, { dia, descarga:esDescarga(dia), pushPats, pullPats, pushSec, pullSec });
+    cargaInfo = cargaAjustar(ordenFinal, rol, { dia, descarga:false, pushPats, pullPats, pushSec, pullSec, excl:exclAcc });   // la plantilla se arma con la carga NORMAL (4 series): la descarga usa los mismos ejercicios con 2
     ordenFinal = cargaInfo.orden;
     if(dia !== 'piernas'){                                                 // los reemplazos pueden desordenar: de más difícil a más fácil dentro de cada grupo
       const por = r => ordenFinal.filter(e => rol.get(e) === r);
@@ -3721,10 +3881,11 @@ function guardarRPEDespuesDeSesion(){
     }
   }
   const full = ordenFinal.map(x => Object.assign({}, x, { _rol: rol.get(x) }));   // copias: el rol no ensucia el catálogo
-  full.dia = dia; full.descarga = esDescarga(dia);
+  full.dia = dia; full.descarga = esDescarga(dia); full.liviana = livianaHoy() && !descargaProgramada(dia);
   const plan = (typeof planTiempo === 'function') ? planTiempo(dia, full) : { finisher:10 };   // tiempo-sesion.js todavía no cargó
   const out = full.slice();
-  out.dia = dia; out.descarga = full.descarga; out.plan = plan; out.cargaCambios = cargaInfo ? cargaInfo.cambios : [];
+  out.dia = dia; out.descarga = full.descarga; out.liviana = full.liviana; out.plan = plan; out.cargaCambios = cargaInfo ? cargaInfo.cambios : [];
+  if(window.FEATURES.plantillaFija !== false) guardarPlantilla(dia, out);                 // queda fija todo el bloque
   return out;
 }
 function dayWarmup(focus){
@@ -4617,7 +4778,7 @@ function renderSessionBlocks(c, session){
     const dl = document.createElement('div');
     dl.id = 'aviso-descarga';
     dl.className = 'summary-card';
-    dl.innerHTML = '<div class="u-num" style="font-family:var(--font-display); font-size:20px; font-weight:700;">Sesión de descarga</div>' +
+    dl.innerHTML = '<div class="u-num" style="font-family:var(--font-display); font-size:20px; font-weight:700;">' + (session.liviana ? 'Sesión liviana' : 'Sesión de descarga') + '</div>' +
       txtExp('<div style="font-size:13.5px; color:var(--text-dim); margin-top:4px;">2 series por ejercicio, con la misma dificultad.</div>');
     c.appendChild(dl);
   }
@@ -4639,7 +4800,7 @@ function renderSessionBlocks(c, session){
   varBtn.style.cssText = 'width:100%; margin:0 0 14px;';
   varBtn.textContent = '🔀 Cambiar ejercicios';
   varBtn.addEventListener('click', () => { stats.varOffset = (stats.varOffset || 0) + 1; saveState(); renderDay(); });
-  c.appendChild(varBtn);
+  if(window.FEATURES.cambiarTodo === true) c.appendChild(varBtn);   // retirado en la Etapa 4 (la plantilla es fija todo el bloque); queda el cambio por ejercicio
 
   blocks.forEach((b, bi) => {
     const wrap = document.createElement('div');
@@ -4658,6 +4819,22 @@ function renderSessionBlocks(c, session){
       card.innerHTML = (b.tipo === 'super' ? '<div style="font-size:12px; color:var(--accent); font-weight:800; letter-spacing:.1em; margin-bottom:6px;">' + (i===0?'A':'B') + '</div>' : '') + exCardHTML(ex);
       if(!b.circuito) card.insertAdjacentHTML('beforeend', serieBoxHTML(ex.name, b.rondas, 'Serie'));   // "Serie 2 de 4"
       if(primerFuerte && ex.name === primerFuerte.name && typeof aproximacionHTML === 'function' && aproximacionNecesaria(ex)) card.insertAdjacentHTML('afterbegin', aproximacionHTML(ex));   // 1-2 series fáciles, marcadas (ya no van en la entrada en calor)
+      // "Cambiar ejercicio" (Etapa 4): solo por dolor o falta de equipamiento. Reemplaza por otro del mismo patrón y nivel, transfiere el
+      // progreso y queda fijo hasta fin de bloque. Sin habilidades, sin soga.
+      const alts = (window.FEATURES.plantillaFija !== false) ? alternativasDe(ex, session) : [];
+      if(alts.length){
+        const cam = document.createElement('div'); cam.style.cssText = 'margin-top:10px;';
+        cam.innerHTML = '<button class="ghost cambiar-btn" style="width:100%; min-height:48px; margin:0;">Cambiar ejercicio</button><div class="cambiar-lista" hidden style="margin-top:8px;"></div>';
+        const lista = cam.querySelector('.cambiar-lista');
+        cam.querySelector('.cambiar-btn').addEventListener('click', () => { lista.hidden = !lista.hidden; });
+        alts.forEach(a => {
+          const b2 = document.createElement('button'); b2.className = 'ghost cambiar-op'; b2.dataset.nombre = a.name;
+          b2.style.cssText = 'width:100%; min-height:48px; margin:0 0 6px; text-align:left;'; b2.textContent = a.name;
+          b2.addEventListener('click', () => { if(cambiarEjercicio(ex, a.name, session.dia)) renderDay(); });
+          lista.appendChild(b2);
+        });
+        card.appendChild(cam);
+      }
       wrap.appendChild(card);
       if(b.tipo === 'super' && i === 0){
         const plus = document.createElement('div');
@@ -4691,13 +4868,15 @@ function commitDay(){
   const res = document.getElementById('day-result');
   if(items.length === 0){ res.innerHTML = '<p style="color:var(--warn); font-size:14px;">Marcá al menos una serie para registrar.</p>'; return; }
   const nivelAntes = nivelInfo().nivel;
-  const events = items.map(it => ({ex:it.ex, ev:registerSeries(it.ex, it.marks)}));
+  // En la descarga / sesión liviana no se mueve ningún objetivo ni peldaño (misma dificultad): las marcas se registran como estadística pero la progresión espera a la sesión normal.
+  const events = items.map(it => ({ex:it.ex, ev: ses.descarga ? 'steady' : registerSeries(it.ex, it.marks)}));
   const nivelNuevo = nivelInfo().nivel;
   const subioRango = nivelNuevo > nivelAntes;
   // (la alternancia empuje/tirón de antes se reemplazó por el ciclo de 3 días elegidos a mano)
   registrarDiaEnCiclo(dayFocus);                          // ciclo de 3: el día hecho queda bloqueado hasta completar los otros dos
   const {newRecord, totalToday} = commitStats(items);
   registrarSesionBloque(dayFocus);                        // cuenta para el bloque mensual (y marca la descarga del tipo, si era)
+  stats.livianaHoy = null;                                // la sesión liviana era de hoy: se apaga al registrar
   if(typeof finisherCerrarSesion === 'function') finisherCerrarSesion(); // finisher pendiente = "omitido", queda registrado
   stats.lastSessionDate = new Date().toDateString(); // para el gancho de mañana
   stats.lastSessionTs = ahoraMs();                        // reingreso: si pasan >= 10 días, la próxima sesión baja el volumen

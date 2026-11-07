@@ -223,7 +223,7 @@ function finisherFuerzaCompleta(session){
 // Nombre arriba, dosis DEBAJO (entra en 375 px); la técnica va en "Cómo se hace", cerrado por defecto.
 function finComoSeHace(e){
   return '<details class="como-se-hace cs-lite" style="margin-top:2px;"><summary style="font-size:14px; font-weight:600; cursor:pointer;">Cómo se hace</summary>' +
-    '<div style="font-size:13px; color:var(--text-dim); margin:4px 0 2px;">' + e.cue + '</div></details>';
+    '<div style="font-size:13px; color:var(--text-dim); margin:4px 0 2px;">' + ((typeof descripcionHTML === 'function' && descripcionHTML(e.n)) || e.cue) + '</div></details>';
 }
 function finListaHTML(plan, grande){
   return plan.ejercicios.map((e, i) => '<div style="margin:' + (grande ? '12px 0' : '10px 0') + '; min-width:0;">' +

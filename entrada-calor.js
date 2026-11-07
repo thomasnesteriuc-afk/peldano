@@ -23,27 +23,27 @@
 
 // `cubre` = qué prepara cada ejercicio: si dos cubren lo mismo, el plan usa uno solo. `equipo` = se omite si no lo tenés.
 const EC_MOV = [
-  { id:'muneca',  n:'Círculos de muñeca', seg:45, cubre:['muñeca'], cue:'Manos entrelazadas o apoyadas: círculos controlados en las dos direcciones. Sumá flexión y extensión completa.' },
-  { id:'muneca-apoyo', n:'Muñecas con apoyo', seg:45, cubre:['muñeca'], cue:'Palmas en el piso con los dedos hacia adelante: llevá el peso suavemente hacia adelante y atrás. Repetí con los dedos hacia los costados. En cuatro apoyos. Sumá una pasada suave con los dedos hacia atrás, sin dolor.', revisado:'entrenador' },
-  { id:'brazo',   n:'Círculos de brazo',  seg:45, cubre:['hombro'], cue:'Brazos extendidos a los costados: círculos grandes y controlados, hacia adelante y hacia atrás.' },
-  { id:'gato',    n:'Gato-vaca',          seg:45, cubre:['columna'], cue:'En cuadrupedia, arqueá la espalda hacia arriba y después hundila, siguiendo el movimiento con la cabeza. Lento, con la respiración.' },
-  { id:'cadera',  n:'Círculos de cadera', seg:45, cubre:['cadera'], cue:'Llevá una rodilla al pecho y abrila hacia afuera en un círculo grande. Alterná las piernas. Rango completo, sin forzar.' },
-  { id:'sentadilla-lenta', n:'Sentadilla lenta de rango completo', seg:40, cubre:['cadera', 'rodilla', 'tobillo'], cue:'Bajá lento lo más profundo que te permita la movilidad, talones apoyados y rodillas en la línea de los pies. Pausa 1 s abajo y subí.', revisado:'entrenador' },
-  { id:'tobillo-rodilla', n:'Tobillos: rodilla hacia adelante', seg:40, cubre:['rodilla', 'tobillo'], cue:'Con el pie apoyado y el talón en el piso, llevá la rodilla hacia adelante pasando la punta del pie. Volvé y repetí. Rodilla alineada con el segundo dedo del pie; el talón nunca se despega.', revisado:'entrenador' },
-  { id:'tobillo', n:'Círculos de tobillo', seg:40, cubre:['tobillo'], cue:'Apoyá la punta del pie y dibujá círculos con el tobillo. Cambiá de pie y de sentido.', revisado:'entrenador' }
+  { id:'muneca',  n:'Círculos de muñeca', seg:45, dosis:'10 por sentido', cubre:['muñeca'], cue:'Manos entrelazadas o apoyadas: círculos controlados en las dos direcciones. Sumá flexión y extensión completa.' },
+  { id:'muneca-apoyo', n:'Muñecas con apoyo', seg:45, dosis:'10 reps', cubre:['muñeca'], cue:'Palmas en el piso con los dedos hacia adelante: llevá el peso suavemente hacia adelante y atrás. Repetí con los dedos hacia los costados. En cuatro apoyos. Sumá una pasada suave con los dedos hacia atrás, sin dolor.', revisado:'entrenador' },
+  { id:'brazo',   n:'Círculos de brazo',  seg:45, dosis:'30 por lado', cubre:['hombro'], cue:'Brazos extendidos a los costados: círculos grandes y controlados, hacia adelante y hacia atrás.' },
+  { id:'gato',    n:'Gato-vaca',          seg:45, dosis:'10 reps', cubre:['columna'], cue:'En cuadrupedia, arqueá la espalda hacia arriba y después hundila, siguiendo el movimiento con la cabeza. Lento, con la respiración.' },
+  { id:'cadera',  n:'Círculos de cadera', seg:45, dosis:'10 por lado', cubre:['cadera'], cue:'Llevá una rodilla al pecho y abrila hacia afuera en un círculo grande. Alterná las piernas. Rango completo, sin forzar.' },
+  { id:'sentadilla-lenta', n:'Sentadilla lenta de rango completo', seg:40, dosis:'10 reps', cubre:['cadera', 'rodilla', 'tobillo'], cue:'Bajá lento lo más profundo que te permita la movilidad, talones apoyados y rodillas en la línea de los pies. Pausa 1 s abajo y subí.', revisado:'entrenador' },
+  { id:'tobillo-rodilla', n:'Tobillos: rodilla hacia adelante', seg:40, dosis:'15 por lado', cubre:['rodilla', 'tobillo'], cue:'Con el pie apoyado y el talón en el piso, llevá la rodilla hacia adelante pasando la punta del pie. Volvé y repetí. Rodilla alineada con el segundo dedo del pie; el talón nunca se despega.', revisado:'entrenador' },
+  { id:'tobillo', n:'Círculos de tobillo', seg:40, dosis:'10 por sentido', cubre:['tobillo'], cue:'Apoyá la punta del pie y dibujá círculos con el tobillo. Cambiá de pie y de sentido.', revisado:'entrenador' }
 ];
 const EC_ACT = [
-  { id:'retracciones', n:'Retracciones escapulares colgado', seg:50, cubre:['escápula'], dias:['tiron'], equipo:'Barra', cue:'Colgado de la barra, retraé las escápulas sin flexionar los brazos.' },
-  { id:'aperturas', n:'Aperturas con banda', seg:50, cubre:['escápula'], dias:['tiron'], equipo:'Banda', cue:'Con la banda tomada al frente y los brazos estirados, separá las manos llevando la banda hacia el pecho y juntando los omóplatos. Brazos a la altura de los hombros, sin subirlos hacia las orejas ni arquear la lumbar. Volvé controlando la banda.', revisado:'entrenador' },
-  { id:'flex-escapulares', n:'Flexiones escapulares', seg:50, cubre:['escápula'], dias:['empuje'], cue:'En posición de flexión con los brazos estirados, hundí y elevá el pecho moviendo solo los omóplatos. El movimiento es chiquito.' },
-  { id:'retroversion', n:'Retroversión pélvica', seg:40, cubre:['pelvis'], dias:['tiron', 'empuje'], cue:'Acostado con las rodillas dobladas, aplastá la zona lumbar contra el piso llevando el pubis hacia el ombligo. Soltá y repetí, lento. Exhalá mientras aplanás la lumbar. Movés solo la pelvis: los glúteos no se despegan del piso.', revisado:'entrenador' },
-  { id:'puente', n:'Puente de glúteo', seg:40, cubre:['pelvis', 'glúteo'], dias:['tiron', 'empuje', 'piernas'], cue:'Empujá con los talones y subí la cadera hasta hacer una línea recta. Apretá el glúteo arriba un segundo y bajá controlado.' }
+  { id:'retracciones', n:'Retracciones escapulares colgado', seg:50, dosis:'10 reps', cubre:['escápula'], dias:['tiron'], equipo:'Barra', cue:'Colgado de la barra, retraé las escápulas sin flexionar los brazos.' },
+  { id:'aperturas', n:'Aperturas con banda', seg:50, dosis:'15 reps', cubre:['escápula'], dias:['tiron'], equipo:'Banda', cue:'Con la banda tomada al frente y los brazos estirados, separá las manos llevando la banda hacia el pecho y juntando los omóplatos. Brazos a la altura de los hombros, sin subirlos hacia las orejas ni arquear la lumbar. Volvé controlando la banda.', revisado:'entrenador' },
+  { id:'flex-escapulares', n:'Flexiones escapulares', seg:50, dosis:'12 reps', cubre:['escápula'], dias:['empuje'], cue:'En posición de flexión con los brazos estirados, hundí y elevá el pecho moviendo solo los omóplatos. El movimiento es chiquito.' },
+  { id:'retroversion', n:'Retroversión pélvica', seg:40, dosis:'12 reps', cubre:['pelvis'], dias:['tiron', 'empuje'], cue:'Acostado con las rodillas dobladas, aplastá la zona lumbar contra el piso llevando el pubis hacia el ombligo. Soltá y repetí, lento. Exhalá mientras aplanás la lumbar. Movés solo la pelvis: los glúteos no se despegan del piso.', revisado:'entrenador' },
+  { id:'puente', n:'Puente de glúteo', seg:40, dosis:'12 reps', cubre:['pelvis', 'glúteo'], dias:['tiron', 'empuje', 'piernas'], cue:'Empujá con los talones y subí la cadera hasta hacer una línea recta. Apretá el glúteo arriba un segundo y bajá controlado.' }
 ];
 // Subir pulsaciones: breve y dinámico. Textos de Claude pendientes de revisión del entrenador.
 const EC_PULSO = [
-  { id:'soga', n:'Soga', seg:100, equipo:'Soga', cue:'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.', revisado:'pendiente' },
-  { id:'jacks', n:'Jumping jacks', seg:100, cue:'Ritmo parejo, brazos completos arriba, aterrizaje suave.', revisado:'pendiente' },
-  { id:'skipping', n:'Skipping', seg:100, cue:'Corrida en el lugar subiendo las rodillas a la cadera, ritmo alto.', revisado:'pendiente' }
+  { id:'soga', n:'Soga', seg:100, dosis:'100 saltos', equipo:'Soga', cue:'Saltos cortos y livianos, muñecas sueltas, aterrizá en la punta de los pies.', revisado:'pendiente' },
+  { id:'jacks', n:'Jumping jacks', seg:100, dosis:'40 reps', cue:'Ritmo parejo, brazos completos arriba, aterrizaje suave.', revisado:'pendiente' },
+  { id:'skipping', n:'Skipping', seg:100, dosis:'40 por lado', cue:'Corrida en el lugar subiendo las rodillas a la cadera, ritmo alto.', revisado:'pendiente' }
 ];
 // Articulaciones que más trabajan cada día, de arriba hacia abajo (las muñecas van SIEMPRE).
 const EC_DIA_ARTIC = { tiron:['muñeca', 'hombro', 'columna'], empuje:['muñeca', 'hombro', 'columna'], piernas:['muñeca', 'cadera', 'rodilla', 'tobillo'] };
@@ -124,7 +124,7 @@ function entradaCalorElegidos(dia, semilla){
 // El plan que consume el reproductor: pasos en ORDEN FIJO movilidad → activación → pulsaciones.
 function entradaCalorPlan(dia, semilla){
   const e = entradaCalorElegidos(dia, semilla), plan = [];
-  const pasar = (lista, bloque, titulo) => lista.forEach(it => plan.push({ bloque, titulo, n: it.n, dur: it.seg, cue: it.cue, revisado: it.revisado, id: it.id, cubre: it.cubre }));
+  const pasar = (lista, bloque, titulo) => lista.forEach(it => plan.push({ bloque, titulo, n: it.n, dur: it.seg, dosis: it.dosis, cue: it.cue, revisado: it.revisado, id: it.id, cubre: it.cubre }));
   pasar(e.mov, 1, 'Movilidad'); pasar(e.act, 2, 'Activación');
   if(e.pulso){ pasar([e.pulso], 3, 'Pulsaciones'); if(!myEquip.includes('Soga') && e.pulso.id === 'soga') plan[plan.length - 1].n = 'Saltitos en el lugar'; }
   return plan;
@@ -162,19 +162,19 @@ function ecCerrar(){
   ecT = null;
   const ov = document.getElementById('ec-ov'); if(ov) ov.classList.remove('open');
 }
+// SIN CRONÓMETRO (pedido de Thomás, 06/11): cada ejercicio dice las repeticiones exactas ("30 por lado") y se pasa al siguiente con "Hecho".
+// `dur` queda solo como estimación de duración para el plan de 60 min (tiempo-sesion.js). Versión con cuenta regresiva: _backup/entrada-calor-antes-reps.js
 function entradaCalorAbrir(dia, alTerminar){
   ecCerrar();
   const plan = entradaCalorPlan(dia);
   if(!plan.length){ if(alTerminar) alTerminar(); return; }
-  ecT = { dia, plan, idx:0, acum:0, t0:Date.now(), corriendo:true, alTerminar, int:null, pintado:-1 };
-  ecT.int = setInterval(ecTick, 250);
+  ecT = { dia, plan, idx:0, alTerminar, int:null, pintado:-1 };
   ecOverlay().classList.add('open');
-  ecTick();
+  ecPintar();
 }
-function ecTranscurrido(){ return ecT.acum + (ecT.corriendo ? (Date.now() - ecT.t0) / 1000 : 0); }
 function ecAvanzar(){
   const t = ecT; if(!t) return;
-  t.idx++; t.acum = 0; t.t0 = Date.now(); t.pintado = -1;
+  t.idx++; t.pintado = -1;
   if(t.idx >= t.plan.length){
     const cb = t.alTerminar; ecCerrar();
     if(typeof vibrar === 'function') vibrar([60, 60, 120]);
@@ -183,43 +183,28 @@ function ecAvanzar(){
   }
   if(typeof vibrar === 'function') vibrar([40, 60, 120]);
 }
-function ecTick(){
-  const t = ecT; if(!t) return;
-  const it = t.plan[t.idx];
-  if(ecTranscurrido() >= it.dur){ ecAvanzar(); if(!ecT) return; }
-  if(ecT.pintado !== ecT.idx) ecPintar(); else ecNumeros();
-}
-function ecNumeros(){
-  const t = ecT; if(!t) return;
-  const n = document.getElementById('ec-num'); if(n) n.textContent = ecFmt(t.plan[t.idx].dur - ecTranscurrido());
-}
 function ecPintar(){
   const t = ecT; if(!t) return;
   t.pintado = t.idx;
   const it = t.plan[t.idx], sig = t.plan[t.idx + 1];
-  const sigTxt = sig ? ('Sigue: ' + (sig.bloque !== it.bloque ? sig.titulo + ' · ' : '') + sig.n) : 'Sigue: la sesión';
+  const sigTxt = sig ? ('Sigue: ' + (sig.bloque !== it.bloque ? sig.titulo + ' · ' : '') + sig.n + ' · ' + sig.dosis) : 'Sigue: la sesión';
   const ov = ecOverlay();
   ov.innerHTML =
     '<div class="ec-wrap">' +
       '<div class="ec-top"><span>' + it.titulo + '</span><span>Bloque ' + it.bloque + ' de 3</span></div>' +
       '<div class="ec-centro">' +
         '<div class="ec-nombre">' + it.n + '</div>' +
-        (it.dosis ? '<div class="ec-dosis">' + (it.serie ? it.serie + ' · ' : '') + it.dosis + '</div>' : '') +
-        '<div class="t-timer" id="ec-num">' + ecFmt(it.dur - ecTranscurrido()) + '</div>' +
-        '<details class="como-se-hace cs-lite" style="margin-top:10px;"><summary style="font-size:15px; font-weight:600; justify-content:center;">Cómo se hace</summary><p class="ec-cue">' + it.cue + '</p></details>' +
+        '<div class="t-timer ec-reps" id="ec-reps" style="font-size:clamp(44px, 15vw, 72px); overflow-wrap:anywhere; text-align:center;">' + (it.dosis || '') + '</div>' +
+        '<details class="como-se-hace cs-lite" style="margin-top:10px;"><summary style="font-size:15px; font-weight:600; justify-content:center;">Cómo se hace</summary><div class="ec-cue">' + ((typeof descripcionHTML === 'function' && descripcionHTML(it.n)) || it.cue) + '</div></details>' +
       '</div>' +
       '<p class="ec-sigue">' + sigTxt + '</p>' +
-      '<button class="primary" id="ec-saltear" style="width:100%; margin:0 0 8px;">Saltear</button>' +
-      '<div style="display:flex; gap:8px;"><button class="ghost" id="ec-pausa" style="flex:1; margin:0;">' + (t.corriendo ? 'Pausar' : 'Seguir') + '</button>' +
+      '<button class="primary" id="ec-hecho" style="width:100%; margin:0 0 8px; min-height:64px !important; font-size:20px;">Hecho</button>' +
+      '<div style="display:flex; gap:8px;"><button class="ghost" id="ec-saltear" style="flex:1; margin:0;">Saltear</button>' +
       '<button class="ghost" id="ec-salir" style="flex:1; margin:0;">Salir</button></div>' +
     '</div>';
   const q = id => ov.querySelector('#' + id);
+  q('ec-hecho').onclick = () => { ecAvanzar(); if(ecT) ecPintar(); };
   q('ec-saltear').onclick = () => { ecAvanzar(); if(ecT) ecPintar(); };
-  q('ec-pausa').onclick = () => {
-    const tt = ecT; if(!tt) return;
-    if(tt.corriendo){ tt.acum = ecTranscurrido(); tt.corriendo = false; } else { tt.t0 = Date.now(); tt.corriendo = true; }
-    ecPintar();
-  };
   q('ec-salir').onclick = () => ecCerrar();
 }
 

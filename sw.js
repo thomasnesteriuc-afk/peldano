@@ -13,7 +13,7 @@
  *
  * Solo toca pedidos del propio sitio. Lo externo (los enlaces a YouTube) pasa directo y es opcional.
  */
-const VERSION = '266958d7c819';
+const VERSION = 'd063a18e8ab3';
 const CACHE = 'peldano-' + VERSION;
 const ASSETS = [
   './',
@@ -35,7 +35,9 @@ const ASSETS = [
   'finisher.js',
   'entrada-calor.js',
   'tiempo-sesion.js',
-  'carga.js'
+  'carga.js',
+  'estiramientos.js',
+  'descripciones.js'
 ];
 const MARCA_LISTO = 'offline-listo.txt';      // se guarda al terminar de bajar TODO: lo lee offline.js para mostrar "lista"
 

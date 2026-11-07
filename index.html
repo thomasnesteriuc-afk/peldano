@@ -39,6 +39,10 @@ window.FEATURES = {
   ladoDebil:false,         // selector de "lado débil" en Perfil y "arrancá por el lado débil" en las tarjetas (retirado a pedido, 31/10)
   homeCamino:false,        // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
   plantillaFija:true,      // Etapa 4: cada tipo de día tiene una plantilla fija por bloque mensual (false = vuelve a armarse sola cada vez)
+  graficoConstancia:false, // gráfico "Tu constancia" (barras por semana) en Progreso: retirado el 07/11
+  sesionLiviana:false,     // botón "Hoy, sesión liviana" (retirado a pedido de Thomás el 06/11; queda la descarga programada)
+  ppCompleto:false,        // punto de partida: false = solo las 5 escaleras más importantes (06/11); true = las 24
+  estiramientos:true,      // 4.º botón de la elección de día: sesión exclusiva de estiramientos (06/11)
   cambiarTodo:false,       // botón global "Cambiar ejercicios" (re-sorteaba toda la sesión): retirado en la Etapa 4, queda el cambio por ejercicio
   textoExplicativo:false   // frases explicativas / instrucciones en letra chica (CORRECCIONES iPhone 01/11, punto 7). Hoy en pantalla: SOLO datos; la técnica va en "Cómo se hace" (cerrado)
 };
@@ -708,7 +712,7 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
     </div>
 
     <div class="actions">
-      <button class="ghost" id="prog-save-json">Guardar progreso (.json)</button>
+      <button class="ghost" id="prog-save-json" hidden>Guardar progreso (.json)</button>   <!-- retirado de pantalla (06/11, a pedido de Thomás): queda el respaldo de Perfil; el código sigue -->
       <label class="ghost" style="display:inline-block; cursor:pointer;">
         Cargar progreso (.json)
         <input type="file" id="prog-load-input" accept=".json" style="display:none;">
@@ -1384,8 +1388,8 @@ function renderHabilidades(){
     const s = skillStatus(id);
     h += '<div style="margin:0 0 14px;">' +
       '<div style="display:flex; justify-content:space-between; align-items:baseline; margin:0 0 4px;"><span style="font-weight:700; font-size:16px;">' + s.nombre + '</span>' +
-      '<span style="font-weight:800; font-size:20px;">' + s.pct + '%' + (s.completa ? ' ✓' : '') + '</span></div>' +
-      '<div class="hab-barra" style="height:16px; border:2px solid var(--line); background:var(--panel-2);"><div style="height:100%; width:' + s.pct + '%; background:var(--accent);"></div></div>' +
+      '<span style="font-weight:800; font-size:20px;">' + pctBarra(s.pct / 100) + '%' + (s.completa ? ' ✓' : '') + '</span></div>' +
+      barraContinua(s.pct / 100, 16, '', 'hab-barra') +
       '</div>';
   });
   el.innerHTML = h + '</div>';
@@ -1716,6 +1720,17 @@ const ZONA_GROUPS = [
 // Movilidad queda afuera: no tiene escaleras propias (es biblioteca de referencia,
 // pilar 2), así que no hay de dónde derivar un nivel real — mostrar un número ahí
 // sería inventar un logro (principio 4 de la Guía Maestra), así que no se muestra.
+// BARRAS DE PROGRESO CONTINUAS (pedido de Thomás, 06/11): una sola barra sin tramos que avanza rápido al principio y cada vez más lento
+// al acercarse al final (curva 1 - (1 - p)^2: con la mitad del camino ya se ve ~75 %, y de 70 % a 100 % cuesta mucho más que de 0 % a 30 %).
+// El número que se muestra es el de la barra (el mismo valor).
+const PROGRESO_EXP = 2;
+function curvaProgreso(p){ p = Math.max(0, Math.min(1, +p || 0)); return 1 - Math.pow(1 - p, PROGRESO_EXP); }
+function pctBarra(p){ return Math.round(curvaProgreso(p) * 100); }
+function barraContinua(p, alto, extra, clase){
+  const d = curvaProgreso(p) * 100;
+  return '<div class="barra-cont' + (clase ? ' ' + clase : '') + '" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(d) + '" style="height:' + (alto || 12) + 'px; border:2px solid var(--line); background:var(--panel-2); overflow:hidden; ' + (extra || '') + '">' +
+    '<div class="barra-cont-relleno" style="height:100%; width:' + d.toFixed(1) + '%; background:var(--accent);"></div></div>';
+}
 function calcularNivelPorZona(){
   return ZONA_GROUPS.map(g=>{
     let mastered = 0, total = 0;
@@ -1744,10 +1759,8 @@ function renderNivelZonas(){
       zonas.map(z => `
         <div class="summary-card" style="margin:0; padding:10px 12px;">
           <div style="font-size:13px; font-weight:600; margin-bottom:4px;">${z.icono} ${z.titulo}</div>
-          <div style="display:flex; gap:3px; margin-bottom:4px;">
-            ${[1,2,3].map(n => `<div style="flex:1; height:6px; border-radius:3px; background:${n <= z.nivel ? 'var(--accent)' : 'var(--panel-2)'};"></div>`).join('')}
-          </div>
-          <div style="font-size:11px; color:var(--text-dim);">${NIVEL_ZONA_LABEL[z.nivel]} · ${z.pct}%</div>
+          <div style="margin-bottom:4px;">${barraContinua(z.pct / 100, 8)}</div>
+          <div style="font-size:11px; color:var(--text-dim);">${NIVEL_ZONA_LABEL[z.nivel]} · ${pctBarra(z.pct / 100)}%</div>
         </div>
       `).join('') +
     '</div>' +
@@ -1819,12 +1832,7 @@ function ppTarjeta(pat){
   const cardEl = document.createElement('div');
   cardEl.className = 'summary-card pp-card';
   cardEl.style.marginBottom = '10px';
-  const segs = s.rungs.map((_, i) => {
-    let bg = 'var(--panel-2)', border = '';
-    if(i < s.mastered) bg = 'var(--accent)';
-    else if(i === s.mastered && !s.allDone){ bg = 'var(--accent-dim)'; border = 'box-shadow:inset 0 0 0 1.5px var(--accent);'; }
-    return `<div style="flex:1; height:9px; border-radius:3px; background:${bg}; ${border}"></div>`;
-  }).join('');
+  const segs = barraContinua(s.rungs.length ? (s.mastered / s.rungs.length) : 0, 10);
   const botones = opcs.map(o => `<button type="button" class="pp-op" data-pat="${pat}" data-v="${o}" aria-pressed="${String(o) === String(dado)}">${o}</button>`).join('');
   const exAhora = (s.current || s.rungs[0]);
   cardEl.innerHTML = `
@@ -1832,7 +1840,7 @@ function ppTarjeta(pat){
       <p style="font-weight:600; font-size:15px; margin:0;">${LADDER_LABEL[pat] || pat}</p>
       <span style="font-size:12px; color:var(--text-dim);">${s.mastered}/${s.rungs.length}</span>
     </div>
-    <div style="display:flex; gap:4px; margin:11px 0;">${segs}</div>
+    <div style="margin:11px 0;">${segs}</div>
     <p class="pp-q" style="display:block; font-size:14px; font-weight:700; margin:0 0 8px; line-height:1.3;">${pp.q}</p>
     <div class="pp-grid">${botones}</div>
     <details class="como-se-hace cs-lite pp-que" data-pat="${pat}" style="margin-top:4px;"><summary style="font-size:14px; font-weight:600; cursor:pointer;">¿Qué es?</summary><div class="pp-que-txt" style="font-size:13px; color:var(--text-dim);"></div></details>
@@ -1849,8 +1857,12 @@ function ppItems(){
   });
 }
 // Dibuja el componente en `box` (acordeón cerrado por defecto) y lo vuelve a dibujar tras cada toque.
+// Escaleras que se preguntan (06/11, a pedido de Thomás): solo las 5 más importantes. Las otras empiezan en su primer peldaño y se
+// ajustan solas con lo que marcás en cada sesión (sus preguntas siguen en PP_REF; FEATURES.ppCompleto = true las vuelve a mostrar).
+const PP_PRINCIPALES = ['pull_vert', 'push_horiz', 'dips', 'squat', 'core_estab'];
 function ppRender(box, grupo, alCambiar){
-  renderAcordeon(box, grupo, ppItems());
+  if(window.FEATURES.ppCompleto === true) renderAcordeon(box, grupo, ppItems());
+  else { box.innerHTML = ''; PP_PRINCIPALES.forEach(p => box.appendChild(ppTarjeta(p))); }
   box.querySelectorAll('.pp-op').forEach(b => b.addEventListener('click', () => {
     aplicarPuntoNumero(b.dataset.pat, /^\d+$/.test(b.dataset.v) ? parseInt(b.dataset.v, 10) : b.dataset.v);
     recalcularBloque();                                              // la sesión siguiente se recalcula con el punto nuevo
@@ -3290,7 +3302,7 @@ function descargaProgramada(dia){
 // misma dificultad). No gasta la descarga programada del bloque. Se apaga sola al registrar la sesión o al cambiar el día del calendario.
 function livianaHoy(){
   const l = stats && stats.livianaHoy;
-  return !!l && l.fecha === new Date(ahoraMs()).toDateString();
+  return window.FEATURES.sesionLiviana === true && !!l && l.fecha === new Date(ahoraMs()).toDateString();
 }
 function esDescarga(dia){ return descargaProgramada(dia) || livianaHoy(); }
 // Series de un bloque de la sesión. `ses` = la sesión (lleva .descarga y .plan). Reingreso: ~-30 %. Descarga: 2.
@@ -3323,9 +3335,10 @@ function renderElegirDia(){
     const bloq = diaBloqueado(d);
     return '<button class="dia-btn' + (bloq ? ' dia-bloq' : '') + '" data-dia="' + d + '"' + (bloq ? ' disabled aria-disabled="true"' : '') + '>' +
       '<span class="dia-nombre">' + DIA_LABEL[d] + '</span>' + (bloq ? '<span class="dia-estado">' + candado + ' Bloqueado</span>' : '') + '</button>';
-  }).join('') + '</div>';
-  hero.querySelectorAll('.dia-btn').forEach(b => b.addEventListener('click', () => elegirDia(b.dataset.dia)));
+  }).join('') + ((window.FEATURES.estiramientos !== false && typeof estiramientosAbrir === 'function') ? '<button class="dia-btn dia-est" data-dia="estiramientos"><span class="dia-nombre">Estiramientos</span></button>' : '') + '</div>';
+  hero.querySelectorAll('.dia-btn').forEach(b => b.addEventListener('click', () => { if(b.dataset.dia === 'estiramientos') estiramientosAbrir(); else elegirDia(b.dataset.dia); }));
   // "Hoy, sesión liviana": un toque, antes de elegir el día. Aplica la descarga solo hoy (2 series, core 2 rondas, misma dificultad).
+  if(window.FEATURES.sesionLiviana !== true) return;                // retirado (stand-by): sin botón
   const on = livianaHoy();
   const lv = document.createElement('button');
   lv.className = 'ghost'; lv.id = 'liviana-btn'; lv.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -4212,6 +4225,7 @@ function renderProgStatsChart(el){
   h += '<div class="summary-card" style="margin-bottom:18px;">';
   h += '<p style="font-weight:700; margin:0 0 4px;">&#128293; Racha de constancia</p>';
   h += '<p style="font-size:14px; margin:0 0 20px;">' + (weeklyStreak()>0 ? ('<strong style="color:var(--accent-strong);">Racha ' + weeklyStreak() + (weeklyStreak()===1?' semana':' semanas') + '</strong>') : 'Racha 0 semanas') + ' · Esta semana <strong>' + currentWeekCount() + '/' + metaSemanal() + '</strong></p>';
+  if(window.FEATURES.graficoConstancia === true){        // gráfico de barras por semana: retirado de pantalla el 07/11 ("insulso"); el código queda en stand-by
   h += '<p style="font-weight:700; margin:0 0 4px;">&#128202; Tu constancia</p>';
   h += '<p style="font-size:12px; color:var(--text-faint); margin:0 0 14px;">Por semana, últimas 6 · meta ' + metaSemanal() + '</p>';
   h += '<div style="position:relative; height:90px; display:flex; align-items:flex-end; gap:8px;">';
@@ -4231,6 +4245,7 @@ function renderProgStatsChart(el){
     h += '<div style="flex:1; text-align:center; font-size:11px; color:' + (isCur?'var(--accent-strong)':'var(--text-faint)') + '; font-weight:600;">' + (isCur ? 'hoy' : c) + '</div>';
   });
   h += '</div>';
+  }
   h += '<p style="font-weight:700; margin:20px 0 4px;">&#128197; Este mes</p>';
   h += '<p style="font-size:14px; color:var(--text-dim); margin:0 0 2px;">' + cmp + '</p>';
   h += '<div class="summary-row" style="margin-top:16px;"><span><strong>Entrenamientos totales</strong></span><span class="tag">' + stats.sessions + '</span></div>';
@@ -4360,7 +4375,7 @@ function renderEquip(){
 
   h += txtExp('<p style="font-size:12.5px; color:var(--text-dim); margin:0 0 14px;">Marcá lo que tenés.</p>');
   h += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
-  EQUIP_OPTIONS.forEach(eq => {
+  EQUIP_OPTIONS.filter(eq => eq !== 'Suelo').forEach(eq => {          // el suelo no se muestra (siempre se tiene; pedido de Thomás, 06/11)
     const on = eq === 'Suelo' || myEquip.includes(eq);
     const fixed = eq === 'Suelo';
     h += '<button class="equip-btn" data-eq="'+eq+'"' + (fixed ? ' disabled' : '') +
@@ -4370,11 +4385,11 @@ function renderEquip(){
          txtExp('<span style="display:block; font-weight:400; font-size:11px; opacity:.85; margin-top:2px;">'+EQUIP_HELP[eq]+'</span>') + '</button>';
   });
   h += '</div>';
-  const n = EQUIP_OPTIONS.filter(e => e==='Suelo' || myEquip.includes(e)).length;
-  if(n <= 1) h += txtExp('<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>');
+  const opcionesEq = EQUIP_OPTIONS.filter(e => e !== 'Suelo'), n = opcionesEq.filter(e => myEquip.includes(e)).length;
+  if(n === 0) h += txtExp('<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>');
   const contenido = document.createElement('div');
   contenido.innerHTML = h;
-  renderAcordeon(el, 'perfil', [{ id:'equip', titulo:'Equipamiento · ' + n + ' de ' + EQUIP_OPTIONS.length, contenido }]);
+  renderAcordeon(el, 'perfil', [{ id:'equip', titulo:'Equipamiento · ' + n + ' de ' + opcionesEq.length, contenido }]);
   el.querySelectorAll('.equip-btn').forEach(b => b.addEventListener('click', () => {
     const eq = b.dataset.eq;
     if(eq === 'Suelo') return;
@@ -4396,11 +4411,7 @@ function renderStreak(){
   const prog = ' Esta semana: <strong>' + cur + '/' + metaSemanal() + '</strong>' + (cur>=metaSemanal() ? ' ✓' : '') + '.';
   el.innerHTML = '<div style="margin-top:14px; background:var(--accent-dim); border-radius:12px; padding:11px 14px; font-size:13.5px; color:var(--text-dim);">' + head + prog + '</div>';
 }
-function segBar(mastered, total){
-  let s = '<div style="display:flex; gap:3px; margin:2px 0 6px;">';
-  for(let i=0;i<total;i++){ s += '<div style="flex:1; height:7px; border-radius:2px; background:' + (i<mastered ? 'var(--accent)' : 'var(--panel-2)') + ';"></div>'; }
-  return s + '</div>';
-}
+function segBar(mastered, total){ return '<div style="margin:2px 0 6px;">' + barraContinua(total ? mastered / total : 0, 8) + '</div>'; }   // (antes: un tramo por peldaño; ahora barra continua)
 // Frase corta de proximidad al objetivo, para el hero.
 // Qué habilidad mostrar en el camino de arriba, SIN que el usuario tenga que elegir:
 // la que eligió (si tiene camino), o la que tiene más cerca.
@@ -4742,7 +4753,8 @@ function exCardHTML(ex){
   if(ex._libre || ex.pattern === 'power_legs'){
     const dosis = ex._dosis || (SALTO_REPS + ' reps por ronda');
     const tips = ex.pattern === 'power_legs' ? (ex.tips || ['Aterrizaje suave, sin golpear el piso.', 'La rodilla alineada con la punta del pie.']) : [];
-    const detalle = (ex.desc ? '<div style="margin-top:8px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
+    const dNueva = (typeof descripcionHTML === 'function') ? descripcionHTML(ex.name) : null;
+    const detalle = dNueva || (ex.desc ? '<div style="margin-top:8px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
       tips.map(t => '<div style="display:flex; gap:8px; margin-top:6px; font-size:13.5px;"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('');
     return '<div style="font-weight:700; font-size:16px;">' + ex.name + '</div>' +
       '<div class="u-num" style="font-family:var(--font-display); font-size:19px; margin:8px 0;">' + dosis + '</div>' +
@@ -4761,7 +4773,8 @@ function exCardHTML(ex){
   // el "cómo se hace" sigue colapsado por default (no se toca, es la parte de mentor).
   const icono = isStatic(ex) ? '🛡️' : '💪';
   const uni = isUnilateral(ex);
-  const comoSeHace = (ex.desc ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
+  const descNueva = (typeof descripcionHTML === 'function') ? descripcionHTML(ex.name) : null;
+  const comoSeHace = descNueva ? ((uni ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim);">Cada serie incluye los dos lados.</div>' : '') + descNueva + '<a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; margin-top:8px; font-size:13px; color:var(--accent); font-weight:600; text-decoration:none;">▶ Ver en YouTube cómo se hace</a>') : (ex.desc ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim); line-height:1.5;">' + ex.desc + '</div>' : '') +
     (uni ? '<div style="margin-top:10px; font-size:13.5px; color:var(--text-dim);">Cada serie incluye los dos lados.</div>' : '') +
     '<div style="margin-top:10px;">' + tipsFor(ex).map(t => '<div style="display:flex; gap:8px; margin-bottom:6px; font-size:13.5px; color:var(--text);"><span style="color:var(--accent); font-weight:700;">&bull;</span><span>' + t + '</span></div>').join('') + '</div>' +
     '<a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-size:13px; color:var(--accent); font-weight:600; text-decoration:none;">▶ Ver en YouTube cómo se hace</a>';
@@ -6087,6 +6100,8 @@ console.log('Ejercicios totales:', Object.values(bibliotecaCalistenia).reduce((s
 <script src="entrada-calor.js"></script>
 <script src="tiempo-sesion.js"></script>
 <script src="carga.js"></script>
+<script src="estiramientos.js"></script>
+<script src="descripciones.js"></script>
 <script src="offline.js"></script>
 <script src="respaldo.js"></script>
 <div class="onboarding-ov" id="onboarding-welcome"></div>

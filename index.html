@@ -3564,7 +3564,11 @@ function coreElegir(grupo, evitar){
 // Los abdominales de la sesión de hoy (estable mientras no se registre una sesión): [anti-extensión, grupo A, grupo B].
 function seleccionarCore(carga, yaEnSesion){
   const out = [], ya = (yaEnSesion || []).slice();
-  const l = LADDERS.core_antiext, anti = l ? l.rungs.map(exByName).filter(e => e && isDoable(e)).reverse()[0] : null;
+  // ANTI-EXTENSIÓN (06/11, a pedido de Thomás): también rota, entre los DOS peldaños más altos que ya podés hacer (dead bug / plancha RKC /
+  // hollow body con rodillas flexionadas / hollow body), el que hace más tiempo que no se hace. Siempre hay uno por sesión (obligatorio).
+  const l = LADDERS.core_antiext, antiCand = l ? l.rungs.map(exByName).filter(e => e && isDoable(e) && hasEquip(e)).slice(-2) : [];
+  const usoA = (stats && stats.coreUso) || {}, nA = (stats && stats.coreN) || 0;
+  const anti = antiCand.length ? antiCand.map((c, i) => ({ c, u: (typeof usoA[c.name] === 'number') ? usoA[c.name] : -1, r: (i + nA) % antiCand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r))[0].c : null;
   if(anti){ out.push(anti); ya.push(anti); }
   const n = (stats && stats.coreN) || 0, cuantos = (carga <= 2) ? 1 : 2;
   for(let k = 0; k < CORE_GRUPOS.length && out.length < 1 + cuantos; k++){

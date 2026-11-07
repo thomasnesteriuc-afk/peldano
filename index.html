@@ -3530,6 +3530,55 @@ function tipsFor(ex){
 // El botón "Cambiar ejercicio" (solo por dolor o falta de equipamiento) reemplaza un hueco por otro del mismo patrón y nivel,
 // transfiere el progreso y queda fijo hasta fin de bloque.
 // Archivado (no borrado): la variedad por semilla del día del año y el botón global "Cambiar ejercicios" (FEATURES.cambiarTodo).
+// ================= ABDOMINALES ROTATIVOS (pedido de Thomás, 06/11) =================
+// Los abdominales NO van en la plantilla fija: cambian de una sesión a otra y entrenan todo el tronco, no solo el six pack.
+// Cada sesión lleva: (1) el ANTI-EXTENSIÓN, siempre el peldaño actual de su escalera (obligatorio por el encargo: dead bug → plancha RKC →
+// hollow body…) y (2) dos grupos que rotan entre CUATRO: abdomen recto (six pack), flexores de cadera, oblicuos y tronco (estabilización
+// y zona lumbar). Sesión 1: recto + flexores de cadera; sesión 2: oblicuos + tronco; y así. Dentro de cada grupo se elige el ejercicio que hace
+// más tiempo que no se hace (nunca el mismo dos sesiones seguidas), entre los de su nivel actual (sin volver a lo trivial).
+// Con carga baja (arranque suave) hay un solo grupo rotando además del anti-extensión.
+const CORE_GRUPOS = ['recto', 'cadera', 'oblicuo', 'tronco'];
+const CORE_GRUPO_TXT = { recto:'Abdomen (six pack)', cadera:'Flexores de cadera', oblicuo:'Oblicuos', tronco:'Tronco (estabilidad y lumbar)' };
+const CORE_CADERA = ['Leg raises en suelo', 'Knee raises en barra', 'L sit raises en fondos', 'L sit raises en barra', 'Leg raises en barra', 'Tijeras en suelo', 'ABS escuadra + leg raises en suelo'];
+function coreGrupoDe(c){
+  if(c.pattern === 'core_antiext') return 'antiext';
+  if(c.pattern === 'core_oblicuo') return 'oblicuo';
+  if(c.pattern === 'core_estab' || c.pattern === 'core_lumbar') return 'tronco';
+  if(c.pattern === 'core_recto') return CORE_CADERA.includes(c.name) ? 'cadera' : (c.name === 'Pullover' ? null : 'recto');
+  return null;
+}
+function coreCandidatos(grupo){
+  const todos = CORE.filter(c => coreGrupoDe(c) === grupo && isDoable(c) && zoneOf(c.pattern) === 'core' && hasEquip(c));
+  if(!todos.length) return [];
+  const tope = Math.max.apply(null, todos.map(c => c.dif || 0));
+  return todos.filter(c => (c.dif || 0) >= Math.max(2, tope - 1));        // los de su nivel actual: sin volver a lo trivial
+}
+// Elige el ejercicio del grupo que hace más tiempo que no se hace (stats.coreUso[nombre] = nº de sesión en que se hizo por última vez).
+function coreElegir(grupo, evitar){
+  const cand = coreCandidatos(grupo).filter(c => !evitar.some(e => e.name === c.name));
+  if(!cand.length) return null;
+  const uso = (stats && stats.coreUso) || {}, n = (stats && stats.coreN) || 0;
+  const ord = cand.map((c, i) => ({ c, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % cand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r));
+  return ord[0].c;
+}
+// Los abdominales de la sesión de hoy (estable mientras no se registre una sesión): [anti-extensión, grupo A, grupo B].
+function seleccionarCore(carga, yaEnSesion){
+  const out = [], ya = (yaEnSesion || []).slice();
+  const l = LADDERS.core_antiext, anti = l ? l.rungs.map(exByName).filter(e => e && isDoable(e)).reverse()[0] : null;
+  if(anti){ out.push(anti); ya.push(anti); }
+  const n = (stats && stats.coreN) || 0, cuantos = (carga <= 2) ? 1 : 2;
+  for(let k = 0; k < CORE_GRUPOS.length && out.length < 1 + cuantos; k++){
+    const g = CORE_GRUPOS[(n * cuantos + k) % CORE_GRUPOS.length], ex = coreElegir(g, ya);
+    if(ex){ out.push(ex); ya.push(ex); }
+  }
+  return out;
+}
+// Al registrar una sesión: anota cuándo se hizo cada abdominal (para rotar) y avanza el contador de sesiones con abdominales.
+function registrarCoreUsado(ses){
+  stats.coreUso = stats.coreUso || {};
+  stats.coreN = (stats.coreN || 0) + 1;
+  (ses || []).filter(e => e._rol === 'core').forEach(e => { stats.coreUso[e.name] = stats.coreN; });
+}
 function topDelPatron(p, tope){
   const l = LADDERS[p]; if(!l) return null;
   const ok = e => e && isDoable(e) && (tope == null || (e.dif || 0) <= tope);
@@ -3553,7 +3602,7 @@ function guardarPlantilla(dia, ses){
   const b = bloqueVigente();
   b.plantilla = b.plantilla || {};
   b.plantilla[claveDePlantilla(dia)] = {
-    slots: ses.map(e => ({ name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
+    slots: ses.filter(e => e._rol !== 'core').map(e => ({ name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
     cambios: (ses.cargaCambios || []).slice()
   };
   try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
@@ -3582,6 +3631,8 @@ function materializarPlantilla(tpl, dia){
     s.ultimo = ex.name;
     items.push(Object.assign({}, ex, { _rol:s.rol }));
   }
+  // Los abdominales NO están en la plantilla: rotan en cada sesión (seleccionarCore).
+  seleccionarCore(cargaNivel(), items).forEach(c => items.push(Object.assign({}, c, { _rol:'core' })));
   const por = r => items.filter(e => e._rol === r);
   const coreOrd = por('core').filter(e => e.pattern === 'core_antiext').concat(por('core').filter(e => e.pattern !== 'core_antiext').sort(exig));
   let full;
@@ -3590,8 +3641,13 @@ function materializarPlantilla(tpl, dia){
   if(full.length !== items.length) return null;
   full.dia = dia; full.descarga = esDescarga(dia); full.liviana = livianaHoy() && !descargaProgramada(dia);
   if(typeof cargaDeSesion === 'function' && typeof CARGA_UMBRAL !== 'undefined'){
-    const tot = cargaDeSesion(full);
-    if(CARGA_ZONAS.some(z => tot[z] > CARGA_UMBRAL[z].max)) return null;          // un ascenso rompería el tope de carga: se arma de nuevo
+    const pasa = () => { const tot = cargaDeSesion(full); return !CARGA_ZONAS.some(z => tot[z] > CARGA_UMBRAL[z].max); };
+    // si los abdominales de hoy pasan el tope, se saca el último abdominal que no es fijo (oblicuo / tronco); si no alcanza, se arma de nuevo
+    while(!pasa()){
+      let i = -1; full.forEach((e, k) => { if(e._rol === 'core' && !/^core_(antiext|recto)$/.test(e.pattern)) i = k; });
+      if(i < 0) return null;                                                      // un ascenso rompería el tope de carga: se arma de nuevo
+      full.splice(i, 1);
+    }
   }
   const plan = (typeof planTiempo === 'function') ? planTiempo(dia, full) : { finisher:10 };
   const out = full.slice();
@@ -3601,7 +3657,7 @@ function materializarPlantilla(tpl, dia){
 // Alternativas para "Cambiar ejercicio": mismo patrón y mismo nivel (si no hay, del nivel de abajo), que se puedan hacer con el equipo marcado
 // y que no estén ya en la sesión. Las habilidades, la soga y el salto de dosis fija no se cambian por acá.
 function alternativasDe(ex, ses){
-  if(!ex || ex._skill || ex._libre || !ex.pattern) return [];
+  if(!ex || ex._skill || ex._libre || !ex.pattern || ex._rol === 'core') return [];    // los abdominales ya rotan solos en cada sesión
   const en = new Set((ses || []).map(e => e.name));
   const base = ALL_POOLS.filter(e => e.name !== ex.name && !en.has(e.name) && e.pattern === ex.pattern && isDoable(e) && !e._skill && !SKILL_REQ[e.name]);
   const mismo = base.filter(e => (e.dif || 0) === (ex.dif || 0));
@@ -3771,42 +3827,9 @@ function guardarRPEDespuesDeSesion(){
   // Antes esto era un no-op: rotaba sobre un pool de tamaño 1 (solo el peldaño de la escalera).
   // Sin los de patrón "warmup" (ej. Flexiones escapulares): no se dibujan en ningún bloque,
   // así que el tercer core quedaba invisible y la sesión mostraba solo 2 abdominales.
-  const coreDoable = z => CORE.filter(c => c.zone === z && isDoable(c) && zoneOf(c.pattern) === 'core');
-  const rotar = (arr, i) => arr.length ? arr[((i % arr.length) + arr.length) % arr.length] : null;
-  const rectoAnchor = () => {
-    const l = LADDERS['core_recto'];
-    const unlocked = l ? l.rungs.map(exByName).filter(e => e && isDoable(e)).reverse() : [];
-    return unlocked[0] || coreDoable('recto')[0] || null;
-  };
-  // Piso de 2 abdominales (recto + oblicuo) hasta carga media; 3 a plena carga.
-  // Incluso el día uno, dos movimientos de piso de abdomen no es sobreentrenar.
-  const coreMax = (carga <= 2) ? 2 : 3;
-  // ANTI-EXTENSIÓN OBLIGATORIA (corrección 28/10): al menos 1 por sesión, siempre el peldaño actual de su escalera
-  // (dead bug -> hollow body con rodillas flexionadas -> hollow body). Va en el 2.º lugar: nunca se recorta por tiempo.
-  const antiAnchor = () => {
-    const l = LADDERS['core_antiext'];
-    const unlocked = l ? l.rungs.map(exByName).filter(e => e && isDoable(e)).reverse() : [];
-    return unlocked[0] || null;
-  };
-  const coreSlots = [
-    rectoAnchor(),
-    antiAnchor(),
-    rotar(coreDoable('oblicuo'), seed)
-  ];
-  let coreAdded = 0;
-  coreSlots.slice(0, coreMax).forEach(ex => {
-    if(ex && !exs.some(e => e.name === ex.name)){ exs.push(ex); coreAdded++; }
-  });
-  // Relleno de seguridad: si alguna zona quedó vacía, completo con otra para llegar al máximo del modo.
-  if(coreAdded < coreMax){
-    ['recto','antiext','oblicuo','estabilizacion','lumbar'].forEach(z => {
-      if(coreAdded >= coreMax) return;
-      coreDoable(z).forEach(ex => {
-        if(coreAdded >= coreMax) return;
-        if(ex && !exs.some(e => e.name === ex.name)){ exs.push(ex); coreAdded++; }
-      });
-    });
-  }
+  // ABDOMINALES (06/11): rotan de una sesión a otra y cubren abdomen recto, flexores de cadera, oblicuos y tronco; anti-extensión siempre.
+  // Ver seleccionarCore() más arriba. (La selección anterior quedó archivada en _archivo/codigo-retirado.js, sección 23.)
+  seleccionarCore(carga, exs).forEach(ex => exs.push(ex));
   // Cada grupo se arma por separado para poder priorizar al recortar por tiempo.
   const core = exs.splice(nHab);                         // las habilidades quedan en exs (cuentan para no repetir)
   const grupo = fn => { const i0 = exs.length; fn(); return exs.splice(i0); };
@@ -4876,6 +4899,7 @@ function commitDay(){
   registrarDiaEnCiclo(dayFocus);                          // ciclo de 3: el día hecho queda bloqueado hasta completar los otros dos
   const {newRecord, totalToday} = commitStats(items);
   registrarSesionBloque(dayFocus);                        // cuenta para el bloque mensual (y marca la descarga del tipo, si era)
+  registrarCoreUsado(ses);                                // abdominales: anota cuáles se hicieron hoy para que la próxima sesión rote
   stats.livianaHoy = null;                                // la sesión liviana era de hoy: se apaga al registrar
   if(typeof finisherCerrarSesion === 'function') finisherCerrarSesion(); // finisher pendiente = "omitido", queda registrado
   stats.lastSessionDate = new Date().toDateString(); // para el gancho de mañana

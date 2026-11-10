@@ -1354,15 +1354,27 @@ function puntoDePartidaNumero(pat, N){
   if(N < piso(r0)) return r0 > 0 ? { k:r0 - 1, objetivo:piso(r0 - 1), regla:'debajo' } : { k:0, objetivo:piso(0), regla:'debajo' };
   return { k:r0, objetivo:N, regla:'exacto' };
 }
-// Aplica la respuesta: deja dominado lo de abajo, pone el objetivo inicial en el peldaño de partida y recuerda la respuesta.
+// Aplica la respuesta. El resultado depende SOLO del número tocado (nunca del orden en que se tocó ni del estado anterior):
+//   · cada peldaño de la escalera se deja en un estado CANÓNICO según (escalera, N): los de abajo dominados, el de partida con su objetivo
+//     (y su mejor marca = N si es de habilidad y N cae dentro del rango), los de arriba sin dominar y en su piso, sin restos de toques anteriores
+//     (objetivos, mejores marcas, "bajó por Costó", sesiones de requisito). Tocar el mismo número dos veces da el mismo estado.
+//   · las MARCAS históricas de cada ejercicio, las estadísticas y la racha no se tocan.
 function aplicarPuntoNumero(pat, opcion){
-  const N = ppValor(opcion), p = puntoDePartidaNumero(pat, N);
-  fijarPuntoDePartida(pat, p.k);
-  const L = LADDERS[pat];
+  const N = ppValor(opcion), p = puntoDePartidaNumero(pat, N), L = LADDERS[pat];
+  L.rungs.forEach((nm, i) => {
+    const ex = exByName(nm); if(!ex) return;
+    let st = progState[nm];
+    if(!st){ if(i >= p.k) return; st = ensureProg(ex); }               // los de arriba que nunca tuvieron estado no necesitan uno
+    st.regressed = false; st.costoSeg = 0; st.sobro = 0; st.cumpli = 0; st.costo = 0;
+    st.target = tBase(ex);
+    if(!SKILL_REQ[nm]){ delete st.best; delete st.reqSes; }
+    if(i < p.k){ st.mastered = true; if(SKILL_REQ[nm]){ st.best = SKILL_REQ[nm].v; st.reqSes = 0; } }
+    else { st.mastered = false; if(SKILL_REQ[nm]){ st.best = 0; st.reqSes = 0; } }
+  });
   if(p.k < L.rungs.length){
     const ex = exByName(L.rungs[p.k]), st = ensureProg(ex);
-    st.target = p.objetivo; st.costoSeg = 0;
-    if(SKILL_REQ[ex.name]){ st.best = (p.regla === 'exacto') ? Math.max(st.best || 0, N) : (st.best || 0); st.reqSes = 0; }
+    st.target = p.objetivo;
+    if(SKILL_REQ[ex.name]) st.best = (p.regla === 'exacto') ? N : 0;
   }
   profile.ppNumero = profile.ppNumero || {}; profile.ppNumero[pat] = opcion;
   if(typeof saveState === 'function') saveState();

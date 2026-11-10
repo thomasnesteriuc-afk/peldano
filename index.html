@@ -861,7 +861,19 @@ const CORE = [
   {name:"Dragon flag a 1 pierna", muscles:"Bíceps, dorsal y abdominales", desc:"Acostado con la cabeza cerca de una barra baja o banco, agarrado de la misma, llevar una rodilla al pecho y sostener el cuerpo a 45°, apoyando solo la espalda alta.", dif:4, zone:"recto", requires:"Leg raises en barra"},
   {name:"L sit en anillas", muscles:"Abdominales, psoas y hombro (estabilización)", desc:"Sostenido en las anillas, levantar las piernas rectas a 90°. La inestabilidad suma mucho trabajo extra de core y hombro.", dif:4, zone:"estabilizacion", requires:"L sit raises en fondos"},
   {name:"Pullover", muscles:"Abdominales, psoas, dorsal y bíceps", desc:"Colgado de la barra, llevar los pies hasta la barra mientras flexionás los brazos, girando por encima de ella hasta quedar en posición de fondo.", dif:4, zone:"recto", requires:"Leg raises en barra"},
-  {name:"Dragon flag", muscles:"Dorsal y abdominales", desc:"Igual que la versión a 1 pierna pero con las dos piernas estiradas, sosteniendo el cuerpo entero a 45°.", dif:4, zone:"recto", requires:"Dragon flag a 1 pierna"}
+  {name:"Dragon flag", muscles:"Dorsal y abdominales", desc:"Igual que la versión a 1 pierna pero con las dos piernas estiradas, sosteniendo el cuerpo entero a 45°.", dif:4, zone:"recto", requires:"Dragon flag a 1 pierna"},
+  // ---- Banco de core SIN PISO (06/11 v2, pedido de Thomás): colgado, paralelas, banda y de pie. Textos de Claude, revisión del entrenador. ----
+  {name:"L-sit en paralelas", muscles:"Abdominales, flexores de cadera y tríceps", desc:"Apoyado en paralelas con los brazos estirados y los hombros hacia abajo, levantá las piernas rectas hasta formar una L y sostené.", dif:4, zone:"recto", revisado:"entrenador"},
+  {name:"Elevaciones de rodillas en paralelas", muscles:"Abdominales y flexores de cadera", desc:"En paralelas con los brazos estirados y los hombros hacia abajo, llevá las rodillas al pecho y bajá controlado.", dif:3, zone:"recto", revisado:"entrenador"},
+  {name:"Elevaciones de rodillas oblicuas colgado", muscles:"Oblicuos y flexores de cadera", desc:"Colgado de la barra, llevá las rodillas hacia un costado (hacia el codo) y bajá; alterná los lados.", dif:3, zone:"oblicuo", pattern:"core_oblicuo", requires:"Knee raises en barra", revisado:"entrenador"},
+  {name:"Limpiaparabrisas colgado", muscles:"Oblicuos, abdominales y agarre (avanzado)", desc:"Colgado de la barra con las piernas rectas arriba, llevalas de un lado al otro como un limpiaparabrisas, con control.", dif:5, zone:"oblicuo", pattern:"core_oblicuo", requires:"Leg raises en barra", revisado:"entrenador"},
+  {name:"Leñador alto-bajo con banda", muscles:"Oblicuos y rotación de tronco", desc:"Con la banda anclada arriba, tirá en diagonal hacia la cadera contraria rotando el tronco y volvé controlado.", dif:2, zone:"oblicuo", pattern:"core_oblicuo", revisado:"entrenador"},
+  {name:"Leñador bajo-alto con banda", muscles:"Oblicuos y rotación de tronco", desc:"Con la banda anclada abajo, tirá en diagonal hacia arriba y afuera rotando el tronco y volvé controlado.", dif:2, zone:"oblicuo", pattern:"core_oblicuo", revisado:"entrenador"},
+  {name:"Elevación de rodilla de pie", muscles:"Flexores de cadera y abdomen", desc:"De pie sobre una pierna, llevá la otra rodilla hacia el pecho con control y bajá sin apoyar.", dif:2, zone:"recto", pattern:"core_recto", revisado:"entrenador"},
+  {name:"Pallof press con banda", muscles:"Core (anti-rotación) y oblicuos", desc:"De costado a la banda anclada, con las manos al pecho, estirá los brazos al frente sin dejar que la banda te gire y volvé.", dif:2, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
+  {name:"Hollow colgado con rodillas flexionadas", muscles:"Abdomen, hombros y agarre (anti-extensión)", desc:"Colgado de la barra con los hombros activos y las rodillas flexionadas, aplaná la espalda baja llevando la pelvis hacia adelante y sostené.", dif:3, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
+  {name:"Hollow colgado", muscles:"Abdomen, hombros y agarre (anti-extensión)", desc:"Colgado de la barra con los hombros activos y las piernas juntas y estiradas hacia adelante, con la pelvis hacia adelante y sin arquear; sostené.", dif:4, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
+  {name:"Hollow de pie contra la pared", muscles:"Abdomen (anti-extensión)", desc:"De pie con la espalda baja y la cabeza contra la pared, costillas hacia abajo y pelvis hacia adelante; sostené sin despegar la espalda baja.", dif:2, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
 ];
 
 const PUSH = [
@@ -1057,7 +1069,7 @@ const LADDER_LABEL = {
   muscleup:"Muscle-up", front_lever:"Front lever",
   squat:"Sentadilla", lunge:"Zancadas", power_legs:"Pliométrico", hinge:"Puente",
   squat_uni:"Sentadilla a una pierna", hinge_uni:"Bisagra a una pierna", nordic:"Nordic (isquios)", copenhagen:"Copenhagen (aductores)",
-  core_recto:"Abdomen (recto)", core_oblicuo:"Oblicuos", core_lumbar:"Lumbares", core_estab:"Estabilización", core_antiext:"Anti-extensión"
+  core_recto:"Abdomen (recto)", core_colgado:"Flexores de cadera (colgado)", core_oblicuo:"Oblicuos", core_lumbar:"Lumbares", core_estab:"Estabilización", core_antiext:"Anti-extensión"
 };
 const LADDERS = {
   push_horiz:{gate:null, rungs:["Flexión inclinada (manos elevadas)","Flexión con rodillas","Flexiones","Flexiones diamante","Flexiones en anillas","Flexiones arqueras de rodillas","Flexiones arqueras"]},
@@ -1081,7 +1093,9 @@ const LADDERS = {
   nordic:{gate:null, rungs:["Nordic asistido","Nordic excéntrico","Nordic completo"]},
   copenhagen:{gate:null, rungs:["Copenhagen con rodilla apoyada","Copenhagen palanca corta","Copenhagen completo"]},
   core_antiext:{gate:null, rungs:["Dead bug","Plancha RKC","Hollow body con rodillas flexionadas","Hollow body"]},
-  core_recto:{gate:null, rungs:["Crunches cortos en suelo","Leg raises en suelo","Knee raises en barra","Leg raises en barra","Dragon flag a 1 pierna","Dragon flag"]},
+  // Flexores de cadera COLGADO / PARALELAS (ancla fija del core, 06/11 v2): elevaciones de rodillas -> de piernas -> L-sit -> pies a la barra
+  core_colgado:{gate:null, rungs:["Knee raises en barra","L sit raises en barra","L-sit en paralelas","Leg raises en barra"]},
+  core_recto:{gate:null, rungs:["Crunches cortos en suelo","Leg raises en suelo","Dragon flag a 1 pierna","Dragon flag"]},
   core_oblicuo:{gate:null, rungs:["Lateral kicks","Windshield wipers en suelo","Plancha a extensión"]},
   core_lumbar:{gate:null, rungs:["Puente a una pierna","Crunches cortos lumbares"]},
   core_estab:{gate:null, rungs:["Birdog","Plancha abdominal","L-sit a tuck (en paralelas)","L sit en anillas"]}
@@ -1107,8 +1121,8 @@ wireLadders();
 const STATIC_EX_NAMES = new Set([
   "Plancha abdominal","Plancha lateral","Dragon flag a 1 pierna","Dragon flag",
   "Plancha RKC","Hollow body con rodillas flexionadas","Hollow body",
-  "Tucked front lever","Soporte en anillas (support hold)","Knee raises en barra",
-  "L sit raises en fondos","L sit raises en barra","L sit en anillas",
+  "Tucked front lever","Soporte en anillas (support hold)",
+  "L sit en anillas","L-sit en paralelas","Hollow colgado","Hollow colgado con rodillas flexionadas","Hollow de pie contra la pared",
   // Habilidades sostenidas (por tiempo)
   "Pino","Pino a una mano","Pseudo plancha","Advanced tucked planche",
   "Straddle planche","Pino a full planche","Front lever a 1 pierna",
@@ -1339,7 +1353,8 @@ const PP_REF = {
   core_oblicuo: { ref:0, u:'reps', q:'¿Cuántos lateral kicks seguidos hacés?' },
   core_lumbar:  { ref:0, u:'reps', q:'¿Cuántos puentes a una pierna hacés por pierna?' },
   core_estab:   { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la plancha?' },
-  core_antiext: { ref:0, u:'reps', q:'¿Cuántos dead bugs seguidos hacés?' },
+  core_antiext: { ref:3, u:'seg',  q:'¿Cuántos segundos aguantás en hollow body?' },
+  core_colgado: { ref:0, u:'reps', q:'¿Cuántas elevaciones de rodillas colgado hacés?' },
   muscleup:     { ref:3, u:'reps', q:'¿Cuántos muscle-ups seguidos hacés?' },
   front_lever:  { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el front lever agrupado (tucked)?' },
   planche:      { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la pseudo plancha?' }
@@ -1515,7 +1530,7 @@ const FAMILY_LABEL = {
   push_horiz:'flexiones', dips:'fondos', push_vert:'empuje vertical', planche:'planche',
   pull_vert:'dominadas', pull_horiz:'remos', muscleup:'muscle-up', front_lever:'front lever',
   squat:'sentadillas', hinge:'puentes', squat_uni:'sentadillas a una pierna', hinge_uni:'bisagras a una pierna', nordic:'nordics', copenhagen:'copenhagen',
-  core_recto:'abdominales', core_oblicuo:'oblicuos', core_estab:'core', core_antiext:'core', core_lumbar:'lumbares'
+  core_recto:'abdominales', core_colgado:'abdominales', core_oblicuo:'oblicuos', core_estab:'core', core_antiext:'core', core_lumbar:'lumbares'
 };
 function familyOf(name){ const ex = exByName(name); return ex ? (FAMILY_LABEL[ex.pattern] || 'otros') : 'otros'; }
 function familyTotals(map){
@@ -1720,7 +1735,7 @@ const ZONA_GROUPS = [
   {title:"Empuje", icono:"💪", pats:["push_horiz","dips","push_vert","triceps"]},
   {title:"Tirón", icono:"🎯", pats:["pull_vert","pull_horiz","pull_activ","ring_support"]},
   {title:"Pierna y cadena posterior", icono:"🦵", pats:["squat","squat_uni","lunge","power_legs","hinge","hinge_uni","nordic","copenhagen"]},
-  {title:"Core", icono:"🛡️", pats:["core_recto","core_oblicuo","core_lumbar","core_estab","core_antiext"]},
+  {title:"Core", icono:"🛡️", pats:["core_recto","core_colgado","core_oblicuo","core_lumbar","core_estab","core_antiext"]},
   {title:"Habilidades", icono:"🌟", pats:["muscleup","front_lever","planche"]}
 ];
 
@@ -1871,7 +1886,7 @@ function ppItems(){
 // Dibuja el componente en `box` (acordeón cerrado por defecto) y lo vuelve a dibujar tras cada toque.
 // Escaleras que se preguntan (06/11, a pedido de Thomás): solo las 5 más importantes. Las otras empiezan en su primer peldaño y se
 // ajustan solas con lo que marcás en cada sesión (sus preguntas siguen en PP_REF; FEATURES.ppCompleto = true las vuelve a mostrar).
-const PP_PRINCIPALES = ['pull_vert', 'push_horiz', 'dips', 'squat', 'core_estab'];
+const PP_PRINCIPALES = ['pull_vert', 'push_horiz', 'dips', 'squat', 'core_antiext', 'core_colgado'];   // (la plancha salió y entraron las 2 del core: anti-extensión y flexores de cadera, 10/11)
 function ppRender(box, grupo, alCambiar){
   if(window.FEATURES.ppCompleto === true) renderAcordeon(box, grupo, ppItems());
   else { box.innerHTML = ''; PP_PRINCIPALES.forEach(p => box.appendChild(ppTarjeta(p))); }
@@ -3087,7 +3102,7 @@ function equipmentOf(ex){
   if(n.includes('human flag') || n.includes('bandera humana')) return 'Poste vertical';
   if(n.includes('anilla')) return 'Anillas';
   if(n.includes('banda') || n.includes('pull-apart') || n.includes('dislocate') || n.includes('rotaciones externas')) return 'Banda';
-  if(ex.family === 'fondo' || n.includes('fondos') || n.includes('korean')) return 'Paralelas';
+  if(ex.family === 'fondo' || n.includes('fondos') || n.includes('korean') || n.includes('paralelas')) return 'Paralelas';
   if(['pull_vert','muscleup','front_lever','pull_horiz'].includes(ex.pattern) ||
      n.includes('dominad') || n.includes('barra') || n.includes('colgado') ||
      n.includes('muscle up') || n.includes('lever') || n.includes('hang') || n.includes('remo')) return 'Barra';
@@ -3416,8 +3431,8 @@ const SIBLING_GROUPS = [
   {pattern:'push_vert',  base:'Pike push up',         hermanas:['Hindu push ups']},
   {pattern:'core_recto', base:'Crunches cortos en suelo', hermanas:['Crunches completos en suelo', 'Tijeras en suelo']},
   {pattern:'core_recto', base:'Leg raises en suelo',   hermanas:['ABS escuadra + leg raises en suelo']},
-  {pattern:'core_recto', base:'Knee raises en barra',  hermanas:['L sit raises en fondos', 'L sit raises en barra']},
-  {pattern:'core_recto', base:'Leg raises en barra',   hermanas:['Pullover']},
+  {pattern:'core_colgado', base:'Knee raises en barra',  hermanas:['L sit raises en fondos', 'Elevaciones de rodillas en paralelas']},
+  {pattern:'core_colgado', base:'Leg raises en barra',   hermanas:['Pullover']},
   {pattern:'core_oblicuo', base:'Lateral kicks',       hermanas:['Crunches oblicuos (codo a rodilla)', 'Bicicleta en suelo', 'Giro ruso sin carga', 'Plancha lateral']}
 ];
 // Índice por patrón: [base, ...hermanas] — lo que usa el generador de sesión.
@@ -3465,7 +3480,7 @@ ALL_POOLS.forEach(e => { if(!e.pattern) e.pattern = "warmup"; });
 // OJO: no incluir variantes tipo "a 1 pierna" que solo reducen dificultad (ahí no cambiás de lado),
 // ni movimientos alternados continuos (bicicleta). Esos NO son unilaterales en el sentido de la app.
 const UNILATERAL = new Set([
-  "Puente a una pierna", "Plancha lateral", "Crunches oblicuos (codo a rodilla)",
+  "Puente a una pierna", "Plancha lateral", "Crunches oblicuos (codo a rodilla)", "Leñador alto-bajo con banda", "Leñador bajo-alto con banda", "Pallof press con banda", "Elevación de rodilla de pie",
   "Zancadas", "Zancadas laterales", "Sentadilla corta a una pierna",
   "Pistol squat", "Flexiones arqueras de rodillas", "Flexiones arqueras",
   "Archer pull ups", "Typewriter pull ups", "Bulgarian squat",
@@ -3555,58 +3570,78 @@ function tipsFor(ex){
 // El botón "Cambiar ejercicio" (solo por dolor o falta de equipamiento) reemplaza un hueco por otro del mismo patrón y nivel,
 // transfiere el progreso y queda fijo hasta fin de bloque.
 // Archivado (no borrado): la variedad por semilla del día del año y el botón global "Cambiar ejercicios" (FEATURES.cambiarTodo).
-// ================= ABDOMINALES ROTATIVOS (pedido de Thomás, 06/11) =================
-// Los abdominales NO van en la plantilla fija: cambian de una sesión a otra y entrenan todo el tronco, no solo el six pack.
-// Cada sesión lleva: (1) el ANTI-EXTENSIÓN, siempre el peldaño actual de su escalera (obligatorio por el encargo: dead bug → plancha RKC →
-// hollow body…) y (2) dos grupos que rotan entre CUATRO: abdomen recto (six pack), flexores de cadera, oblicuos y tronco (estabilización
-// y zona lumbar). Sesión 1: recto + flexores de cadera; sesión 2: oblicuos + tronco; y así. Dentro de cada grupo se elige el ejercicio que hace
-// más tiempo que no se hace (nunca el mismo dos sesiones seguidas), entre los de su nivel actual (sin volver a lo trivial).
-// Con carga baja (arranque suave) hay un solo grupo rotando además del anti-extensión.
-const CORE_GRUPOS = ['recto', 'cadera', 'oblicuo', 'tronco'];
-const CORE_GRUPO_TXT = { recto:'Abdomen (six pack)', cadera:'Flexores de cadera', oblicuo:'Oblicuos', tronco:'Tronco (estabilidad y lumbar)' };
-const CORE_CADERA = ['Leg raises en suelo', 'Knee raises en barra', 'L sit raises en fondos', 'L sit raises en barra', 'Leg raises en barra', 'Tijeras en suelo', 'ABS escuadra + leg raises en suelo'];
-function coreGrupoDe(c){
-  if(c.pattern === 'core_antiext') return 'antiext';
-  if(c.pattern === 'core_oblicuo') return 'oblicuo';
-  if(c.pattern === 'core_estab' || c.pattern === 'core_lumbar') return 'tronco';
-  if(c.pattern === 'core_recto') return CORE_CADERA.includes(c.name) ? 'cadera' : (c.name === 'Pullover' ? null : 'recto');
+// ================= ABDOMINALES v2 (pedido de Thomás, 10/11) =================
+// 1 ANCLA FIJA todo el bloque mensual, con progresión: la escalera de flexores de cadera COLGADO / en paralelas (core_colgado:
+//   elevaciones de rodillas -> de piernas -> L-sit -> pies a la barra). Va en la plantilla del bloque y sube sola de peldaño.
+// 2 que ROTAN en cada sesión (nunca los de la sesión anterior del mismo tipo de día), de categorías distintas:
+//   · grupo A = OBLICUOS y FLEXORES DE CADERA (rotación y elevaciones: oblicuas colgado, leñador con banda, elevación de rodilla de pie…)
+//   · grupo B = ANTI-EXTENSIÓN (hollow colgado, Pallof press, hollow contra la pared… y los de piso si hay piso apto)
+// Siguen en circuito (3 rondas, anti-extensión primero). SIN PISO: ningún ejercicio de piso (acostado, en cuatro apoyos, plancha) entra salvo que
+// "Piso apto" esté marcado en Perfil (profile.pisoApto). Sin piso, el nivel de anti-extensión se traduce al equivalente colgado / con banda / de pie.
+const CORE_PISO = new Set(['Dead bug', 'Plancha RKC', 'Hollow body con rodillas flexionadas', 'Hollow body', 'Puente a una pierna', 'Lateral kicks',
+  'Crunches oblicuos (codo a rodilla)', 'Bicicleta en suelo', 'Giro ruso sin carga', 'Birdog', 'Crunches cortos en suelo', 'Crunches completos en suelo',
+  'Tijeras en suelo', 'Plancha abdominal', 'Plancha lateral', 'Plancha a extensión', 'Windshield wipers en suelo', 'Crunches cortos lumbares',
+  'ABS escuadra + leg raises en suelo', 'Leg raises en suelo', 'Dragon flag a 1 pierna', 'Dragon flag']);
+CORE.forEach(c => { c.piso = CORE_PISO.has(c.name); });
+const coreSinPisoOk = c => !c.piso || (typeof profile !== 'undefined' && profile && profile.pisoApto === true);
+// Nivel de anti-extensión de cada ejercicio (1 = lo más fácil, 4 = hollow): permite traducir el nivel de piso a su equivalente sin piso.
+const CORE_ANTI_NIVEL = { 'Dead bug':1, 'Hollow de pie contra la pared':1, 'Plancha RKC':2, 'Pallof press con banda':2, 'Hollow body con rodillas flexionadas':3, 'Hollow colgado con rodillas flexionadas':3, 'Hollow body':4, 'Hollow colgado':4 };
+function coreNivelAnti(){
+  const s = ladderStatus('core_antiext'); if(s.allDone) return 4;
+  const c = s.current || s.rungs[0];
+  return Math.min(4, 1 + Math.max(0, s.rungs.findIndex(r => r.name === c.name)));
+}
+const CORE_A_CADERA = ['Elevación de rodilla de pie', 'Elevaciones de rodillas en paralelas', 'L sit raises en fondos', 'Leg raises en suelo', 'Tijeras en suelo', 'ABS escuadra + leg raises en suelo'];
+// ANCLA: el peldaño actual de la escalera colgada (con barra); sin barra, elevaciones de rodillas en paralelas; sin ninguna, no hay ancla.
+function coreAncla(){
+  if(myEquip.includes('Barra')) return topDelPatron('core_colgado');
+  if(myEquip.includes('Paralelas')){ const e = exByName('Elevaciones de rodillas en paralelas'); return (e && isDoable(e)) ? e : null; }
   return null;
 }
-function coreCandidatos(grupo){
-  const todos = CORE.filter(c => coreGrupoDe(c) === grupo && isDoable(c) && zoneOf(c.pattern) === 'core' && hasEquip(c));
+function coreCandidatosA(anclaNombre){
+  const rungsAncla = (LADDERS.core_colgado || {}).rungs || [];
+  const todos = CORE.filter(c => (c.pattern === 'core_oblicuo' || CORE_A_CADERA.includes(c.name)) && !rungsAncla.includes(c.name) && c.name !== anclaNombre && isDoable(c) && coreSinPisoOk(c));
   if(!todos.length) return [];
   const tope = Math.max.apply(null, todos.map(c => c.dif || 0));
-  return todos.filter(c => (c.dif || 0) >= Math.max(2, tope - 1));        // los de su nivel actual: sin volver a lo trivial
+  return todos.filter(c => (c.dif || 0) >= Math.max(2, tope - 2));                  // de su nivel actual: sin volver a lo trivial
 }
-// Elige el ejercicio del grupo que hace más tiempo que no se hace (stats.coreUso[nombre] = nº de sesión en que se hizo por última vez).
-function coreElegir(grupo, evitar){
-  const cand = coreCandidatos(grupo).filter(c => !evitar.some(e => e.name === c.name));
-  if(!cand.length) return null;
-  const uso = (stats && stats.coreUso) || {}, n = (stats && stats.coreN) || 0;
-  const ord = cand.map((c, i) => ({ c, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % cand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r));
+function coreCandidatosB(){
+  const L = coreNivelAnti();
+  const base = CORE.filter(c => CORE_ANTI_NIVEL[c.name] !== undefined && hasEquip(c) && coreSinPisoOk(c));
+  const cerca = base.filter(c => CORE_ANTI_NIVEL[c.name] >= Math.max(1, L - 1) && CORE_ANTI_NIVEL[c.name] <= L);
+  return cerca.length ? cerca : base.filter(c => CORE_ANTI_NIVEL[c.name] <= L);                    // sin equivalente cercano: el más alto que haya por debajo
+}
+// El que hace más tiempo que no se hace (stats.coreUso[nombre] = nº de sesión) y, si hay otra opción, nunca uno de los de la sesión anterior del mismo tipo de día.
+function coreElegir(cand, evitar, dia){
+  const lista = cand.filter(c => !evitar.some(e => e.name === c.name));
+  if(!lista.length) return null;
+  const uso = (stats && stats.coreUso) || {}, n = (stats && stats.coreN) || 0, ult = ((stats && stats.coreUltimo) || {})[dia] || [];
+  const ord = lista.map((c, i) => ({ c, rep: ult.includes(c.name) ? 1 : 0, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % lista.length }))
+    .sort((a, b) => (a.rep - b.rep) || (a.u - b.u) || (a.r - b.r));
   return ord[0].c;
 }
-// Los abdominales de la sesión de hoy (estable mientras no se registre una sesión): [anti-extensión, grupo A, grupo B].
-function seleccionarCore(carga, yaEnSesion){
-  const out = [], ya = (yaEnSesion || []).slice();
-  // ANTI-EXTENSIÓN (06/11, a pedido de Thomás): también rota, entre los DOS peldaños más altos que ya podés hacer (dead bug / plancha RKC /
-  // hollow body con rodillas flexionadas / hollow body), el que hace más tiempo que no se hace. Siempre hay uno por sesión (obligatorio).
-  const l = LADDERS.core_antiext, antiCand = l ? l.rungs.map(exByName).filter(e => e && isDoable(e) && hasEquip(e)).slice(-2) : [];
-  const usoA = (stats && stats.coreUso) || {}, nA = (stats && stats.coreN) || 0;
-  const anti = antiCand.length ? antiCand.map((c, i) => ({ c, u: (typeof usoA[c.name] === 'number') ? usoA[c.name] : -1, r: (i + nA) % antiCand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r))[0].c : null;
-  if(anti){ out.push(anti); ya.push(anti); }
-  const n = (stats && stats.coreN) || 0, cuantos = (carga <= 2) ? 1 : 2;
-  for(let k = 0; k < CORE_GRUPOS.length && out.length < 1 + cuantos; k++){
-    const g = CORE_GRUPOS[(n * cuantos + k) % CORE_GRUPOS.length], ex = coreElegir(g, ya);
-    if(ex){ out.push(ex); ya.push(ex); }
-  }
+// Los DOS que rotan hoy: [anti-extensión (B), oblicuos / flexores de cadera (A)]. Con carga baja (arranque suave) solo el anti-extensión.
+function coreRotativos(carga, yaEnSesion, dia){
+  const ya = (yaEnSesion || []).slice(), out = [];
+  const ancla = ya.find(e => e._coreAncla);
+  const b = coreElegir(coreCandidatosB(), ya, dia); if(b){ out.push(b); ya.push(b); }
+  if(carga >= 3){ const a = coreElegir(coreCandidatosA(ancla ? ancla.name : null), ya, dia); if(a) out.push(a); }
   return out;
 }
-// Al registrar una sesión: anota cuándo se hizo cada abdominal (para rotar) y avanza el contador de sesiones con abdominales.
+// Los abdominales de la sesión de hoy: [ancla, anti-extensión, A]. (Estable mientras no se registre una sesión.)
+function seleccionarCore(carga, yaEnSesion, dia){
+  const out = [], an = coreAncla();
+  if(an) out.push(Object.assign({}, an, { _coreAncla:true }));
+  coreRotativos(carga, (yaEnSesion || []).concat(out), dia).forEach(x => out.push(x));
+  return out;
+}
+// Al registrar una sesión: anota cuándo se hizo cada abdominal (para rotar) y cuáles fueron los que rotaron en ese tipo de día.
 function registrarCoreUsado(ses){
-  stats.coreUso = stats.coreUso || {};
+  stats.coreUso = stats.coreUso || {}; stats.coreUltimo = stats.coreUltimo || {};
   stats.coreN = (stats.coreN || 0) + 1;
-  (ses || []).filter(e => e._rol === 'core').forEach(e => { stats.coreUso[e.name] = stats.coreN; });
+  const core = (ses || []).filter(e => e._rol === 'core');
+  core.forEach(e => { stats.coreUso[e.name] = stats.coreN; });
+  if(ses && ses.dia) stats.coreUltimo[ses.dia] = core.filter(e => !e._coreAncla).map(e => e.name);
 }
 function topDelPatron(p, tope){
   const l = LADDERS[p]; if(!l) return null;
@@ -3631,7 +3666,7 @@ function guardarPlantilla(dia, ses){
   const b = bloqueVigente();
   b.plantilla = b.plantilla || {};
   b.plantilla[claveDePlantilla(dia)] = {
-    slots: ses.filter(e => e._rol !== 'core').map(e => ({ name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
+    slots: ses.filter(e => e._rol !== 'core' || e._coreAncla).map(e => ({ coreAncla:!!e._coreAncla, name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
     cambios: (ses.cargaCambios || []).slice()
   };
   try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
@@ -3658,10 +3693,10 @@ function materializarPlantilla(tpl, dia){
     if(!ex) return null;
     if(items.some(x => x.name === ex.name)) return null;
     s.ultimo = ex.name;
-    items.push(Object.assign({}, ex, { _rol:s.rol }));
+    items.push(Object.assign({}, ex, { _rol:s.rol, _coreAncla:!!s.coreAncla }));
   }
   // Los abdominales NO están en la plantilla: rotan en cada sesión (seleccionarCore).
-  seleccionarCore(cargaNivel(), items).forEach(c => items.push(Object.assign({}, c, { _rol:'core' })));
+  coreRotativos(cargaNivel(), items, dia).forEach(c => items.push(Object.assign({}, c, { _rol:'core' })));
   const por = r => items.filter(e => e._rol === r);
   const coreOrd = por('core').filter(e => e.pattern === 'core_antiext').concat(por('core').filter(e => e.pattern !== 'core_antiext').sort(exig));
   let full;
@@ -3673,7 +3708,7 @@ function materializarPlantilla(tpl, dia){
     const pasa = () => { const tot = cargaDeSesion(full); return !CARGA_ZONAS.some(z => tot[z] > CARGA_UMBRAL[z].max); };
     // si los abdominales de hoy pasan el tope, se saca el último abdominal que no es fijo (oblicuo / tronco); si no alcanza, se arma de nuevo
     while(!pasa()){
-      let i = -1; full.forEach((e, k) => { if(e._rol === 'core' && !/^core_(antiext|recto)$/.test(e.pattern)) i = k; });
+      let i = -1; full.forEach((e, k) => { if(e._rol === 'core' && !/^core_(antiext|recto|colgado)$/.test(e.pattern)) i = k; });
       if(i < 0) return null;                                                      // un ascenso rompería el tope de carga: se arma de nuevo
       full.splice(i, 1);
     }
@@ -3858,7 +3893,7 @@ function guardarRPEDespuesDeSesion(){
   // así que el tercer core quedaba invisible y la sesión mostraba solo 2 abdominales.
   // ABDOMINALES (06/11): rotan de una sesión a otra y cubren abdomen recto, flexores de cadera, oblicuos y tronco; anti-extensión siempre.
   // Ver seleccionarCore() más arriba. (La selección anterior quedó archivada en _archivo/codigo-retirado.js, sección 23.)
-  seleccionarCore(carga, exs).forEach(ex => exs.push(ex));
+  seleccionarCore(carga, exs, dia).forEach(ex => exs.push(ex));
   // Cada grupo se arma por separado para poder priorizar al recortar por tiempo.
   const core = exs.splice(nHab);                         // las habilidades quedan en exs (cuentan para no repetir)
   const grupo = fn => { const i0 = exs.length; fn(); return exs.splice(i0); };
@@ -4070,7 +4105,7 @@ const STRETCH_MAP = {
   pull_vert:['dorsal'], pull_horiz:['dorsal','biceps'], pull_activ:['dorsal'], muscleup:['dorsal','hombro'], front_lever:['dorsal'],
   squat:['cuadriceps','gluteo'], hinge:['isquios','gluteo'], lunge:['cuadriceps','flexor_cadera'], power_legs:['cuadriceps'],
   squat_uni:['cuadriceps','gluteo'], hinge_uni:['isquios','gluteo'], nordic:['isquios'], copenhagen:['aductor'],
-  core_recto:['abdomen'], core_oblicuo:['abdomen'], core_estab:['abdomen'], core_antiext:['abdomen'], core_lumbar:['flexor_cadera'],
+  core_recto:['abdomen'], core_colgado:['abdomen'], core_oblicuo:['abdomen'], core_estab:['abdomen'], core_antiext:['abdomen'], core_lumbar:['flexor_cadera'],
 };
 function dayStretch(session){
   const zonas = [];
@@ -4396,6 +4431,8 @@ function renderEquip(){
          (on?'✓ ':'') + (EQUIP_LABEL[eq] || eq) +
          txtExp('<span style="display:block; font-weight:400; font-size:11px; opacity:.85; margin-top:2px;">'+EQUIP_HELP[eq]+'</span>') + '</button>';
   });
+  // PISO APTO (10/11): sin esto marcado, ningún ejercicio de core es de piso (acostado, cuatro apoyos, plancha); entran los colgados, de paralelas, con banda y de pie.
+  { const on = !!profile.pisoApto; h += '<button class="equip-btn piso-btn" data-eq="__piso" aria-pressed="' + on + '" style="border:none; cursor:pointer; text-align:left; padding:10px 14px; border-radius:12px; font-family:inherit; font-size:13.5px; font-weight:600; background:' + (on ? 'var(--accent)' : 'var(--panel-2)') + '; color:' + (on ? '#fff' : 'var(--text-dim)') + ';">' + (on ? '✓ ' : '') + 'Piso apto</button>'; }
   h += '</div>';
   const opcionesEq = EQUIP_OPTIONS.filter(e => e !== 'Suelo'), n = opcionesEq.filter(e => myEquip.includes(e)).length;
   if(n === 0) h += txtExp('<p style="font-size:12.5px; color:var(--warn); margin:14px 0 0;">Solo con el suelo se puede entrenar, pero te vas a perder el tirón (dominadas). Si conseguís una barra, se abre medio catálogo.</p>');
@@ -4405,6 +4442,7 @@ function renderEquip(){
   el.querySelectorAll('.equip-btn').forEach(b => b.addEventListener('click', () => {
     const eq = b.dataset.eq;
     if(eq === 'Suelo') return;
+    if(eq === '__piso'){ profile.pisoApto = !profile.pisoApto; saveState(); recalcularBloque(); renderEquip(); renderDay(); return; }
     if(myEquip.includes(eq)) myEquip = myEquip.filter(x => x !== eq);
     else myEquip.push(eq);
     saveState();
@@ -5549,6 +5587,7 @@ let reconfigMode = false;
 function reconfigurarNivel(){
   reconfigMode = true;
   onboardData.equip = myEquip.slice();                    // equipo actual pre-marcado
+  onboardData.pisoApto = !!profile.pisoApto;
   renderOnboarding(1);                                     // arranca en equipamiento
   const ov = document.getElementById('onboarding-welcome');
   if(ov && ov.scrollTo) ov.scrollTo({top:0});
@@ -5594,7 +5633,7 @@ function renderOnboarding(step){
   } else if(step === 1){
     const opts = ['Barra','Paralelas','Anillas','Banda','Soga'];
     h = obCard(etiqueta + titulo('¿Con qué entrenás?') +
-      opts.map(eq => obBtn('eq:' + eq, eq, onboardData.equip.includes(eq))).join('') +
+      opts.map(eq => obBtn('eq:' + eq, eq, onboardData.equip.includes(eq))).join('') + obBtn('eq:__piso', 'Piso apto', !!onboardData.pisoApto) +
       '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:8px;">Seguir</button>');
   } else if(step === 2){
     h = obCard(etiqueta + titulo('Punto de partida') + '<div id="ob-pp"></div>' +
@@ -5611,7 +5650,7 @@ function renderOnboarding(step){
     if(cxb) cxb.addEventListener('click', () => { reconfigMode = false; ov.classList.remove('open'); ov.innerHTML = ''; renderDay(); window.scrollTo({top:0}); });
   }
   if(step === 2){
-    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));      // el equipo ya elegido decide qué escaleras y ejercicios hay
+    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo')); profile.pisoApto = !!onboardData.pisoApto;      // el equipo ya elegido decide qué escaleras y ejercicios hay
     ppRender(document.getElementById('ob-pp'), 'onboarding');                      // MISMO componente que Perfil
   }
 
@@ -5627,6 +5666,7 @@ function renderOnboarding(step){
     const v = b.dataset.v;
     if(step === 1){
       const eq = v.slice(3);
+      if(eq === '__piso'){ onboardData.pisoApto = !onboardData.pisoApto; renderOnboarding(step); return; }
       if(onboardData.equip.includes(eq)) onboardData.equip = onboardData.equip.filter(x => x !== eq);
       else onboardData.equip.push(eq);
     }
@@ -5646,7 +5686,7 @@ function finishOnboarding(){
   if(reconfigMode){
     // Reconfiguración: el punto de partida ya se aplicó al tocar cada número; acá solo el equipo. Cerramos y volvemos a Hoy.
     reconfigMode = false;
-    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));
+    myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo')); profile.pisoApto = !!onboardData.pisoApto;
     const ov = document.getElementById('onboarding-welcome');
     if(ov){ ov.classList.remove('open'); ov.innerHTML = ''; }
     saveState();
@@ -5655,7 +5695,7 @@ function finishOnboarding(){
     window.scrollTo({top:0});
     return;
   }
-  myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo'));
+  myEquip = ['Suelo'].concat(onboardData.equip.filter(e => e !== 'Suelo')); profile.pisoApto = !!onboardData.pisoApto;
   profile.nivelListo = true; // completó la configuración de nivel (cualquier camino) — no vuelve a forzarse
   dayFocus = 'full';
   sessionStarted = false;

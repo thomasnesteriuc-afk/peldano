@@ -26,7 +26,7 @@ const CARGA_PATRON = {
   push_horiz:[2, 2, 2, 0], dips:[3, 2, 1, 0], push_vert:[3, 2, 3, 0], triceps:[1, 3, 2, 0], planche:[3, 3, 3, 1],
   pull_vert:[2, 3, 1, 0], pull_horiz:[1, 2, 1, 0], pull_activ:[1, 0, 1, 0], ring_support:[2, 1, 1, 0], muscleup:[3, 3, 1, 1], front_lever:[3, 3, 1, 2],
   squat:[0, 0, 0, 1], squat_uni:[0, 0, 0, 1], lunge:[0, 0, 0, 1], power_legs:[0, 0, 0, 1], hinge:[0, 0, 1, 2], hinge_uni:[0, 0, 0, 2], nordic:[0, 0, 0, 1], copenhagen:[0, 0, 0, 1],
-  core_recto:[0, 0, 0, 1], core_oblicuo:[0, 0, 0, 1], core_lumbar:[0, 0, 1, 2], core_estab:[1, 0, 1, 1], core_antiext:[0, 0, 0, 1]
+  core_recto:[0, 0, 0, 1], core_colgado:[1, 0, 1, 1], core_oblicuo:[0, 0, 0, 1], core_lumbar:[0, 0, 1, 2], core_estab:[1, 0, 1, 1], core_antiext:[0, 0, 0, 1]
 };
 // Excepciones por ejercicio (las hermanas de cada escalera también).
 const CARGA_NOMBRE = {
@@ -46,10 +46,13 @@ const CARGA_NOMBRE = {
   // piernas / cadena posterior
   'Puente corto':[0, 0, 1, 2], 'Puente completo':[2, 0, 3, 3], 'Puente de pie a pie':[2, 0, 3, 3],
   // core
-  'Knee raises en barra':[1, 0, 1, 1], 'Leg raises en suelo':[0, 0, 0, 2], 'Leg raises en barra':[2, 1, 1, 2], 'Dragon flag a 1 pierna':[2, 1, 0, 3], 'Dragon flag':[2, 1, 0, 3],
-  'L sit raises en fondos':[2, 1, 2, 2], 'L sit raises en barra':[2, 1, 1, 2], 'Pullover':[3, 3, 1, 2], 'Plancha a extensión':[2, 1, 2, 1], 'Plancha lateral':[2, 1, 1, 1], 'Windshield wipers en suelo':[0, 0, 0, 2],
+  'Knee raises en barra':[1, 0, 1, 1], 'Leg raises en suelo':[0, 0, 0, 2], 'Leg raises en barra':[2, 1, 1, 1], 'Dragon flag a 1 pierna':[2, 1, 0, 3], 'Dragon flag':[2, 1, 0, 3],
+  'L sit raises en fondos':[2, 1, 2, 2], 'L sit raises en barra':[2, 1, 1, 1], 'Pullover':[3, 3, 1, 2], 'Plancha a extensión':[2, 1, 2, 1], 'Plancha lateral':[2, 1, 1, 1], 'Windshield wipers en suelo':[0, 0, 0, 2],
   'Crunches cortos lumbares':[0, 0, 0, 2], 'Birdog':[1, 0, 2, 1], 'Plancha abdominal':[2, 1, 0, 1], 'L-sit a tuck (en paralelas)':[2, 2, 2, 1], 'L sit en anillas':[3, 2, 1, 1],
-  'Plancha RKC':[2, 1, 0, 1], 'Hollow body':[0, 0, 0, 2]
+  'Plancha RKC':[2, 1, 0, 1], 'Hollow body':[0, 0, 0, 2],
+  'L-sit en paralelas':[2, 2, 2, 1], 'Elevaciones de rodillas en paralelas':[2, 1, 2, 1], 'Elevaciones de rodillas oblicuas colgado':[1, 0, 1, 1], 'Limpiaparabrisas colgado':[2, 1, 1, 2],
+  'Hollow colgado':[2, 1, 1, 1], 'Hollow colgado con rodillas flexionadas':[1, 1, 1, 1], 'Hollow de pie contra la pared':[0, 0, 0, 1], 'Pallof press con banda':[0, 0, 0, 1],
+  'Leñador alto-bajo con banda':[0, 0, 0, 1], 'Leñador bajo-alto con banda':[0, 0, 0, 1], 'Elevación de rodilla de pie':[0, 0, 0, 1]
 };
 // Carga de un ejercicio: { hombro, codo, muñeca, lumbar } en 0-3. Lo que no está en ninguna tabla se asume baja en lo que toca (1,1,1,0).
 function cargaDe(ex){
@@ -120,7 +123,7 @@ function cargaAjustar(orden, rol, ctx){
   orden.forEach(ex => {
     const r = rol.get(ex), s = serDe(r), zona = zoneOf(ex.pattern);
     if(r === 'ancla' && !primeraAncla) primeraAncla = ex;
-    const fijo = r === 'skill' || r === 'bajoA' || ex === primeraAncla || (r === 'circ' && zona === 'piernas') || (r === 'core' && /^core_(antiext|recto)$/.test(ex.pattern));
+    const fijo = r === 'skill' || r === 'bajoA' || ex === primeraAncla || (r === 'circ' && zona === 'piernas') || (r === 'core' && /^core_(antiext|recto|colgado)$/.test(ex.pattern));
     if(fijo || cargaPermite(acum, ex, s)){ out.push(ex); cargaSumar(acum, ex, s); return; }
     const alt = cargaAlternativa(ex, r, s, acum, ctx, usados, out);
     usados.delete(ex.pattern);

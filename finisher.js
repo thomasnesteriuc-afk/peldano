@@ -301,6 +301,7 @@ function finOverlay(){
 function finCerrarOverlay(){
   if(finTimer && finTimer.int) clearInterval(finTimer.int);
   finTimer = null;
+  if(typeof alarmaSoltar === 'function'){ alarmaSoltar('finisher'); alarmaReset('fin:'); }
   const ov = document.getElementById('fin-ov'); if(ov) ov.classList.remove('open');
 }
 function finisherAbrir(auto){
@@ -310,6 +311,8 @@ function finisherAbrir(auto){
   if(plan.formato === 'vueltas'){ finTimer.total = Infinity; }
   else { finTimer.seg = finSegmentos(plan); finTimer.total = finTimer.seg.reduce((s, x) => s + x.dur, 0); }
   finOverlay().classList.add('open');
+  // ALARMA (11/11): el toque en "Empezar" destraba el sonido de iOS y mantiene la pantalla encendida mientras corre el finisher.
+  if(typeof alarmaDesbloquear === 'function'){ alarmaDesbloquear(); alarmaReset('fin:'); alarmaMantener('finisher'); }
   finTick();
 }
 function finElapsed(){ const t = finTimer; return t.acum + (t.corriendo ? (Date.now() - t.t0) / 1000 : 0); }
@@ -321,6 +324,7 @@ function finTick(){
     if(t.terminado) return;
     if(t.fase === 'descanso'){
       const resta = FIN_DESC_VUELTAS - (el - t.faseDesde);
+      if(typeof alarmaTick === 'function') alarmaTick('fin:v' + t.vuelta, resta);                  // 3-2-1 y fin del descanso entre vueltas
       if(resta <= 0){ t.vuelta++; t.fase = 'trabajo'; t.faseDesde = el; finVibrar([40, 60, 120]); finPintar(); return; }
       t.leftSeg = resta;
     }
@@ -329,14 +333,18 @@ function finTick(){
   }
   if(el >= t.total && !t.terminado){
     t.terminado = true; t.corriendo = false; clearInterval(t.int); t.int = null;
-    finVibrar([80, 60, 80, 60, 200]);
+    if(typeof alarmaTick === 'function'){ alarmaTick('fin:' + (t.seg.length - 1), 0, { fin:true }); alarmaSoltar('finisher'); }   // fin del finisher: alarma larga + parpadeo
     finPintar(); return;
   }
   let idx = 0, ini = 0;
   for(let i = 0; i < t.seg.length; i++){ if(el < ini + t.seg[i].dur){ idx = i; break; } ini += t.seg[i].dur; idx = i; }
   const cambio = (idx !== t.ultimoIdx);
-  if(cambio){ t.ultimoIdx = idx; finVibrar([40, 60, 120]); }
+  if(cambio){ t.ultimoIdx = idx; }
   t.idx = idx; t.leftSeg = t.seg[idx].dur - (el - ini);
+  if(typeof alarmaTick === 'function'){                                        // pitidos a los 3-2-1 y aviso al final de cada tramo (minuto EMOM, intervalo, AMRAP)
+    if(idx > 0) alarmaTick('fin:' + (idx - 1), 0);                              // si el reloj saltó de tramo entre dos vueltas, el anterior igual suena
+    alarmaTick('fin:' + idx, t.leftSeg, { fin: idx === t.seg.length - 1 });
+  }
   // Se repinta entero solo al cambiar de tramo (o pausar); el resto del tiempo solo se actualizan los números.
   if(cambio || !t.pintado) finPintar(); else finNumeros();
 }

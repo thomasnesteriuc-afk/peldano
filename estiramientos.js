@@ -45,6 +45,7 @@ function estOverlay(){
 function estCerrar(){
   if(estT && estT.int) clearInterval(estT.int);
   estT = null;
+  if(typeof alarmaSoltar === 'function'){ alarmaSoltar('est'); alarmaReset('est:'); }
   const ov = document.getElementById('est-ov'); if(ov) ov.classList.remove('open');
 }
 function estiramientosAbrir(){
@@ -53,6 +54,7 @@ function estiramientosAbrir(){
   estT = { plan, idx:0, lado:1, prep:true, acum:0, t0:Date.now(), corriendo:true, terminado:false, int:null, pintado:'' };
   estT.int = setInterval(estTick, 250);
   estOverlay().classList.add('open');
+  if(typeof alarmaDesbloquear === 'function'){ alarmaDesbloquear(); alarmaReset('est:'); alarmaMantener('est'); }   // alarma (11/11): sonido destrabado con el toque + pantalla encendida
   estTick();
 }
 const estVibrar = p => { try{ if(typeof vibrar === 'function') vibrar(p); }catch(e){ /* sin vibración */ } };
@@ -66,12 +68,16 @@ function estAvanzar(){
   const p = t.plan[t.idx];
   if(t.lado < p.lados){ t.lado++; estVibrar([40, 60, 120]); return; }
   t.idx++; t.lado = 1;
-  if(t.idx >= t.plan.length){ t.terminado = true; t.corriendo = false; clearInterval(t.int); t.int = null; estVibrar([80, 60, 80, 60, 200]); return; }
+  if(t.idx >= t.plan.length){ t.terminado = true; t.corriendo = false; clearInterval(t.int); t.int = null; if(typeof alarmaSoltar === 'function') alarmaSoltar('est'); return; }
   estVibrar([40, 60, 120]);
 }
 function estTick(){
   const t = estT; if(!t) return;
-  if(!t.terminado && estTranscurrido() >= estDuracion()) estAvanzar();
+  if(!t.terminado){                                                    // ALARMA: pitidos 3-2-1 y aviso al final de cada lado / estiramiento; alarma larga al final de todo
+    const rest = estDuracion() - estTranscurrido(), p = t.plan[t.idx];
+    if(typeof alarmaTick === 'function') alarmaTick('est:' + (t.prep ? 'prep' : t.idx + ':' + t.lado), rest, { fin: !t.prep && t.idx === t.plan.length - 1 && t.lado === p.lados });
+    if(rest <= 0) estAvanzar();
+  }
   const clave = t.terminado ? 'fin' : (t.prep ? 'prep' : t.idx + ':' + t.lado) + ':' + t.corriendo;
   if(t.pintado !== clave){ t.pintado = clave; estPintar(); }
   else { const n = document.getElementById('est-num'); if(n && !t.terminado) n.textContent = estFmt(estDuracion() - estTranscurrido()); }

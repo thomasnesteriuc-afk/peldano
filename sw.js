@@ -13,7 +13,7 @@
  *
  * Solo toca pedidos del propio sitio. Lo externo (los enlaces a YouTube) pasa directo y es opcional.
  */
-const VERSION = '9ed67cb22e61';
+const VERSION = '3da8e1be16c6';
 const CACHE = 'peldano-' + VERSION;
 const ASSETS = [
   './',
@@ -36,6 +36,7 @@ const ASSETS = [
   'entrada-calor.js',
   'tiempo-sesion.js',
   'carga.js',
+  'alarma.js',
   'estiramientos.js',
   'descripciones.js'
 ];

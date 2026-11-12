@@ -40,6 +40,7 @@ window.FEATURES = {
   homeCamino:false,        // home vieja: Peldaño, Capítulo, escalera dibujada, racha (reemplazada por la elección de día)
   plantillaFija:true,      // Etapa 4: cada tipo de día tiene una plantilla fija por bloque mensual (false = vuelve a armarse sola cada vez)
   graficoConstancia:false, // gráfico "Tu constancia" (barras por semana) en Progreso: retirado el 07/11
+  vibracion:false,         // vibración de los timers: apagada (iOS no la permite en la web; se avisa con sonido y parpadeo, alarma.js)
   sesionLiviana:false,     // botón "Hoy, sesión liviana" (retirado a pedido de Thomás el 06/11; queda la descarga programada)
   ppCompleto:false,        // punto de partida: false = solo las 5 escaleras más importantes (06/11); true = las 24
   estiramientos:true,      // 4.º botón de la elección de día: sesión exclusiva de estiramientos (06/11)
@@ -317,6 +318,11 @@ window.FEATURE_SIN_BOTON = [];   // activos que no llevan botón en la barra (ho
   /* ZONA SEGURA SUPERIOR (iPhone, app instalada): el contenido scrollea por debajo de la hora/batería.
      Esta franja fija tiene fondo propio y alto = safe-area-inset-top, y queda por encima de todo (también de los overlays). */
   .zona-segura{ position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top, 0px); background:var(--bg); z-index:9000; pointer-events:none; }
+  /* ALARMA de los timers (11/11): al llegar al límite la pantalla entera parpadea (2 veces por segundo) además de sonar */
+  #alarma-flash{ position:fixed; inset:0; z-index:99999; pointer-events:none; display:none; background:var(--text); opacity:.92; }
+  #alarma-flash.activo{ display:block; animation:alarmaParp 1s steps(1, end) infinite; }
+  html[data-diseno="minimo"] #alarma-flash.activo{ animation:alarmaParp 1s steps(1, end) infinite !important; }   /* el diseño mínimo apaga las animaciones: el aviso de la alarma es la excepción a propósito */
+  @keyframes alarmaParp{ 0%{ opacity:.92; } 25%{ opacity:0; } 50%{ opacity:.92; } 75%{ opacity:0; } 100%{ opacity:.92; } }
   .t-overlay{ padding-top:env(safe-area-inset-top, 0px); }
   /* Punto de partida con número: grilla compacta, botones de 48 px (mismo componente en Perfil y onboarding) */
   .pp-grid{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
@@ -1189,19 +1195,20 @@ function skillStatus(id){
 }
 // ===== PROGRESIÓN POR SERIE (cambio del 29/10, FEEDBACK_ENTRENAMIENTO.md ítem 3) =====
 // En cada serie se marca Costó · Cumplí · Sobró. La próxima vez sale de las marcas de TODAS las series de la sesión:
-//  · todas Cumplí o Sobró, con al menos la mitad Sobró   -> SUBE: +1 rep (+5 s en isométricos)
-//  · todas Cumplí (o mezcla sin Costó)                    -> IGUAL: mismo objetivo
-//  · solo la ÚLTIMA serie costó (1 Costó, al final)       -> IGUAL: es fatiga normal, no es señal de bajar
-//  · 2 o más series Costó                                 -> IGUAL; si se repite en la sesión siguiente -> BAJA: -1 rep (-5 s)
-//  · al llegar al tope del rango con todas Cumplí/Sobró   -> SIGUIENTE PELDAÑO (el nuevo arranca en su piso)
-// Un solo Costó en el medio (no al final) cuenta como mezcla: IGUAL, sin señal.
+// OBJETIVO EN RANGO (11/11): cada ejercicio muestra un rango ("8–10 reps", "15–20 s"). Costó = no llegó al mínimo · Cumplí = dentro del rango ·
+// Sobró = llegó al tope o lo pasó. Sale de las marcas de TODAS las series de la sesión:
+//  · la mitad o más de las series Sobró                   -> SUBE: el rango sube 1 (8–10 → 9–11; +5 s en isométricos)
+//  · menos de la mitad Sobró                              -> IGUAL: mismo rango
+//  · solo la ÚLTIMA serie costó (1 Costó, al final)       -> IGUAL: es fatiga normal, el objetivo NO baja
+//  · 2 o más series Costó                                 -> IGUAL; si se repite en la sesión siguiente -> BAJA: el rango baja 1 (-5 s)
+//  · en el rango más alto del peldaño (su techo) y la mitad o más Sobró -> SIGUIENTE PELDAÑO (el nuevo arranca en su rango inicial)
+// Un solo Costó en el medio (no al final) no impide subir si la mitad o más fueron Sobró (c < 2).
 function evaluarSeries(marks){
   const n = marks.length, c = marks.filter(m => m === 'costo').length, s = marks.filter(m => m === 'sobro').length;
   if(!n) return { tipo:'nada', n, c, s };
-  if(c === 0) return { tipo: (s * 2 >= n) ? 'sube' : 'igual', n, c, s };
   if(c === 1 && marks[n - 1] === 'costo') return { tipo:'ultima', n, c, s };
   if(c >= 2) return { tipo:'costo2', n, c, s };
-  return { tipo:'igual', n, c, s };
+  return { tipo: (s * 2 >= n) ? 'sube' : 'igual', n, c, s };
 }
 // Marca de resumen de la sesión (para el historial y el volumen estimado).
 function marcaResumen(marks){ const e = evaluarSeries(marks); return e.tipo === 'sube' ? 'sobro' : (e.tipo === 'costo2' ? 'costo' : 'cumpli'); }
@@ -2687,10 +2694,18 @@ function targetText(ex){
     const ts = progState[ex.name] ? progState[ex.name].target : SKILL_REQ[ex.name].v;
     return isStatic(ex) ? ts + 's' : ts + ' reps';
   }
-  const st = progState[ex.name];
-  const t = st ? st.target : tBase(ex);
-  if(isStatic(ex)) return t + 's';
-  return t + ' reps';                                       // la app pide UN número de reps (o segundos) por ejercicio, no un rango
+  const R = rangoDe(ex);                                    // OBJETIVO EN RANGO (11/11): "8–10 reps", "15–20 s" (antes: un solo número)
+  return isStatic(ex) ? (R.min + '–' + R.max + ' s') : (R.min + '–' + R.max + ' reps');
+}
+// RANGO DEL OBJETIVO (pedido de Thomás, 11/11). Ancho: 2 reps (5 s en isométricos). `st.target` es el MÍNIMO del rango; el máximo es mínimo + ancho
+// y nunca pasa el techo del peldaño (getCeilings().medio). Arranca en el piso: p. ej. flexiones 8–10 → 9–11 → 10–12 (techo 12).
+//   Costó = no llegó al mínimo · Cumplí = dentro del rango · Sobró = llegó al tope del rango o lo pasó.
+function rangoAncho(ex){ return isStatic(ex) ? 5 : 2; }
+function rangoDe(ex){
+  const c = getCeilings(ex), W = rangoAncho(ex), st = progState[ex.name];
+  let lo = st && typeof st.target === 'number' ? st.target : tBase(ex);
+  lo = Math.max(c.bajo, Math.min(lo, Math.max(c.bajo, c.medio - W)));
+  return { min: lo, max: Math.min(lo + W, Math.max(c.medio, lo)), techo: c.medio, piso: c.bajo, ancho: W };
 }
 function tStep(ex){ return isStatic(ex) ? 5 : 1; }   // +1 rep (+5 s en isométricos) por cada mejora (feedback por serie)
 function tFloor(ex){ return getCeilings(ex).bajo; }   // el piso del rango
@@ -2714,17 +2729,17 @@ function registerSeries(ex, marks){
   st.marks.push(marcaResumen(marks));
   st.sobro = 0; st.cumpli = 0; st.costo = 0;                         // contadores viejos (por ejercicio): ya no se usan
   let event = 'steady';
-  const ceil = getCeilings(ex).medio, paso = tStep(ex);
-  if(ev.c === 0 && st.target >= ceil){
-    st.mastered = true;                                              // tope del rango con todas Cumplí/Sobró -> siguiente peldaño
+  const R = rangoDe(ex), ceil = R.techo, paso = tStep(ex);
+  st.target = R.min;                                                  // el mínimo del rango vigente (ya acomodado a su piso y a su techo)
+  if(ev.tipo === 'sube' && R.max >= ceil){
+    st.mastered = true;                                              // rango más alto del peldaño y la mitad o más Sobró -> siguiente peldaño
     event = 'mastered'; st.costoSeg = 0;
   } else if(ev.tipo === 'sube'){
-    st.target = Math.min(st.target + paso, ceil); event = 'raised'; st.costoSeg = 0;
+    st.target = Math.min(R.min + paso, Math.max(R.piso, ceil - R.ancho)); event = 'raised'; st.costoSeg = 0;   // el rango sube 1 (8–10 → 9–11)
   } else if(ev.tipo === 'costo2'){
-    st.costoSeg = (st.costoSeg || 0) + 1;                            // 2 o más Costó: mismo objetivo; si se repite -> baja
+    st.costoSeg = (st.costoSeg || 0) + 1;                            // 2 o más Costó: mismo rango; si se repite -> el rango baja 1
     if(st.costoSeg >= 2){
-      const piso = tFloor(ex);
-      if(st.target - paso >= piso) st.target -= paso;
+      if(R.min - paso >= R.piso) st.target = R.min - paso;
       if(st.mastered) st.mastered = false;                           // recalibración a la baja
       st.costoSeg = 0; event = 'lowered';
     }
@@ -2897,7 +2912,7 @@ document.getElementById("session-commit").addEventListener("click", ()=>{
     const ex = exByName(name);
     const wasUnlockable = unlockedDependents(name);
     const ev = registerMark(ex, sessionMarks[name]);
-    if(ev==="raised") raised.push(name + " → " + progState[name].target + tUnit(ex));
+    if(ev==="raised") raised.push(name + " → " + targetText(ex));
     if(ev==="raised" || ev==="mastered"){
       if(ev==="mastered") mastered.push(name);
       wasUnlockable.forEach(sk => { if(!unlocked.includes(sk)) unlocked.push(sk); });
@@ -4006,13 +4021,14 @@ function restSeconds(ex){
 }
 function workSeconds(ex){ const st = progState[ex.name]; return (st ? st.target : tBase(ex)) || 30; }
 function fmtT(sec){ sec = Math.max(0, Math.round(sec)); const m = Math.floor(sec/60), s = sec%60; return m > 0 ? (m + ':' + String(s).padStart(2,'0')) : ('' + s); }
-function vibrar(p){ if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(p); }
+// SIN VIBRACIÓN (11/11): iOS no la permite en la web; el aviso de los timers es sonido + parpadeo de pantalla (alarma.js). La función queda por si se reactiva.
+function vibrar(p){ if(window.FEATURES.vibracion === true && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(p); }
 function ensureTimerOverlay(){
   let ov = document.getElementById('timer-ov');
   if(!ov){ ov = document.createElement('div'); ov.id = 'timer-ov'; ov.className = 't-overlay'; document.body.appendChild(ov); }
   return ov;
 }
-function cerrarTimer(){ if(timerState && timerState.int) clearInterval(timerState.int); timerState = null; const ov = document.getElementById('timer-ov'); if(ov) ov.classList.remove('open'); }
+function cerrarTimer(){ if(timerState && timerState.int) clearInterval(timerState.int); timerState = null; alarmaSoltar('timer'); alarmaReset('tm:'); const ov = document.getElementById('timer-ov'); if(ov) ov.classList.remove('open'); }
 function abrirTimer(opts){
   opts = opts || {};
   ensureTimerOverlay().classList.add('open');
@@ -4025,28 +4041,32 @@ function tickTimer(){
   const t = timerState; if(!t) return;
   if(t.modo === 'chrono'){ t.up++; pintarTimer(); return; }
   t.left--;
+  // ALARMA (11/11): pitidos a los 3-2-1 y, al terminar el tramo (trabajo o descanso), sonido + parpadeo de pantalla. Sin vibración.
+  alarmaTick('tm:' + t.ronda + ':' + t.fase, t.left);
   if(t.left <= 0){
-    vibrar([40,80,160]);
     if(t.fase === 'work'){ t.fase = 'rest'; t.left = t.rest; }
     else { t.fase = 'work'; t.left = t.work; t.ronda++; }
-  } else if(t.left <= 3){ vibrar(18); }
+  }
   pintarTimer();
 }
 function toggleTimer(){
   const t = timerState; if(!t) return;
   t.corriendo = !t.corriendo;
-  if(t.corriendo){ vibrar(12); t.int = setInterval(tickTimer, 1000); } else { clearInterval(t.int); t.int = null; }
+  if(t.corriendo){
+    alarmaDesbloquear(); alarmaMantener('timer');                    // toque en "Empezar": destraba el sonido y mantiene la pantalla encendida
+    t.int = setInterval(tickTimer, 1000);
+  } else { clearInterval(t.int); t.int = null; alarmaSoltar('timer'); }
   pintarTimer();
 }
 function reiniciarTimer(){
   const t = timerState; if(!t) return;
-  clearInterval(t.int); t.int = null; t.corriendo = false;
+  clearInterval(t.int); t.int = null; t.corriendo = false; alarmaSoltar('timer'); alarmaReset('tm:');
   if(t.modo === 'chrono'){ t.up = 0; } else { t.fase = 'work'; t.left = t.work; t.ronda = 1; }
   pintarTimer();
 }
 function setModoTimer(m){
   const t = timerState; if(!t) return;
-  clearInterval(t.int); t.int = null; t.corriendo = false;
+  clearInterval(t.int); t.int = null; t.corriendo = false; alarmaSoltar('timer'); alarmaReset('tm:');
   t.modo = m;
   if(m === 'chrono') t.up = 0; else { t.fase = 'work'; t.left = t.work; t.ronda = 1; }
   pintarTimer();
@@ -4718,8 +4738,13 @@ function renderDay(){
 
   window.__sesionActual = session;                                          // commitDay registra contra ESTA sesión
   renderSessionBlocks(c, session);
-  c.querySelectorAll('.dser').forEach(b => b.addEventListener('click', () => { const k = b.dataset.k, n = parseInt(b.dataset.n) || 1; const a = daySeries[k] = daySeries[k] || []; if(a.length < n) a.push(b.dataset.m); renderDay(); }));
-  c.querySelectorAll('.dser-undo').forEach(b => b.addEventListener('click', () => { const a = daySeries[b.dataset.k]; if(a && a.length) a.pop(); renderDay(); }));
+  c.querySelectorAll('.dser').forEach(b => b.addEventListener('click', () => { const k = b.dataset.k, n = parseInt(b.dataset.n) || 1; const a = daySeries[k] = daySeries[k] || []; if(a.length < n) a.push(b.dataset.m);
+    // DESCANSO ENTRE SERIES con alarma (11/11): al marcar una serie (que no sea la última) arranca la cuenta del descanso del ejercicio.
+    const rest = parseInt(b.dataset.rest) || 0;
+    if(typeof descansoArrancar === 'function'){ if(a.length < n && rest > 0){ alarmaDesbloquear(); descansoArrancar(k, rest); } else descansoCancelar(true); }
+    renderDay(); }));
+  c.querySelectorAll('.dser-undo').forEach(b => b.addEventListener('click', () => { const a = daySeries[b.dataset.k]; if(a && a.length) a.pop(); if(typeof descansoCancelar === 'function') descansoCancelar(true); renderDay(); }));
+  c.querySelectorAll('.descanso-saltar').forEach(b => b.addEventListener('click', () => { if(typeof descansoCancelar === 'function') descansoCancelar(true); const bx = b.closest('.descanso-box'); if(bx) bx.remove(); }));
   c.querySelectorAll('.tm-open').forEach(b => b.addEventListener('click', () => {
     const ex = exByName(b.dataset.ex);
     if(ex) abrirTimer({ name: ex.name, work: workSeconds(ex), rest: restSeconds(ex) });
@@ -4788,14 +4813,15 @@ function buildBlocks(session){
 // El total de series es fijo (anclas 4, accesorios 3, descarga 2): no se suman ni se quitan. `palabra` = 'Serie' o 'Ronda'.
 // daySeries[key] = lista de marcas ya dadas ('costo' | 'cumpli' | 'sobro'); en los circuitos la clave es 'ronda::<bloque>'.
 const MARCA_TXT = { costo:'Costó', cumpli:'Cumplí', sobro:'Sobró' };
-function serieBoxHTML(key, n, palabra){
+function serieBoxHTML(key, n, palabra, restSeg){
   const marcas = (daySeries[key] || []).slice(0, n), hechas = marcas.length, completo = hechas >= n;
   const k = String(key).replace(/"/g, '&quot;');
-  const bt = m => '<button class="ghost dser" data-k="' + k + '" data-n="' + n + '" data-m="' + m + '" style="margin:0; min-height:' + (m === 'cumpli' ? 64 : 48) + 'px; font-size:' + (m === 'cumpli' ? 20 : 16) + 'px; font-weight:' + (m === 'cumpli' ? 800 : 700) + ';">' + MARCA_TXT[m] + '</button>';
+  const bt = m => '<button class="ghost dser" data-k="' + k + '" data-n="' + n + '" data-rest="' + (restSeg || 0) + '" data-m="' + m + '" style="margin:0; min-height:' + (m === 'cumpli' ? 64 : 48) + 'px; font-size:' + (m === 'cumpli' ? 20 : 16) + 'px; font-weight:' + (m === 'cumpli' ? 800 : 700) + ';">' + MARCA_TXT[m] + '</button>';
   return '<div class="serie-box" style="margin:10px 0 0;">' +
     '<div class="u-num" style="font-family:var(--font-display); font-size:19px; margin-bottom:8px;">' + (completo ? palabra + 's completas ✓ ' + n + ' de ' + n : palabra + ' ' + (hechas + 1) + ' de ' + n) + '</div>' +
     (completo ? '' : '<div style="display:grid; grid-template-columns:1fr 2fr 1fr; gap:8px; align-items:stretch;">' + bt('costo') + bt('cumpli') + bt('sobro') + '</div>') +
     (hechas ? '<div style="font-size:13px; margin-top:8px; display:flex; justify-content:space-between; align-items:center; gap:8px;"><span class="serie-marcas">' + marcas.map((m, i) => (i + 1) + ': ' + MARCA_TXT[m]).join(' · ') + '</span><button class="ghost dser-undo" data-k="' + k + '" style="margin:0; min-height:48px; padding:6px 12px; font-size:13px;">Deshacer última</button></div>' : '') +
+    ((!completo && hechas) ? descansoHTML(key) : '') +
     '</div>';
 }
 function exCardHTML(ex){
@@ -4907,7 +4933,7 @@ function renderSessionBlocks(c, session){
       card.className = 'summary-card';
       card.style.cssText = 'margin-bottom:8px;' + (b.tipo === 'super' ? ' border-left:3px solid var(--accent);' : '');
       card.innerHTML = (b.tipo === 'super' ? '<div style="font-size:12px; color:var(--accent); font-weight:800; letter-spacing:.1em; margin-bottom:6px;">' + (i===0?'A':'B') + '</div>' : '') + exCardHTML(ex);
-      if(!b.circuito) card.insertAdjacentHTML('beforeend', serieBoxHTML(ex.name, b.rondas, 'Serie'));   // "Serie 2 de 4"
+      if(!b.circuito) card.insertAdjacentHTML('beforeend', serieBoxHTML(ex.name, b.rondas, 'Serie', restSeconds(ex)));   // "Serie 2 de 4" + descanso con alarma
       if(primerFuerte && ex.name === primerFuerte.name && typeof aproximacionHTML === 'function' && aproximacionNecesaria(ex)) card.insertAdjacentHTML('afterbegin', aproximacionHTML(ex));   // 1-2 series fáciles, marcadas (ya no van en la entrada en calor)
       // "Cambiar ejercicio" (Etapa 4): solo por dolor o falta de equipamiento. Reemplaza por otro del mismo patrón y nivel, transfiere el
       // progreso y queda fijo hasta fin de bloque. Sin habilidades, sin soga.
@@ -4936,7 +4962,7 @@ function renderSessionBlocks(c, session){
     if(b.circuito){                            // en el circuito (piernas y abdominales) se cuenta la RONDA del bloque entero, no cada ejercicio
       const rb = document.createElement('div');
       rb.className = 'summary-card';
-      rb.innerHTML = serieBoxHTML('ronda::' + bi, b.rondas, 'Ronda');
+      rb.innerHTML = serieBoxHTML('ronda::' + bi, b.rondas, 'Ronda', b.tipo === 'core' ? 60 : 75);
       wrap.appendChild(rb);
     }
     c.appendChild(wrap);
@@ -5027,7 +5053,7 @@ function commitDay(){
     h += '</div>';
     // Vibración: pulsos que aceleran mientras se carga y un golpe en el pum.
     // Anda en Android; iOS Safari la bloquea (undefined -> no hace nada). En la nativa funcionará en iPhone.
-    if(typeof navigator !== 'undefined' && navigator.vibrate){ navigator.vibrate([12,150,18,130,28,105,45,80,70,55,100,30,400]); }
+    vibrar([12,150,18,130,28,105,45,80,70,55,100,30,400]);   // (apagada: FEATURES.vibracion)
   }
   h += '<p style="font-size:13px; color:var(--text-dim); margin:2px 0 ' + ((completaSemana||nuevoColor)?'2px':'14px') + ';">Entrenamiento hecho.</p>';
   if(completaSemana) h += '<p style="font-size:12.5px; color:var(--accent-strong); font-weight:600; margin:0 0 14px;">🔥 Semana completa.</p>';
@@ -6152,6 +6178,7 @@ console.log('Ejercicios totales:', Object.values(bibliotecaCalistenia).reduce((s
 <script src="entrada-calor.js"></script>
 <script src="tiempo-sesion.js"></script>
 <script src="carga.js"></script>
+<script src="alarma.js"></script>
 <script src="estiramientos.js"></script>
 <script src="descripciones.js"></script>
 <script src="offline.js"></script>

@@ -25,7 +25,7 @@ const CARGA_UMBRAL = { hombro:{ alta:22, max:32 }, codo:{ alta:28, max:40 }, 'mu
 const CARGA_PATRON = {
   push_horiz:[2, 2, 2, 0], dips:[3, 2, 1, 0], push_vert:[3, 2, 3, 0], triceps:[1, 3, 2, 0], planche:[3, 3, 3, 1],
   pull_vert:[2, 3, 1, 0], pull_horiz:[1, 2, 1, 0], pull_activ:[1, 0, 1, 0], ring_support:[2, 1, 1, 0], muscleup:[3, 3, 1, 1], front_lever:[3, 3, 1, 2],
-  squat:[0, 0, 0, 1], squat_uni:[0, 0, 0, 1], lunge:[0, 0, 0, 1], power_legs:[0, 0, 0, 1], hinge:[0, 0, 1, 2], hinge_uni:[0, 0, 0, 2], nordic:[0, 0, 0, 1], copenhagen:[0, 0, 0, 1],
+  squat:[0, 0, 0, 1], squat_uni:[0, 0, 0, 1], lunge:[0, 0, 0, 1], power_legs:[0, 0, 0, 1], hinge:[0, 0, 1, 2], hinge_uni:[0, 0, 0, 2], isquio_a:[0, 0, 0, 1], aductor_a:[0, 0, 0, 1],
   core_recto:[0, 0, 0, 1], core_colgado:[1, 0, 1, 1], core_oblicuo:[0, 0, 0, 1], core_lumbar:[0, 0, 1, 2], core_estab:[1, 0, 1, 1], core_antiext:[0, 0, 0, 1]
 };
 // Excepciones por ejercicio (las hermanas de cada escalera también).
@@ -44,6 +44,7 @@ const CARGA_NOMBRE = {
   'Remo en anillas (ring row)':[2, 2, 1, 0], 'Australiana prona (barra baja)':[1, 1, 1, 0], 'Australiana supina (barra baja)':[1, 2, 1, 0], 'Australiana con pies elevados':[2, 2, 1, 0], 'Remo en barra':[1, 2, 1, 1],
   'Dominadas con banda':[2, 2, 1, 0], 'Dominadas en anillas':[3, 3, 1, 0], 'Dominadas explosivas':[3, 3, 1, 0], 'Dominadas asimétricas':[3, 3, 1, 0], 'Soporte en anillas (support hold)':[2, 1, 1, 0],
   // piernas / cadena posterior
+  'Peso muerto a una pierna con bajada lenta':[0, 0, 0, 1], 'Curl femoral de pie con banda':[0, 0, 0, 1], 'Sentadilla cosaca asistida (agarrado de un poste)':[0, 0, 0, 1], 'Sentadilla cosaca':[0, 0, 0, 1],
   'Puente corto':[0, 0, 1, 2], 'Puente completo':[2, 0, 3, 3], 'Puente de pie a pie':[2, 0, 3, 3],
   // core
   'Knee raises en barra':[1, 0, 1, 1], 'Leg raises en suelo':[0, 0, 0, 2], 'Leg raises en barra':[2, 1, 1, 1], 'Dragon flag a 1 pierna':[2, 1, 0, 3], 'Dragon flag':[2, 1, 0, 3],
@@ -88,7 +89,7 @@ function cargaDeSesion(ses){
 // ---------- ajuste de la sesión por carga ----------
 // Recorre la sesión en su orden real (habilidad → anclas → secundario → core) sumando la carga. Un ejercicio que NO puede entrar
 // (la zona ya está en ALTA y tiene carga mayor a baja, o pasaría el MAX) se cambia por otro del mismo grupo que sí entre y, si no hay,
-// se saca. NUNCA se tocan: la habilidad, la primera ancla, el bloque de calidad (Nordic/Copenhagen), los ejercicios de Piernas del
+// se saca. NUNCA se tocan: la habilidad, la primera ancla, el bloque A de calidad (isquios y aductores), los ejercicios de Piernas del
 // circuito y el anti-extensión / abdomen recto del core. El segundo ancla del día no retrocede en su propia escalera.
 function cargaAlternativa(ex, r, s, acum, ctx, usados, yaEnSesion){
   const zona = zoneOf(ex.pattern);

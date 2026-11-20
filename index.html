@@ -950,14 +950,12 @@ const LEGS = [
   {name:"Bisagra de cadera (buenos días)", muscles:"Isquiotibiales y glúteos", desc:"De pie, manos detrás de la nuca o cruzadas en el pecho: llevás la cadera atrás con la espalda recta hasta sentir el isquio y volvés apretando el glúteo. Es el patrón base del peso muerto.", dif:2, tips:["La cadera va hacia atrás, no hacia abajo: es una bisagra, no una sentadilla.", "Espalda recta todo el tiempo, rodillas apenas flexionadas.", "Bajá hasta sentir el isquio estirado y volvé apretando el glúteo.", "Mirada al frente, cuello neutro."]},
   {name:"Peso muerto a una pierna con apoyo", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera parado en una pierna, con la punta del otro pie apoyada atrás en el piso o una mano en la pared para no perder el equilibrio.", dif:3, tips:["Tocá el piso solo con la punta del pie de atrás; el peso va en la pierna de adelante.", "Cadera y hombros cuadrados: no abras la cadera hacia el costado.", "Espalda recta, pierna de apoyo con la rodilla apenas flexionada."]},
   {name:"Peso muerto a una pierna", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Bisagra de cadera en una sola pierna, con la otra pierna estirada hacia atrás en el aire, cuerpo en línea de la cabeza al talón.", dif:4, tips:["Cuerpo en una línea: la pierna de atrás sube a la vez que el torso baja.", "Cadera cuadrada, sin abrirla hacia afuera.", "Apoyás toda la planta del pie; no te agarrés de nada."]},
-  // Nordic hamstring: LO #1 para no desgarrarte el isquio. Bajo volumen, progresión propia.
-  {name:"Nordic asistido", muscles:"Isquiotibiales", desc:"De rodillas con los talones fijos (debajo de un sillón, una barra baja o un compañero), bajá el torso hacia adelante lo más lento que puedas y frená el final con las manos. Empujá con las manos para volver.", dif:3, tips:["Talones bien anclados; almohadón o toalla abajo de las rodillas.", "Cuerpo en línea recta de las rodillas a la cabeza: no te dobles en la cadera.", "Bajá LENTO; las manos solo frenan el final, después te ayudás para subir.", "Es un ejercicio de bajo volumen: pocas reps, muy bien hechas."]},
-  {name:"Nordic excéntrico", muscles:"Isquiotibiales", desc:"Igual que el Nordic asistido pero aguantás la bajada con los isquios hasta donde puedas antes de apoyar las manos, y subís con ayuda de los brazos.", dif:4, tips:["Bajá lo más lento que puedas: contá 4-5 segundos.", "Cuerpo recto, sin doblar la cadera.", "Las manos aparecen recién cuando ya no aguantás.", "Bajo volumen: 2 series y listo."]},
-  {name:"Nordic completo", muscles:"Isquiotibiales", desc:"Bajás controlado y volvés a subir usando solo los isquios (con un empujón mínimo de las manos si hace falta). Es una de las mejores prevenciones de desgarros.", dif:5, tips:["Bajada lenta y subida con los isquios; manos solo si te falla.", "Cuerpo en línea recta todo el recorrido.", "Bajo volumen: pocas reps de calidad.", "Si te falla la bajada, volvé al excéntrico."]},
-  // Copenhagen: aductores (ingle). Isométrico por lado; bajo volumen; progresión de palanca.
-  {name:"Copenhagen con rodilla apoyada", muscles:"Aductores (ingle)", desc:"De costado, antebrazo en el piso, la rodilla de arriba apoyada sobre un banco o silla y la pierna de abajo colgando: subí la cadera y sostené. Palanca corta = versión más fácil.", dif:2, tips:["Codo abajo del hombro, cuerpo en línea recta.", "Apoyás la RODILLA (no el pie) arriba del banco.", "Subí la cadera apretando la parte interna del muslo de arriba.", "Hacé un lado y después el otro."]},
-  {name:"Copenhagen palanca corta", muscles:"Aductores (ingle)", desc:"Igual, pero apoyando el pie y la parte interna del tobillo arriba del banco con la pierna estirada. Más palanca, más trabajo para los aductores.", dif:3, tips:["Pierna de arriba estirada, apoyada por el borde interno del pie.", "Cuerpo en línea recta; la cadera no se cae.", "Sostené el tiempo indicado sin dejar caer la cadera."]},
-  {name:"Copenhagen completo", muscles:"Aductores (ingle)", desc:"Cuerpo horizontal con el pie de arriba apoyado en el banco y la pierna de abajo flotando o tocando el piso solo como ayuda: el trabajo fuerte para la ingle.", dif:4, tips:["Cuerpo horizontal, bien firme.", "Apoyá el pie completo arriba del banco, no la rodilla.", "Sostené sin que la cadera se hunda."]},
+  // BLOQUE A de Piernas (calidad, descanso completo; 20/11, reemplaza a Nordic y Copenhagen): todo parado y sin piso.
+  // Isquiotibiales: peso muerto a una pierna con bajada lenta y pausa abajo (o curl femoral de pie con banda si hay bandas). Aductores: sentadilla cosaca.
+  {name:"Peso muerto a una pierna con bajada lenta", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"De pie sobre una pierna, bajá el torso llevando la otra pierna atrás en 3 a 4 segundos, hacé una pausa abajo y subí. Todas las de un lado y cambiá.", dif:2, zone:"isquios", revisado:"entrenador"},
+  {name:"Curl femoral de pie con banda", muscles:"Isquiotibiales", desc:"De pie, con la banda anclada abajo y enganchada en un tobillo, llevá el talón hacia el glúteo doblando la rodilla y volvé controlado. Todas las de un lado y cambiá.", dif:2, zone:"isquios", revisado:"entrenador"},
+  {name:"Sentadilla cosaca asistida (agarrado de un poste)", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Piernas bien abiertas y agarrado de un poste: bajá sobre una pierna con la otra estirada de costado y volvé. Todas las de un lado y cambiá.", dif:2, zone:"aductores", revisado:"entrenador"},
+  {name:"Sentadilla cosaca", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Piernas bien abiertas: bajá sobre una pierna con la otra estirada de costado y el talón apoyado, y volvé. Todas las de un lado y cambiá.", dif:3, zone:"aductores", revisado:"entrenador"},
   // Cadena posterior — Puentes (Paul Wade, Convict Conditioning). Rellena el hueco de columna/glúteo.
   {name:"Puente corto", muscles:"Glúteo, isquiotibiales y lumbar", desc:"Acostado boca arriba, rodillas flexionadas y pies en el suelo, elevar la cadera contrayendo glúteo hasta alinear tronco y muslos. Paso inicial y accesible de la serie de puentes.", dif:2, cite:"Paul Wade — Convict Conditioning (Big Six)"},
   {name:"Puente completo", muscles:"Lumbar, glúteo, hombros y cuádriceps", desc:"Puente de espalda completo (rueda): manos y pies en el suelo, empujar la cadera hacia arriba hasta extender caderas y hombros. Exige movilidad de columna y hombro.", dif:3, requires:"Puente corto", cite:"Paul Wade — Convict Conditioning (Big Six)"},
@@ -1074,7 +1072,7 @@ const LADDER_LABEL = {
   pull_horiz:"Remo (tirón horizontal)", pull_vert:"Dominadas (tirón vertical)",
   muscleup:"Muscle-up", front_lever:"Front lever",
   squat:"Sentadilla", lunge:"Zancadas", power_legs:"Pliométrico", hinge:"Puente",
-  squat_uni:"Sentadilla a una pierna", hinge_uni:"Bisagra a una pierna", nordic:"Nordic (isquios)", copenhagen:"Copenhagen (aductores)",
+  squat_uni:"Sentadilla a una pierna", hinge_uni:"Bisagra a una pierna", isquio_a:"Isquiotibiales (bloque A)", aductor_a:"Aductores (bloque A)",
   core_recto:"Abdomen (recto)", core_colgado:"Flexores de cadera (colgado)", core_oblicuo:"Oblicuos", core_lumbar:"Lumbares", core_estab:"Estabilización", core_antiext:"Anti-extensión"
 };
 const LADDERS = {
@@ -1096,8 +1094,9 @@ const LADDERS = {
   power_legs:{gate:"Sentadillas", rungs:["Squat plío"]},
   hinge:{gate:null, rungs:["Puente corto","Puente completo","Puente de pie a pie"]},
   hinge_uni:{gate:null, rungs:["Bisagra de cadera (buenos días)","Peso muerto a una pierna con apoyo","Peso muerto a una pierna"]},
-  nordic:{gate:null, rungs:["Nordic asistido","Nordic excéntrico","Nordic completo"]},
-  copenhagen:{gate:null, rungs:["Copenhagen con rodilla apoyada","Copenhagen palanca corta","Copenhagen completo"]},
+  // BLOQUE A (20/11): isquiotibiales (una sola escalera de un peldaño; el curl con banda es su hermana) y aductores (asistida con poste -> libre)
+  isquio_a:{gate:null, rungs:["Peso muerto a una pierna con bajada lenta"]},
+  aductor_a:{gate:null, rungs:["Sentadilla cosaca asistida (agarrado de un poste)","Sentadilla cosaca"]},
   core_antiext:{gate:null, rungs:["Dead bug","Plancha RKC","Hollow body con rodillas flexionadas","Hollow body"]},
   // Flexores de cadera COLGADO / PARALELAS (ancla fija del core, 06/11 v2): elevaciones de rodillas -> de piernas -> L-sit -> pies a la barra
   core_colgado:{gate:null, rungs:["Knee raises en barra","L sit raises en barra","L-sit en paralelas","Leg raises en barra"]},
@@ -1135,8 +1134,6 @@ const STATIC_EX_NAMES = new Set([
   "Half front lever","Front lever",
   // Sostenes de habilidad que antes contaban como repeticiones
   "Pino en pared (asistido)","L-sit a tuck (en paralelas)",
-  // Copenhagen: isométrico por lado (segundos)
-  "Copenhagen con rodilla apoyada","Copenhagen palanca corta","Copenhagen completo",
   // Movilidad: estiramientos y sostenes (Encargo Final, pilar 2)
   "Sentadilla profunda sostenida","Estiramiento de isquiotibiales de pie",
   "Estiramiento de cuádriceps de pie","Estiramiento de pectoral en marco",
@@ -1354,8 +1351,8 @@ const PP_REF = {
   power_legs:   { ref:0, u:'reps', q:'¿Cuántos saltos con sentadilla seguidos hacés?' },
   hinge:        { ref:0, u:'reps', q:'¿Cuántos puentes cortos seguidos hacés?' },
   hinge_uni:    { ref:1, u:'reps', q:'¿Cuántos pesos muertos a una pierna con apoyo hacés por pierna?' },
-  nordic:       { ref:0, u:'reps', q:'¿Cuántos Nordic asistidos seguidos hacés?' },
-  copenhagen:   { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el Copenhagen con rodilla apoyada, por lado?' },
+  isquio_a:     { ref:0, u:'reps', q:'¿Cuántos pesos muertos a una pierna con bajada lenta hacés por lado?' },
+  aductor_a:    { ref:1, u:'reps', q:'¿Cuántas sentadillas cosacas hacés por lado?' },
   core_recto:   { ref:1, u:'reps', q:'¿Cuántas elevaciones de piernas en el suelo seguidas hacés?' },
   core_oblicuo: { ref:0, u:'reps', q:'¿Cuántos lateral kicks seguidos hacés?' },
   core_lumbar:  { ref:0, u:'reps', q:'¿Cuántos puentes a una pierna hacés por pierna?' },
@@ -1453,8 +1450,10 @@ function getCeilings(ex){
   if(SKILL_REQ[ex.name]) return { bajo: skillStep(ex), medio: SKILL_REQ[ex.name].v };
   // Prevención de lesiones, bajo volumen (spec 23/9): pocas reps / poco tiempo por lado.
   if(ex.name === "Plancha RKC") return {bajo:10, medio:20};   // series cortas de máxima tensión: 10-20 s
-  if(ex.pattern === 'nordic') return d >= 5 ? {bajo:2, medio:4} : {bajo:3, medio:6};
-  if(ex.pattern === 'copenhagen'){ const t = {2:{bajo:15,medio:30}, 3:{bajo:12,medio:25}, 4:{bajo:10,medio:20}}; return t[d] || t[3]; }
+  // Bloque A (20/11): peso muerto lento 8 por lado, curl con banda 10, sentadilla cosaca 6-8
+  if(ex.name === 'Peso muerto a una pierna con bajada lenta') return {bajo:8, medio:12};
+  if(ex.name === 'Curl femoral de pie con banda') return {bajo:10, medio:14};
+  if(ex.pattern === 'aductor_a') return {bajo:6, medio:8};
   if(STATIC_EX_NAMES.has(ex.name)){
     const t = {2:{bajo:25,medio:40}, 3:{bajo:15,medio:25}, 4:{bajo:8,medio:15}, 5:{bajo:5,medio:10}};
     return t[d] || t[3];
@@ -1536,7 +1535,7 @@ function prevMonthKey(key){ const [y,m] = key.split('-').map(Number); const d = 
 const FAMILY_LABEL = {
   push_horiz:'flexiones', dips:'fondos', push_vert:'empuje vertical', planche:'planche',
   pull_vert:'dominadas', pull_horiz:'remos', muscleup:'muscle-up', front_lever:'front lever',
-  squat:'sentadillas', hinge:'puentes', squat_uni:'sentadillas a una pierna', hinge_uni:'bisagras a una pierna', nordic:'nordics', copenhagen:'copenhagen',
+  squat:'sentadillas', hinge:'puentes', squat_uni:'sentadillas a una pierna', hinge_uni:'bisagras a una pierna', isquio_a:'pesos muertos lentos', aductor_a:'sentadillas cosacas',
   core_recto:'abdominales', core_colgado:'abdominales', core_oblicuo:'oblicuos', core_estab:'core', core_antiext:'core', core_lumbar:'lumbares'
 };
 function familyOf(name){ const ex = exByName(name); return ex ? (FAMILY_LABEL[ex.pattern] || 'otros') : 'otros'; }
@@ -1612,7 +1611,7 @@ function mensajeVivo(){
 }
 const ZONES = ['piernas','empuje','tiron','core','movilidad'];
 // Todos los patrones que cuentan como "tren inferior" (una sola fuente de verdad).
-const PATRONES_PIERNA = ['squat','squat_uni','hinge','hinge_uni','lunge','power_legs','nordic','copenhagen'];
+const PATRONES_PIERNA = ['squat','squat_uni','hinge','hinge_uni','lunge','power_legs','isquio_a','aductor_a'];
 function ensureZones(){ ZONES.forEach(z => { if(typeof stats.lastZone[z] !== 'number') stats.lastZone[z] = Date.now(); }); }
 function zoneOf(pattern){
   if(['push_horiz','dips','push_vert','planche','triceps'].includes(pattern)) return 'empuje';
@@ -1741,7 +1740,7 @@ function ladderStatus(pat){
 const ZONA_GROUPS = [
   {title:"Empuje", icono:"💪", pats:["push_horiz","dips","push_vert","triceps"]},
   {title:"Tirón", icono:"🎯", pats:["pull_vert","pull_horiz","pull_activ","ring_support"]},
-  {title:"Pierna y cadena posterior", icono:"🦵", pats:["squat","squat_uni","lunge","power_legs","hinge","hinge_uni","nordic","copenhagen"]},
+  {title:"Pierna y cadena posterior", icono:"🦵", pats:["squat","squat_uni","lunge","power_legs","hinge","hinge_uni","isquio_a","aductor_a"]},
   {title:"Core", icono:"🛡️", pats:["core_recto","core_colgado","core_oblicuo","core_lumbar","core_estab","core_antiext"]},
   {title:"Habilidades", icono:"🌟", pats:["muscleup","front_lever","planche"]}
 ];
@@ -3324,8 +3323,8 @@ function esReingreso(){
 }
 function seriesAjustadas(n){ return esReingreso() ? Math.max(1, Math.round(n * 0.65)) : n; }
 // SERIES FIJAS (ENCARGO, corrección 28/10): anclas 4, accesorios 3, siempre. Descarga: 2. No se pueden sumar ni quitar.
-// (Habilidad y abdominales siguen en 3; Nordic/Copenhagen en 2 por ser bajo volumen: no estaban en el encargo, se mantienen.)
-const SERIES_POR_ROL = { ancla:4, acc:3, skill:3, core:3, bajoA:2 };
+// (Habilidad y abdominales siguen en 3; el Bloque A de Piernas pasa a 3 series: isquios 3–4 y aductores 2–3.)
+const SERIES_POR_ROL = { ancla:4, acc:3, skill:3, core:3, bajoA:3 };   // bajoA = Bloque A de Piernas (20/11): 3 series (isquios 3–4, aductores 2–3)
 const SERIES_DESCARGA = 2;
 // Accesorios del grupo SECUNDARIO: tope de dificultad. dif 2 = lo más liviano de la escala (Korean dips y Pike push up son dif 3).
 const TOPE_DIF_SEC = 2;
@@ -3430,6 +3429,7 @@ function restText(ex){
   const mayor = profile.edad != null && profile.edad >= 45;   // recupera más lento
   const grande = profile.edad != null && profile.edad >= 58;
   const suave = cargaNivel() === 1;                            // primeras sesiones: sin apuro
+  if(ex.pattern === 'isquio_a' || ex.pattern === 'aductor_a') return grande ? '2:30 min' : '2 min';   // Bloque A de Piernas (20/11): calidad con descanso completo
   if(duro) return grande ? '2:30 min' : '2 min';
   return (mayor || suave) ? '2 min' : '90 s';
 }
@@ -3448,6 +3448,7 @@ const SIBLING_GROUPS = [
   {pattern:'core_recto', base:'Leg raises en suelo',   hermanas:['ABS escuadra + leg raises en suelo']},
   {pattern:'core_colgado', base:'Knee raises en barra',  hermanas:['L sit raises en fondos', 'Elevaciones de rodillas en paralelas']},
   {pattern:'core_colgado', base:'Leg raises en barra',   hermanas:['Pullover']},
+  {pattern:'isquio_a', base:'Peso muerto a una pierna con bajada lenta', hermanas:['Curl femoral de pie con banda']},
   {pattern:'core_oblicuo', base:'Lateral kicks',       hermanas:['Crunches oblicuos (codo a rodilla)', 'Bicicleta en suelo', 'Giro ruso sin carga', 'Plancha lateral']}
 ];
 // Índice por patrón: [base, ...hermanas] — lo que usa el generador de sesión.
@@ -3466,6 +3467,8 @@ SIBLING_GROUPS.forEach(g => {
     if(base){ ex.rung = base.rung; ex.ladderLen = base.ladderLen; }
   });
 });
+// Bloque A (20/11): el curl femoral con banda es una ALTERNATIVA del peso muerto lento desde el primer día (no un peldaño posterior): no pide dominar nada.
+{ const curl = exByName('Curl femoral de pie con banda'); if(curl) curl.requires = undefined; }
 // Elige una variante hermana según el mes/ciclo, si el usuario la tiene disponible.
 function monthlyVariant(pattern, ex){
   const group = SIBLINGS[pattern];
@@ -3495,14 +3498,13 @@ ALL_POOLS.forEach(e => { if(!e.pattern) e.pattern = "warmup"; });
 // OJO: no incluir variantes tipo "a 1 pierna" que solo reducen dificultad (ahí no cambiás de lado),
 // ni movimientos alternados continuos (bicicleta). Esos NO son unilaterales en el sentido de la app.
 const UNILATERAL = new Set([
-  "Puente a una pierna", "Plancha lateral", "Crunches oblicuos (codo a rodilla)", "Leñador alto-bajo con banda", "Leñador bajo-alto con banda", "Pallof press con banda", "Elevación de rodilla de pie",
+  "Puente a una pierna", "Plancha lateral", "Crunches oblicuos (codo a rodilla)", "Peso muerto a una pierna con bajada lenta", "Curl femoral de pie con banda", "Sentadilla cosaca", "Sentadilla cosaca asistida (agarrado de un poste)", "Leñador alto-bajo con banda", "Leñador bajo-alto con banda", "Pallof press con banda", "Elevación de rodilla de pie",
   "Zancadas", "Zancadas laterales", "Sentadilla corta a una pierna",
   "Pistol squat", "Flexiones arqueras de rodillas", "Flexiones arqueras",
   "Archer pull ups", "Typewriter pull ups", "Bulgarian squat",
   // Tren inferior unilateral (spec 23/9): lado débil primero
   "Sentadilla a una pierna a caja", "Pistol squat asistido",
   "Peso muerto a una pierna con apoyo", "Peso muerto a una pierna",
-  "Copenhagen con rodilla apoyada", "Copenhagen palanca corta", "Copenhagen completo"
 ]);
 function isUnilateral(ex){ return UNILATERAL.has(ex.name); }
 
@@ -3577,7 +3579,7 @@ function tipsFor(ex){
 // Cada tipo de día (Tirón, Empuje, Piernas) tiene UNA plantilla por bloque: mismos ejercicios, mismo orden, todo el bloque.
 // La primera vez que se pide el día en el bloque, generateSession lo arma y guarda la plantilla en stats.bloque.plantilla[dia:variante].
 // Cada hueco guarda { name, pattern, rol, skill, libre, actual, tope, req }:
-//   · actual = el hueco sigue al peldaño actual de su escalera (anclas, habilidad, Nordic, Copenhagen, circuito…): si subís de peldaño
+//   · actual = el hueco sigue al peldaño actual de su escalera (anclas, habilidad, aductores del Bloque A, circuito…): si subís de peldaño
 //     a mitad de bloque, el hueco sube con vos y ese ejercicio arranca en el piso de su rango. Lo demás (hermanas, abdominales
 //     oblicuos, salto) queda con el MISMO nombre hasta fin de bloque.
 //   · Si algo ya no se puede armar (cambió el equipo, se desbloqueó/bloqueó algo, el ascenso rompe el tope de carga), la plantilla de
@@ -3655,8 +3657,17 @@ function registrarCoreUsado(ses){
   stats.coreUso = stats.coreUso || {}; stats.coreUltimo = stats.coreUltimo || {};
   stats.coreN = (stats.coreN || 0) + 1;
   const core = (ses || []).filter(e => e._rol === 'core');
+  (ses || []).filter(e => e.pattern === 'isquio_a').forEach(e => { stats.coreUso[e.name] = stats.coreN; });   // el isquio del Bloque A alterna: se anota cuál fue
   core.forEach(e => { stats.coreUso[e.name] = stats.coreN; });
   if(ses && ses.dia) stats.coreUltimo[ses.dia] = core.filter(e => !e._coreAncla).map(e => e.name);
+}
+// ISQUIOTIBIALES del Bloque A (20/11): peso muerto a una pierna con bajada lenta; si "Bandas" está marcado alterna con el curl femoral de pie con banda
+// (el que hace más tiempo que no se hace). No va en la plantilla del bloque mensual.
+function isquioElegido(){
+  const cand = ['Peso muerto a una pierna con bajada lenta'].concat(myEquip.includes('Banda') ? ['Curl femoral de pie con banda'] : []).map(exByName).filter(e => e && isDoable(e));
+  if(!cand.length) return null;
+  const uso = (stats && stats.coreUso) || {}, n = (stats && stats.coreN) || 0;
+  return cand.map((c, i) => ({ c, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % cand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r))[0].c;
 }
 function topDelPatron(p, tope){
   const l = LADDERS[p]; if(!l) return null;
@@ -3681,7 +3692,7 @@ function guardarPlantilla(dia, ses){
   const b = bloqueVigente();
   b.plantilla = b.plantilla || {};
   b.plantilla[claveDePlantilla(dia)] = {
-    slots: ses.filter(e => e._rol !== 'core' || e._coreAncla).map(e => ({ coreAncla:!!e._coreAncla, name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
+    slots: ses.filter(e => (e._rol !== 'core' || e._coreAncla) && e.pattern !== 'isquio_a').map(e => ({ coreAncla:!!e._coreAncla, name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
     cambios: (ses.cargaCambios || []).slice()
   };
   try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
@@ -3711,11 +3722,12 @@ function materializarPlantilla(tpl, dia){
     items.push(Object.assign({}, ex, { _rol:s.rol, _coreAncla:!!s.coreAncla }));
   }
   // Los abdominales NO están en la plantilla: rotan en cada sesión (seleccionarCore).
+  if(dia === 'piernas'){ const h = isquioElegido(); if(h) items.push(Object.assign({}, h, { _rol:'bajoA' })); }   // el isquio del Bloque A alterna en cada sesión (no está en la plantilla)
   coreRotativos(cargaNivel(), items, dia).forEach(c => items.push(Object.assign({}, c, { _rol:'core' })));
   const por = r => items.filter(e => e._rol === r);
   const coreOrd = por('core').filter(e => e.pattern === 'core_antiext').concat(por('core').filter(e => e.pattern !== 'core_antiext').sort(exig));
   let full;
-  if(dia === 'piernas') full = [].concat(por('skill'), por('bajoA'), por('circ'), coreOrd);
+  if(dia === 'piernas') full = [].concat(por('skill'), por('bajoA').sort((a, b) => (b.pattern === 'isquio_a') - (a.pattern === 'isquio_a')), por('circ'), coreOrd);
   else full = [].concat(por('skill'), por('ancla').sort(exig), por('acc').sort(exig), coreOrd);
   if(full.length !== items.length) return null;
   full.dia = dia; full.descarga = esDescarga(dia); full.liviana = livianaHoy() && !descargaProgramada(dia);
@@ -3736,7 +3748,7 @@ function materializarPlantilla(tpl, dia){
 // Alternativas para "Cambiar ejercicio": mismo patrón y mismo nivel (si no hay, del nivel de abajo), que se puedan hacer con el equipo marcado
 // y que no estén ya en la sesión. Las habilidades, la soga y el salto de dosis fija no se cambian por acá.
 function alternativasDe(ex, ses){
-  if(!ex || ex._skill || ex._libre || !ex.pattern || ex._rol === 'core') return [];    // los abdominales ya rotan solos en cada sesión
+  if(!ex || ex._skill || ex._libre || !ex.pattern || ex._rol === 'core' || ex.pattern === 'isquio_a') return [];    // los abdominales ya rotan solos en cada sesión
   const en = new Set((ses || []).map(e => e.name));
   const base = ALL_POOLS.filter(e => e.name !== ex.name && !en.has(e.name) && e.pattern === ex.pattern && isDoable(e) && !e._skill && !SKILL_REQ[e.name]);
   const mismo = base.filter(e => (e.dif || 0) === (ex.dif || 0));
@@ -3916,8 +3928,8 @@ function guardarRPEDespuesDeSesion(){
   const P = grupo(() => pick(dia === 'empuje' ? pushPats : pushSec, nPush, dia === 'empuje' ? null : TOPE_DIF_SEC));
   const Q = grupo(() => pick(dia === 'tiron' ? pullPats : pullSec, nPull, dia === 'tiron' ? null : TOPE_DIF_SEC));
   // TREN INFERIOR: solo el día de Piernas (ENCARGO, corrección 28/10). Dos bloques:
-  //  · Bloque A, CALIDAD (descanso completo de 2 min), siempre primero después de la habilidad: Nordic + Copenhagen.
-  //    No se ordenan por dificultad con el resto ni van en circuito. Lado débil primero (Copenhagen es unilateral).
+  //  · Bloque A, CALIDAD (descanso completo de 2 min), siempre primero después de la habilidad: isquiotibiales + aductores (parado, sin piso).
+  //    No se ordenan por dificultad con el resto ni van en circuito.
   //  · Bloque B, CIRCUITO (3-4 rondas, 60-90 s entre rondas, sin descanso entre ejercicios):
   //    sentadilla unilateral -> salto -> peso muerto a una pierna -> soga 45 s. El empuje y el tirón livianos van adentro.
   // Hasta que estén desbloqueadas las unilaterales, entran las versiones base de la misma familia.
@@ -3926,16 +3938,19 @@ function guardarRPEDespuesDeSesion(){
     pick([poolFor('squat_uni') ? 'squat_uni' : 'squat'], 1);
     if(carga >= 2) pick([poolFor('hinge_uni') ? 'hinge_uni' : 'hinge'], 1);
   });
-  // Bloque A: Nordic + Copenhagen. Nunca se recortan por tiempo: son prevención de lesiones.
+  // BLOQUE A (20/11, reemplaza a Nordic y Copenhagen; todo parado y sin piso): ISQUIOTIBIALES (peso muerto a una pierna con bajada lenta, o curl femoral de pie
+  // con banda si hay bandas: alternan sesión a sesión) y ADUCTORES (sentadilla cosaca: asistida con poste hasta que se domine). Nunca se recortan por tiempo.
+  // El de isquios no va en la plantilla del bloque mensual (alterna en cada sesión); el de aductores sí.
   const A = grupo(() => {
-    if(dia !== 'piernas' || carga < 2) return;
-    ['nordic', 'copenhagen'].forEach(p => {
-      const PP = poolFor(p); if(!PP) return;
+    if(dia !== 'piernas') return;
+    const h = isquioElegido(); if(h && !exs.some(e => e.name === h.name)) exs.push(h);
+    const PP = poolFor('aductor_a');
+    if(PP){
       let ex = PP.actual;
       const st = progState[ex.name];
       if(st && st.regressed && ex.requires) ex = applyRegression(ex);
       if(ex && !exs.some(e => e.name === ex.name)) exs.push(ex);
-    });
+    }
   });
   // Salto del circuito: jump squat (Squat plío) / zancada con salto / skater jumps, rotando con la semilla. Dosis fija
   // (SALTO_REPS por ronda), sin marcas. Con carga 1 no entra.
@@ -4124,7 +4139,7 @@ const STRETCH_MAP = {
   push_horiz:['pecho'], dips:['pecho','triceps'], push_vert:['hombro','triceps'], triceps:['triceps'], planche:['pecho','hombro'],
   pull_vert:['dorsal'], pull_horiz:['dorsal','biceps'], pull_activ:['dorsal'], muscleup:['dorsal','hombro'], front_lever:['dorsal'],
   squat:['cuadriceps','gluteo'], hinge:['isquios','gluteo'], lunge:['cuadriceps','flexor_cadera'], power_legs:['cuadriceps'],
-  squat_uni:['cuadriceps','gluteo'], hinge_uni:['isquios','gluteo'], nordic:['isquios'], copenhagen:['aductor'],
+  squat_uni:['cuadriceps','gluteo'], hinge_uni:['isquios','gluteo'], isquio_a:['isquios'], aductor_a:['aductor'],
   core_recto:['abdomen'], core_colgado:['abdomen'], core_oblicuo:['abdomen'], core_estab:['abdomen'], core_antiext:['abdomen'], core_lumbar:['flexor_cadera'],
 };
 function dayStretch(session){
@@ -4786,7 +4801,7 @@ function buildBlocks(session){
   const dia = session.dia || dayFocus;
   const TIT = { tiron:'Tirón', empuje:'Empuje', piernas:'Tren inferior' };
   // El rol lo fija generateSession (`_rol`). Sin rol (sesiones armadas a mano) se deduce por el patrón, como antes.
-  const rolDe = e => e._skill ? 'skill' : (e._rol || (zoneOf(e.pattern) === 'core' ? 'core' : ['nordic', 'copenhagen'].includes(e.pattern) ? 'bajoA' : 'acc'));
+  const rolDe = e => e._skill ? 'skill' : (e._rol || (zoneOf(e.pattern) === 'core' ? 'core' : ['isquio_a', 'aductor_a'].includes(e.pattern) ? 'bajoA' : 'acc'));
   const B = [];
   let ult = null;
   session.forEach(e => {

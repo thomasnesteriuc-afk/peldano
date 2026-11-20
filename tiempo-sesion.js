@@ -7,10 +7,10 @@
  * El selector 60 / 45 / 30 y su orden de recortes están archivados: _archivo/tiempo-sesion-selector-y-recortes.js.
  *
  * ESTIMACIÓN de duración (supuestos a la vista, para discutirlos):
- *  - Ritmo de repetición: 3 s por rep dinámica; 5 s por rep de Nordic (baja lento); 1,5 s por rep de salto.
+ *  - Ritmo de repetición: 3 s por rep dinámica; 5 s por rep de bajada lenta (peso muerto a una pierna con bajada lenta); 1,5 s por rep de salto.
  *  - Isométricos: el tiempo objetivo. Unilaterales: se hacen los dos lados en cada serie (x2).
  *  - 10 s por serie para acomodarse; 30 s de transición al cambiar de ejercicio (barra, banda, etc.).
- *  - Descanso entre series = el de la tarjeta (90 s, 2 min o 2:30 según el ejercicio); Nordic/Copenhagen 2 min.
+ *  - Descanso entre series = el de la tarjeta (90 s, 2 min o 2:30 según el ejercicio); bloque A de Piernas (isquios y aductores) 2 min.
  *  - Circuito de Piernas: 10 s de transición entre ejercicios y 75 s entre rondas (punto medio de 60-90 s).
  *  - Circuito de abdominales: 10 s de transición entre ejercicios y 60 s entre rondas (ENCARGO).
  *  - Entrada en calor: la suma de sus pasos (criterios, orientativo 5-8 min); las 2 series de aproximación se suman a la fuerza. Finisher: 10 o 5 min. Vuelta a la calma: 3 min (ENCARGO: 2-3 min). OJO: la tarjeta
@@ -26,7 +26,7 @@ function tsTrabajoSerie(ex){
   if(ex.pattern === 'power_legs') return SALTO_REPS * TS.TEMPO_SALTO;
   const lados = isUnilateral(ex) ? 2 : 1;
   if(isStatic(ex)) return sessionTarget(ex) * lados;
-  return sessionTarget(ex) * (ex.pattern === 'nordic' ? TS.TEMPO_NORDIC : TS.TEMPO) * lados;
+  return sessionTarget(ex) * (ex.pattern === 'isquio_a' ? TS.TEMPO_NORDIC : TS.TEMPO) * lados;
 }
 function tsSegBloque(b){
   if(b.circuito){                                                                       // Piernas y abdominales: sin descanso entre ejercicios

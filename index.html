@@ -3303,17 +3303,23 @@ function intentarEmpezarSesion(preAccion){
 }
 
 // ===== ETAPA 3: días, ciclo de 3 y reingreso (ENCARGO.md) =====
-// Tres tipos de día. NO hay calendario: el usuario elige. Un día hecho queda BLOQUEADO hasta completar
-// los otros dos (ciclo de 3, no semana calendario); al completar los 3 se desbloquean todos.
+// Tres tipos de día. NO hay calendario: el usuario elige. Tirón y Empuje se alternan; Piernas siempre libre (ver abajo).
 const DIAS = ['tiron', 'empuje', 'piernas'];
 const DIA_LABEL = { tiron:'Tirón', empuje:'Empuje', piernas:'Piernas' };
-function cicloHechos(){ const c = stats && stats.ciclo; return (c && Array.isArray(c.hechos)) ? c.hechos.filter(d => DIAS.includes(d)) : []; }
-function diaBloqueado(d){ return cicloHechos().includes(d); }
-function registrarDiaEnCiclo(d){
-  if(!DIAS.includes(d)) return;
-  const h = cicloHechos(); if(!h.includes(d)) h.push(d);
-  stats.ciclo = { hechos: h.length >= DIAS.length ? [] : h };       // al completar los 3 se reinicia
+// ELECCIÓN DE DÍA (25/11, REEMPLAZA el ciclo de 3 bloqueado; el código viejo está en _archivo/ciclo-de-3-retirado.js):
+// Tirón y Empuje se alternan (no se puede elegir el mismo dos veces seguidas, contando solo sesiones de Tirón y Empuje).
+// Piernas está siempre disponible y no bloquea ni desbloquea nada (no corta la alternancia). Sirve para 3, 4 o 5 sesiones por semana.
+// Guarda solo el último de Tirón/Empuje en stats.ultimoTE. Si nunca se guardó (undefined), se deduce del ciclo viejo (el último del orden en que se hicieron).
+function ultimoTironEmpuje(){
+  const u = stats && stats.ultimoTE;
+  if(u === 'tiron' || u === 'empuje') return u;
+  if(u === null) return null;
+  const h = (stats && stats.ciclo && Array.isArray(stats.ciclo.hechos)) ? stats.ciclo.hechos : [];
+  for(let i = h.length - 1; i >= 0; i--) if(h[i] === 'tiron' || h[i] === 'empuje') return h[i];
+  return null;
 }
+function diaBloqueado(d){ return (d === 'tiron' || d === 'empuje') && ultimoTironEmpuje() === d; }
+function registrarDiaEnCiclo(d){ if(d === 'tiron' || d === 'empuje') stats.ultimoTE = d; }
 // ahoraMs() = Date.now() salvo que un test fije window.__testAhora (para simular fechas sin esperar al calendario).
 // Reingreso: ≥ 10 días sin entrenar -> la primera sesión baja ~30 % el volumen (series).
 const REINGRESO_DIAS = 10;
@@ -3389,7 +3395,7 @@ function renderElegirDia(){
   hero.appendChild(lv);
 }
 function proximoFocoAlternado(){
-  const ultimo = stats && stats.lastFocusEntrenado;
+  const ultimo = ultimoTironEmpuje();
   if(ultimo === 'empuje') return 'tiron';
   if(ultimo === 'tiron') return 'empuje';
   return 'empuje'; // primera vez, sin historial: arrancamos por empuje
@@ -5004,7 +5010,7 @@ function commitDay(){
   const nivelNuevo = nivelInfo().nivel;
   const subioRango = nivelNuevo > nivelAntes;
   // (la alternancia empuje/tirón de antes se reemplazó por el ciclo de 3 días elegidos a mano)
-  registrarDiaEnCiclo(dayFocus);                          // ciclo de 3: el día hecho queda bloqueado hasta completar los otros dos
+  registrarDiaEnCiclo(dayFocus);                          // alternancia: Tirón y Empuje no se repiten seguidos (Piernas no cuenta)
   const {newRecord, totalToday} = commitStats(items);
   registrarSesionBloque(dayFocus);                        // cuenta para el bloque mensual (y marca la descarga del tipo, si era)
   registrarCoreUsado(ses);                                // abdominales: anota cuáles se hicieron hoy para que la próxima sesión rote

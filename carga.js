@@ -25,8 +25,8 @@ const CARGA_UMBRAL = { hombro:{ alta:22, max:32 }, codo:{ alta:28, max:40 }, 'mu
 const CARGA_PATRON = {
   push_horiz:[2, 2, 2, 0], dips:[3, 2, 1, 0], push_vert:[3, 2, 3, 0], triceps:[1, 3, 2, 0], planche:[3, 3, 3, 1],
   pull_vert:[2, 3, 1, 0], pull_horiz:[1, 2, 1, 0], pull_activ:[1, 0, 1, 0], ring_support:[2, 1, 1, 0], muscleup:[3, 3, 1, 1], front_lever:[3, 3, 1, 2],
-  squat:[0, 0, 0, 1], squat_uni:[0, 0, 0, 1], lunge:[0, 0, 0, 1], power_legs:[0, 0, 0, 1], hinge:[0, 0, 1, 2], hinge_uni:[0, 0, 0, 2], isquio_a:[0, 0, 0, 1], aductor_a:[0, 0, 0, 1],
-  core_recto:[0, 0, 0, 1], core_colgado:[1, 0, 1, 1], core_oblicuo:[0, 0, 0, 1], core_lumbar:[0, 0, 1, 2], core_estab:[1, 0, 1, 1], core_antiext:[0, 0, 0, 1]
+  squat:[0, 0, 0, 1], squat_uni:[0, 0, 0, 1], sissy:[0, 0, 0, 1], power_legs:[0, 0, 0, 1], hinge_uni:[0, 0, 0, 2], glute:[0, 0, 0, 1], lateral:[0, 0, 0, 1], calf:[0, 0, 0, 0],
+  core_recto:[0, 0, 0, 1], core_colgado:[1, 0, 1, 1], core_oblicuo:[0, 0, 0, 1], core_antiext:[0, 0, 0, 1], core_lsit:[2, 2, 2, 1]
 };
 // Excepciones por ejercicio (las hermanas de cada escalera también).
 const CARGA_NOMBRE = {
@@ -45,12 +45,15 @@ const CARGA_NOMBRE = {
   'Dominadas con banda':[2, 2, 1, 0], 'Dominadas en anillas':[3, 3, 1, 0], 'Dominadas explosivas':[3, 3, 1, 0], 'Dominadas asimétricas':[3, 3, 1, 0], 'Soporte en anillas (support hold)':[2, 1, 1, 0],
   // piernas / cadena posterior
   'Peso muerto a una pierna con bajada lenta':[0, 0, 0, 1], 'Curl femoral de pie con banda':[0, 0, 0, 1], 'Sentadilla cosaca asistida (agarrado de un poste)':[0, 0, 0, 1], 'Sentadilla cosaca':[0, 0, 0, 1],
-  'Puente corto':[0, 0, 1, 2], 'Puente completo':[2, 0, 3, 3], 'Puente de pie a pie':[2, 0, 3, 3],
+  'Peso muerto a una pierna repeticiones y media':[0, 0, 0, 2], 'Peso muerto a una pierna con mochila':[0, 0, 0, 2],
   // core
   'Knee raises en barra':[1, 0, 1, 1], 'Leg raises en suelo':[0, 0, 0, 2], 'Leg raises en barra':[2, 1, 1, 1], 'Dragon flag a 1 pierna':[2, 1, 0, 3], 'Dragon flag':[2, 1, 0, 3],
   'L sit raises en fondos':[2, 1, 2, 2], 'L sit raises en barra':[2, 1, 1, 1], 'Pullover':[3, 3, 1, 2], 'Plancha a extensión':[2, 1, 2, 1], 'Plancha lateral':[2, 1, 1, 1], 'Windshield wipers en suelo':[0, 0, 0, 2],
   'Crunches cortos lumbares':[0, 0, 0, 2], 'Birdog':[1, 0, 2, 1], 'Plancha abdominal':[2, 1, 0, 1], 'L-sit a tuck (en paralelas)':[2, 2, 2, 1], 'L sit en anillas':[3, 2, 1, 1],
   'Plancha RKC':[2, 1, 0, 1], 'Hollow body':[0, 0, 0, 2],
+  // plaza (24/11): estimaciones de Claude, pendientes de revisión del entrenador
+  'Rodillas colgado enrollando la pelvis':[1, 0, 1, 1], 'Toes to bar':[2, 1, 1, 1], 'Rodilla al codo cruzado de pie':[0, 0, 0, 1], 'Piernas estiradas al costado':[2, 1, 1, 1], 'Limpiaparabrisas tuck':[1, 1, 1, 1],
+  'Plancha alta en banco':[1, 0, 2, 1], 'Toques de hombro en banco':[2, 0, 2, 1], 'Hollow colgado con piernas a 45°':[2, 1, 1, 1], 'L-sit a una pierna':[2, 2, 2, 1],
   'L-sit en paralelas':[2, 2, 2, 1], 'Elevaciones de rodillas en paralelas':[2, 1, 2, 1], 'Elevaciones de rodillas oblicuas colgado':[1, 0, 1, 1], 'Limpiaparabrisas colgado':[2, 1, 1, 2],
   'Hollow colgado':[2, 1, 1, 1], 'Hollow colgado con rodillas flexionadas':[1, 1, 1, 1], 'Hollow de pie contra la pared':[0, 0, 0, 1], 'Pallof press con banda':[0, 0, 0, 1],
   'Leñador alto-bajo con banda':[0, 0, 0, 1], 'Leñador bajo-alto con banda':[0, 0, 0, 1], 'Elevación de rodilla de pie':[0, 0, 0, 1]

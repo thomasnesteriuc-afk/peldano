@@ -841,21 +841,17 @@ const CORE = [
   {name:"Plancha RKC", muscles:"Abdominales (anti-extensión), glúteos y cuádriceps", desc:"Plancha sobre los antebrazos hecha con máxima tensión: retroversión pélvica (aplanar la lumbar), glúteos y cuádriceps apretados fuerte, y tirando isométricamente los codos hacia los pies. Series cortas de 10 a 20 segundos.", dif:2, zone:"antiext", requires:"Dead bug", cite:"Pavel Tsatsouline (StrongFirst); EMG: Schoenfeld et al. 2014 (plancha con retroversión pélvica > plancha tradicional en activación abdominal)", tips:["Antebrazos apoyados, con los codos bajo los hombros o apenas adelante.", "Retroversión pélvica (aplanar la lumbar) y apretá los glúteos fuerte.", "Apretá los cuádriceps y tirá los codos hacia los pies, sin moverlos.", "Series cortas de máxima tensión: 10 a 20 s. Respirá corto, SIN aguantar la respiración.", "Errores: cadera hundida o lumbar arqueada, glúteos sueltos, hacerla larga y relajada (pierde el sentido)."]},
   {name:"Hollow body con rodillas flexionadas", muscles:"Abdominales (anti-extensión)", desc:"Acostado boca arriba, brazos extendidos arriba y rodillas a 90°. Despegá hombros y pies del piso 15-20 cm con la espalda baja EN el piso y sostené. Es la regresión del hollow body.", dif:2, zone:"antiext", requires:"Dead bug", cite:"Guía de biblioteca del proyecto (Hollow Body Hold, regresión)", tips:["La espalda baja no se despega del piso.", "Hombros y pies a 15-20 cm del piso.", "Si la espalda baja se arquea, apoyá y descansá."]},
   {name:"Hollow body", muscles:"Abdominales (anti-extensión)", desc:"Acostado boca arriba, brazos extendidos arriba y pies juntos con las piernas rectas. Despegá hombros y pies del piso 15-20 cm con la espalda baja EN el piso y sostené.", dif:3, zone:"antiext", requires:"Hollow body con rodillas flexionadas", cite:"Guía de biblioteca del proyecto (Hollow Body Hold)", tips:["La espalda baja no se despega del piso.", "Hombros y pies a 15-20 cm del piso.", "Si la espalda baja se arquea, volvé a la versión con rodillas flexionadas."]},
-  {name:"Puente a una pierna", muscles:"Glúteo, isquiotibiales y zona baja de la espalda", desc:"Levantás la cadera apoyando un solo pie, con la otra pierna en el aire. Al trabajar de a una pierna se nota (y se corrige) si un lado está más flojo que el otro.", dif:2, zone:"lumbar"},
   {name:"Flexiones escapulares (activación)", muscles:"Serrato anterior y escápula", desc:"En posición de plancha alta (o de flexión), sin mover los brazos, hundir y elevar el pecho entre los omóplatos. Activa el serrato, clave para estabilizar el hombro antes de empujar fuerte.", dif:2, zone:"estabilizacion"},
   {name:"Lateral kicks", muscles:"Abdominales y oblicuos", desc:"Sentado o apoyado de costado, patada lateral controlada manteniendo la cadera alineada. Activa oblicuos y estabilidad de cadera.", dif:2, zone:"oblicuo"},
   {name:"Crunches oblicuos (codo a rodilla)", muscles:"Oblicuos", desc:"Acostado boca arriba, manos en la nuca, llevar un codo hacia la rodilla contraria contrayendo el costado. Es el ejercicio más directo de oblicuo puro, sin mezclar con recto ni psoas.", dif:2, zone:"oblicuo"},
   {name:"Bicicleta en suelo", muscles:"Oblicuos y abdominales", desc:"Acostado boca arriba, pedaleo alternando codo-rodilla contraria de forma continua. Variante dinámica del crunch oblicuo, mayor volumen de trabajo por serie.", dif:2, zone:"oblicuo"},
   {name:"Giro ruso sin carga", muscles:"Oblicuos", desc:"Sentado, tronco inclinado hacia atrás y piernas semiflexionadas en el aire, rotar el tronco de lado a lado tocando el suelo con las manos. Rotación pura, complementa a los ejercicios de flexión lateral.", dif:2, zone:"oblicuo"},
   {name:"Birdog", muscles:"Abdominales, lumbares y glúteo", desc:"En cuadrupedia, extender brazo y pierna contraria a la vez, manteniendo la espalda neutra sin balancearse. Clásico de estabilidad de core.", dif:2, zone:"estabilizacion"},
-  {name:"Crunches cortos en suelo", muscles:"Abdominales", desc:"Acostado boca arriba, rodillas flexionadas en el aire, contracción corta para despegar la espalda alta del suelo.", dif:2, zone:"recto"},
-  {name:"Crunches completos en suelo", muscles:"Abdominales", desc:"Acostado boca arriba, rodillas flexionadas y pies en el suelo, la cabeza va hacia la rodilla al contraer.", dif:2, zone:"recto"},
   {name:"Tijeras en suelo", muscles:"Abdominales y psoas", desc:"Acostado boca arriba, levantar las piernas lo justo para que los talones no toquen el suelo, y cruzarlas una y otra vez.", dif:2, zone:"recto"},
   {name:"Plancha abdominal", muscles:"Abdominales y psoas", desc:"Apoyo en antebrazos y puntas de los pies, cuerpo recto, aguantar el mayor tiempo posible.", dif:2, zone:"estabilizacion"},
   {name:"Plancha lateral", muscles:"Abdominales y oblicuos", desc:"De costado, apoyando un antebrazo y el lateral de los pies, sin que caiga la cadera.", dif:2, zone:"oblicuo"},
   {name:"Plancha a extensión", muscles:"Abdominales y hombro (estabilización)", desc:"Desde plancha alta, extender un brazo hacia adelante manteniendo la cadera fija y sin rotar el tronco. Suma trabajo de hombro y anti-rotación al plancha básico.", dif:3, zone:"oblicuo"},
   {name:"Windshield wipers en suelo", muscles:"Abdominales y oblicuos", desc:"Acostado boca arriba, piernas rectas a 90°, llevarlas a un lado hasta rozar el suelo y cambiar de lado.", dif:2, zone:"oblicuo"},
-  {name:"Crunches cortos lumbares", muscles:"Lumbares", desc:"Boca abajo, manos en la nuca, contracción lumbar corta para despegar el pecho del suelo. Equilibra el trabajo de abdominales con la zona baja de la espalda.", dif:2, zone:"lumbar"},
   {name:"Tucked front lever", muscles:"Dorsal y abdominales", desc:"En barra con agarre prono, llevar las rodillas al pecho manteniendo los brazos estirados, buscando que la espalda quede paralela al suelo.", dif:2, zone:"estabilizacion"},
   {name:"ABS escuadra + leg raises en suelo", muscles:"Abdominales y psoas", desc:"Combo: primero llevar piernas rectas hasta formar una escuadra con el tronco (sentado, apoyado en manos), después leg raises acostado. Suma volumen de abdominal bajo en un mismo bloque.", dif:3, zone:"recto"},
   {name:"L-sit a tuck (en paralelas)", muscles:"Abdominales, psoas y tríceps (estabilización)", desc:"Sostenido en paralelas o banco, alternar entre L-sit (piernas rectas) y tuck (rodillas al pecho), sin apoyar los pies. Progresión intermedia real hacia el L-sit completo.", dif:3, zone:"estabilizacion"},
@@ -863,11 +859,8 @@ const CORE = [
   {name:"Knee raises en barra", muscles:"Abdominales y psoas", desc:"Colgado de la barra, llevar las rodillas al pecho sin flexionar los brazos.", dif:3, zone:"recto"},
   {name:"L sit raises en fondos", muscles:"Abdominales y psoas", desc:"En posición de fondos, levantar las piernas rectas hasta 90° con el cuerpo, sin balanceo ni inercia.", dif:3, zone:"recto"},
   {name:"L sit raises en barra", muscles:"Abdominales, psoas y lumbar", desc:"Colgado de la barra, levantar las piernas rectas hasta formar un ángulo de 90° con el cuerpo. Sin balanceo ni inercia.", dif:3, zone:"recto"},
-  {name:"Leg raises en barra", muscles:"Abdominales, psoas y lumbar", desc:"Colgado de la barra, llevar los pies hasta tocarla sin flexionar las rodillas.", dif:4, zone:"recto", requires:"L sit raises en barra"},
-  {name:"Dragon flag a 1 pierna", muscles:"Bíceps, dorsal y abdominales", desc:"Acostado con la cabeza cerca de una barra baja o banco, agarrado de la misma, llevar una rodilla al pecho y sostener el cuerpo a 45°, apoyando solo la espalda alta.", dif:4, zone:"recto", requires:"Leg raises en barra"},
   {name:"L sit en anillas", muscles:"Abdominales, psoas y hombro (estabilización)", desc:"Sostenido en las anillas, levantar las piernas rectas a 90°. La inestabilidad suma mucho trabajo extra de core y hombro.", dif:4, zone:"estabilizacion", requires:"L sit raises en fondos"},
   {name:"Pullover", muscles:"Abdominales, psoas, dorsal y bíceps", desc:"Colgado de la barra, llevar los pies hasta la barra mientras flexionás los brazos, girando por encima de ella hasta quedar en posición de fondo.", dif:4, zone:"recto", requires:"Leg raises en barra"},
-  {name:"Dragon flag", muscles:"Dorsal y abdominales", desc:"Igual que la versión a 1 pierna pero con las dos piernas estiradas, sosteniendo el cuerpo entero a 45°.", dif:4, zone:"recto", requires:"Dragon flag a 1 pierna"},
   // ---- Banco de core SIN PISO (06/11 v2, pedido de Thomás): colgado, paralelas, banda y de pie. Textos de Claude, revisión del entrenador. ----
   {name:"L-sit en paralelas", muscles:"Abdominales, flexores de cadera y tríceps", desc:"Apoyado en paralelas con los brazos estirados y los hombros hacia abajo, levantá las piernas rectas hasta formar una L y sostené.", dif:4, zone:"recto", revisado:"entrenador"},
   {name:"Elevaciones de rodillas en paralelas", muscles:"Abdominales y flexores de cadera", desc:"En paralelas con los brazos estirados y los hombros hacia abajo, llevá las rodillas al pecho y bajá controlado.", dif:3, zone:"recto", revisado:"entrenador"},
@@ -880,6 +873,16 @@ const CORE = [
   {name:"Hollow colgado con rodillas flexionadas", muscles:"Abdomen, hombros y agarre (anti-extensión)", desc:"Colgado de la barra con los hombros activos y las rodillas flexionadas, aplaná la espalda baja llevando la pelvis hacia adelante y sostené.", dif:3, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
   {name:"Hollow colgado", muscles:"Abdomen, hombros y agarre (anti-extensión)", desc:"Colgado de la barra con los hombros activos y las piernas juntas y estiradas hacia adelante, con la pelvis hacia adelante y sin arquear; sostené.", dif:4, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
   {name:"Hollow de pie contra la pared", muscles:"Abdomen (anti-extensión)", desc:"De pie con la espalda baja y la cabeza contra la pared, costillas hacia abajo y pelvis hacia adelante; sostené sin despegar la espalda baja.", dif:2, zone:"antiext", pattern:"core_antiext", revisado:"entrenador"},
+  // ---- PLAZA, FASE 1 (24/11): escaleras de core (flexión colgado, giro, estabilidad) y rama L-sit. Todo sin piso. Textos cortos a partir de BIBLIOTECA_PLAZA.md. ----
+  {name:"Rodillas colgado enrollando la pelvis", muscles:"Abdominales y flexores de cadera", desc:"Colgado de la barra, subí las rodillas al pecho y al final enrollá la pelvis para que la cadera suba, sin balanceo.", dif:3, zone:"recto", revisado:"entrenador"},
+  {name:"Toes to bar", muscles:"Abdominales, psoas y agarre", desc:"Colgado de la barra, llevá los pies hasta tocarla con las piernas estiradas, sin balanceo.", dif:4, zone:"recto", equipo:"Barra", revisado:"entrenador"},
+  {name:"Rodilla al codo cruzado de pie", muscles:"Oblicuos y flexores de cadera", desc:"De pie, llevá una rodilla hacia el codo contrario rotando el tronco, sin tirar del cuello. Alterná los lados.", dif:2, zone:"oblicuo", revisado:"entrenador"},
+  {name:"Piernas estiradas al costado", muscles:"Oblicuos y abdominales", desc:"Colgado de la barra, llevá las piernas estiradas hacia un costado y volvé al centro; alterná los lados.", dif:4, zone:"oblicuo", equipo:"Barra", revisado:"entrenador"},
+  {name:"Limpiaparabrisas tuck", muscles:"Oblicuos y abdominales", desc:"Colgado de la barra con las rodillas arriba, llevalas de un lado al otro como un limpiaparabrisas.", dif:4, zone:"oblicuo", equipo:"Barra", revisado:"entrenador"},
+  {name:"Plancha alta en banco", muscles:"Abdominales (anti-extensión)", desc:"Con las manos en un banco y el cuerpo en línea recta, con la pelvis enrollada, sostené sin dejar caer la cadera.", dif:2, zone:"antiext", equipo:"Banco", revisado:"entrenador"},
+  {name:"Toques de hombro en banco", muscles:"Abdominales (anti-extensión) y hombro", desc:"En plancha alta con las manos en un banco, tocate un hombro con la mano contraria sin mover la cadera.", dif:3, zone:"antiext", equipo:"Banco", revisado:"entrenador"},
+  {name:"Hollow colgado con piernas a 45°", muscles:"Abdomen, hombros y agarre (anti-extensión)", desc:"Colgado de la barra en hollow, con el cuerpo rígido y las piernas rectas más arriba, a unos 45°.", dif:5, zone:"antiext", equipo:"Barra", revisado:"entrenador"},
+  {name:"L-sit a una pierna", muscles:"Abdominales, flexores de cadera y tríceps", desc:"Apoyado en paralelas con los brazos estirados, sostené una pierna estirada al frente y la otra flexionada. Después cambiá de pierna.", dif:4, zone:"recto", equipo:"Paralelas", revisado:"entrenador"},
 ];
 
 const PUSH = [
@@ -930,7 +933,6 @@ const PULL = [
 const LEGS = [
   {name:"Sentadilla asistida (a caja)", muscles:"Cuádriceps y glúteos", desc:"Sentadilla bajando a tocar una caja o silla y volver a subir, controlando el rango. Regresión para afirmar el patrón sin frustrarte.", dif:2},
   {name:"Sentadillas", muscles:"Cuádriceps y glúteos", desc:"Sentadilla libre bajando hasta que los muslos queden paralelos al suelo, espalda neutra y talones apoyados.", dif:2},
-  {name:"Zancadas", muscles:"Cuádriceps y glúteos", desc:"Adelantar una pierna y flexionar la rodilla a 90°, volver y cambiar de pierna.", dif:2},
   {name:"Sentadilla sumo", muscles:"Cuádriceps y glúteos", desc:"Piernas más abiertas que lo normal, puntas hacia afuera, intensifica glúteo.", dif:2},
   {name:"Squat plío", muscles:"Cuádriceps y glúteos (potencia)", desc:"Sentadilla con salto explosivo hacia arriba, aterrizando suave y controlado. Suma componente de potencia, no solo fuerza.", dif:3},
   // Saltos del circuito de Piernas (ENCARGO 28/10: jump squat / zancada con salto / skater jumps). Dosis fija, sin marcas.
@@ -938,12 +940,9 @@ const LEGS = [
   {name:"Zancada con salto", muscles:"Cuádriceps y glúteos (potencia)", desc:"Desde la posición de zancada con ambas rodillas a unos 90° y el torso erguido, saltá explosivo, cambiá las piernas en el aire y aterrizá suave en el medio del pie, bajando directo a la siguiente zancada.", dif:3, requires:"Sentadillas", pattern:"power_legs", tips:["Ambas rodillas a ~90° y torso erguido.", "Saltá explosivo y cambiá las piernas en el aire.", "Aterrizá suave en el medio del pie y bajá directo a la siguiente zancada.", "Errores: rodilla delantera hacia adentro, aterrizaje rígido, rodilla de atrás golpeando el piso, torso inclinado."]},
   {name:"Skater jumps", muscles:"Cuádriceps, glúteos y equilibrio (potencia)", desc:"Salto lateral de una pierna a la otra. Aterrizá en una sola pierna, con la cadera atrás y la rodilla alineada con el pie, mientras la otra pierna cruza por detrás sin apoyar. Al principio, pausa de 1 s de estabilización en cada aterrizaje.", dif:3, requires:"Sentadillas", pattern:"power_legs", tips:["Aterrizá en una pierna con la cadera atrás y la rodilla alineada con el pie.", "La otra pierna cruza por detrás sin apoyar.", "Al principio, pausa de 1 s de estabilización en cada aterrizaje.", "Errores: rodilla hacia adentro, aterrizaje rígido, saltar más lejos de lo que controlás."]},
   {name:"Sentadilla profunda", muscles:"Cuádriceps, femoral y glúteos", desc:"Sentadilla bajando lo máximo posible, superando los 90°.", dif:3},
-  {name:"Bulgarian squat", muscles:"Cuádriceps y glúteos", desc:"Empeine de un pie apoyado en un banco o barra baja, en posición de zancada.", dif:3},
-  {name:"Zancadas laterales", muscles:"Cuádriceps, femoral y glúteos", desc:"Paso largo hacia un costado, flexionando esa rodilla y manteniendo la otra pierna estirada.", dif:3},
-  {name:"Sentadilla corta a una pierna", muscles:"Cuádriceps y glúteos", desc:"En equilibrio a la pata coja, repeticiones cortas bajando hasta los 45°.", dif:3},
+  {name:"Bulgarian squat", muscles:"Cuádriceps y glúteos", desc:"Empeine de un pie apoyado en un banco o barra baja, en posición de zancada.", dif:3, equipo:"Banco"},
   // ---- TREN INFERIOR dentro de las sesiones de calistenia (spec 23/9) ----
   // La fuerza de piernas vive acá. Unilateral, lado débil primero.
-  {name:"Sentadilla a una pierna a caja", muscles:"Cuádriceps y glúteos", desc:"Parado en una sola pierna frente a un banco o silla: bajá sentándote hasta tocar apenas y volvé a subir sin ayudarte con la otra pierna. Primer peldaño hacia la pistol.", dif:2, tips:["Una pierna apoyada; la otra estirada al frente, sin tocar el piso.", "Bajá lento hasta rozar el banco; no te dejes caer.", "La rodilla sigue la línea del pie, no se mete hacia adentro."]},
   {name:"Pistol squat asistido", muscles:"Cuádriceps y glúteos", desc:"Sentadilla a una pierna hasta abajo de todo agarrándote de algo (anillas, marco de puerta o una banda) para ayudarte a subir lo justo.", dif:4, tips:["Agarrate de algo firme y usá la ayuda solo para subir.", "Pierna libre estirada al frente, talón del pie de apoyo pegado al piso.", "Bajá controlado hasta abajo; subí empujando el piso.", "Cada semana, menos ayuda."]},
   {name:"Pistol squat", muscles:"Cuádriceps, glúteos y equilibrio", desc:"Sentadilla completa a una sola pierna, con la otra estirada al frente sin tocar el piso. Fuerza, movilidad de tobillo y equilibrio.", dif:5, tips:["Brazos al frente para equilibrarte.", "Talón del pie de apoyo siempre en el piso.", "Bajá lento hasta abajo y subí sin rebotar.", "Si se te va la rodilla hacia adentro, volvé al asistido."]},
   // Bisagra de cadera a una pierna (peso muerto sin peso): isquios, glúteo y equilibrio.
@@ -956,10 +955,33 @@ const LEGS = [
   {name:"Curl femoral de pie con banda", muscles:"Isquiotibiales", desc:"De frente a un poste o a una barra baja, agarrado, con la banda anclada ahí a la altura del tobillo y enganchada en el tobillo: llevá el talón hacia la cola doblando la rodilla y volvé controlado. Todas las de un lado y cambiá.", dif:2, zone:"isquios", revisado:"entrenador"},
   {name:"Sentadilla cosaca asistida (agarrado de un poste)", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Piernas bien abiertas y agarrado de un poste: bajá sobre una pierna con la otra estirada de costado y volvé. Todas las de un lado y cambiá.", dif:2, zone:"aductores", revisado:"entrenador"},
   {name:"Sentadilla cosaca", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Piernas bien abiertas: bajá sobre una pierna con la otra estirada de costado y el talón apoyado, y volvé. Todas las de un lado y cambiá.", dif:3, zone:"aductores", revisado:"entrenador"},
+  // ---- PLAZA, FASE 1 (24/11): escaleras de piernas. Textos cortos a partir de las frases de BIBLIOTECA_PLAZA.md (Thomás); revisión del entrenador. ----
+  // Rodilla (a una pierna)
+  {name:"Subida al banco", muscles:"Cuádriceps y glúteos", desc:"Parado frente a un banco o escalón, subí con una sola pierna sin tomar impulso con la de abajo y bajá controlado.", dif:2, equipo:"Banco", revisado:"entrenador"},
+  {name:"Zancada estática", muscles:"Cuádriceps y glúteos", desc:"Con un pie adelante y el otro atrás, bajá y subí sin mover los pies de lugar.", dif:2, revisado:"entrenador"},
+  {name:"Búlgara lenta", muscles:"Cuádriceps y glúteos", desc:"Como la búlgara (pie de atrás en un banco o paralela baja), con la bajada de 3 segundos y una pausa abajo.", dif:3, equipo:"Banco", revisado:"entrenador"},
+  {name:"Pistol a banco", muscles:"Cuádriceps, glúteos y equilibrio", desc:"Parado sobre una pierna frente a un banco, sentate en el banco bajando a una pierna y volvé a pararte, con la otra pierna estirada al frente.", dif:3, equipo:"Banco", revisado:"entrenador"},
+  // Rama sissy squat (desde la búlgara). Carga de rodilla ALTA.
+  {name:"Sissy squat asistido (rango parcial)", muscles:"Cuádriceps", desc:"Agarrado de un poste, con el cuerpo inclinado hacia atrás y las rodillas yendo hacia adelante, bajá una parte del recorrido y volvé.", dif:3, revisado:"entrenador"},
+  {name:"Sissy squat asistido (rango completo)", muscles:"Cuádriceps", desc:"Agarrado de un poste, igual que el anterior pero bajando todo el recorrido.", dif:4, revisado:"entrenador"},
+  {name:"Sissy squat", muscles:"Cuádriceps", desc:"Sin agarrarte de nada: cuerpo inclinado hacia atrás, rodillas hacia adelante, bajá todo el recorrido y volvé.", dif:5, revisado:"entrenador"},
+  // Cadera (bisagra): los peldaños 1 a 4 ya existían (buenos días, con apoyo, sin apoyo y con bajada lenta)
+  {name:"Peso muerto a una pierna repeticiones y media", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Peso muerto a una pierna: bajás, subís hasta la mitad, volvés a bajar y recién ahí subís del todo. Eso es una repetición.", dif:4, revisado:"entrenador"},
+  {name:"Peso muerto a una pierna con mochila", muscles:"Isquiotibiales, glúteo y equilibrio", desc:"Peso muerto a una pierna sosteniendo una mochila con botellas contra el pecho.", dif:4, revisado:"entrenador"},
+  // Glúteo: hip thrust con la espalda en un banco
+  {name:"Hip thrust a dos piernas", muscles:"Glúteo e isquiotibiales", desc:"Con la espalda alta apoyada en un banco y los pies en el piso, subí la cadera hasta alinear tronco y muslos y bajá controlado.", dif:2, equipo:"Banco", revisado:"entrenador"},
+  {name:"Hip thrust a una pierna", muscles:"Glúteo e isquiotibiales", desc:"Igual que el hip thrust, con un solo pie apoyado y la otra pierna estirada en el aire.", dif:3, equipo:"Banco", revisado:"entrenador"},
+  {name:"Hip thrust a una pierna con pausa", muscles:"Glúteo e isquiotibiales", desc:"Hip thrust a una pierna, con 2 segundos de pausa arriba apretando el glúteo.", dif:4, equipo:"Banco", revisado:"entrenador"},
+  // Lateral: glúteo medio y aductores (el descenso pélvico es la alternativa de glúteo medio; la escalera de aductores empieza en la cosaca asistida)
+  {name:"Descenso pélvico", muscles:"Glúteo medio", desc:"De costado en un escalón, con una pierna apoyada y la otra colgando libre, bajá y subí la cadera de la pierna libre.", dif:2, equipo:"Banco", revisado:"entrenador"},
+  {name:"Sentadilla cosaca con pausa", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Sentadilla cosaca con 2 segundos de pausa abajo.", dif:4, revisado:"entrenador"},
+  {name:"Sentadilla cosaca de lado a lado", muscles:"Aductores (cara interna del muslo) y glúteos", desc:"Bajá hacia un lado en cosaca y pasá al otro lado sin subir en el medio.", dif:4, revisado:"entrenador"},
+  // Pantorrilla: gemelos y sóleo
+  {name:"Elevación de talones a dos piernas", muscles:"Gemelos y sóleo", desc:"Con las puntas de los pies en un escalón, subí y bajá los talones con control.", dif:2, equipo:"Banco", revisado:"entrenador"},
+  {name:"Elevación de talones a una pierna", muscles:"Gemelos y sóleo", desc:"Agarrado de un poste, subí y bajá el talón sobre una sola pierna.", dif:3, revisado:"entrenador"},
+  {name:"Elevación de talones a una pierna lenta", muscles:"Gemelos y sóleo", desc:"Elevación de talones a una pierna, con la bajada de 3 segundos y una pausa abajo.", dif:3, revisado:"entrenador"},
+  {name:"Saltitos a una pierna", muscles:"Gemelos, sóleo y tobillo (potencia)", desc:"Rebotes cortos sobre una sola pierna, con los tobillos firmes y sin bajar del todo el talón.", dif:3, revisado:"entrenador"},
   // Cadena posterior — Puentes (Paul Wade, Convict Conditioning). Rellena el hueco de columna/glúteo.
-  {name:"Puente corto", muscles:"Glúteo, isquiotibiales y lumbar", desc:"Acostado boca arriba, rodillas flexionadas y pies en el suelo, elevar la cadera contrayendo glúteo hasta alinear tronco y muslos. Paso inicial y accesible de la serie de puentes.", dif:2, cite:"Paul Wade — Convict Conditioning (Big Six)"},
-  {name:"Puente completo", muscles:"Lumbar, glúteo, hombros y cuádriceps", desc:"Puente de espalda completo (rueda): manos y pies en el suelo, empujar la cadera hacia arriba hasta extender caderas y hombros. Exige movilidad de columna y hombro.", dif:3, requires:"Puente corto", cite:"Paul Wade — Convict Conditioning (Big Six)"},
-  {name:"Puente de pie a pie", muscles:"Cadena posterior completa y hombros", desc:"Desde de pie, bajar en control hasta el puente completo y volver a incorporarse sin ayuda. Paso maestro de la serie de puentes.", dif:4, isSkill:true, requires:"Puente completo", cite:"Paul Wade — Convict Conditioning (Big Six)"}
 ];
 
 /* ===== HABILIDADES (ocultas hasta ganar la fuerza previa) =====
@@ -1071,9 +1093,9 @@ const LADDER_LABEL = {
   pull_activ:"Activación escapular", ring_support:"Soporte en anillas",
   pull_horiz:"Remo (tirón horizontal)", pull_vert:"Dominadas (tirón vertical)",
   muscleup:"Muscle-up", front_lever:"Front lever",
-  squat:"Sentadilla", lunge:"Zancadas", power_legs:"Pliométrico", hinge:"Puente",
-  squat_uni:"Sentadilla a una pierna", hinge_uni:"Bisagra a una pierna", isquio_a:"Isquiotibiales (bloque A)", aductor_a:"Aductores (bloque A)",
-  core_recto:"Abdomen (recto)", core_colgado:"Flexores de cadera (colgado)", core_oblicuo:"Oblicuos", core_lumbar:"Lumbares", core_estab:"Estabilización", core_antiext:"Anti-extensión"
+  squat:"Sentadilla", power_legs:"Pliométrico",
+  squat_uni:"Rodilla (a una pierna)", sissy:"Sissy squat", hinge_uni:"Cadera (bisagra)", glute:"Glúteo (hip thrust)", lateral:"Lateral (aductores)", calf:"Pantorrilla",
+  core_colgado:"Core: flexión (colgado)", core_oblicuo:"Core: giro", core_antiext:"Core: estabilidad (anti-extensión)", core_lsit:"L-sit"
 };
 const LADDERS = {
   push_horiz:{gate:null, rungs:["Flexión inclinada (manos elevadas)","Flexión con rodillas","Flexiones","Flexiones diamante","Flexiones en anillas","Flexiones arqueras de rodillas","Flexiones arqueras"]},
@@ -1089,21 +1111,20 @@ const LADDERS = {
   front_lever:{gate:"Dominadas pronas", rungs:["Tucked front lever","Front lever a 1 pierna","Half front lever","Front lever"]},
   squat:{gate:null, rungs:["Sentadilla asistida (a caja)","Sentadillas","Sentadilla profunda"]},
   // Tren inferior unilateral (spec 23/9): progresión hacia búlgara y pistol. Se abre al dominar Sentadillas.
-  squat_uni:{gate:"Sentadillas", rungs:["Sentadilla a una pierna a caja","Bulgarian squat","Sentadilla corta a una pierna","Pistol squat asistido","Pistol squat"]},
-  lunge:{gate:null, rungs:["Zancadas","Zancadas laterales"]},
+  squat_uni:{gate:"Sentadillas", rungs:["Subida al banco","Zancada estática","Bulgarian squat","Búlgara lenta","Pistol a banco","Pistol squat asistido","Pistol squat"]},
+  // Rama sissy squat (plaza 24/11): se abre al dominar la búlgara. Carga de rodilla ALTA. (Todavía no entra en las sesiones: falta aprobar sus requisitos medibles.)
+  sissy:{gate:"Bulgarian squat", rungs:["Sissy squat asistido (rango parcial)","Sissy squat asistido (rango completo)","Sissy squat"]},
   power_legs:{gate:"Sentadillas", rungs:["Squat plío"]},
-  hinge:{gate:null, rungs:["Puente corto","Puente completo","Puente de pie a pie"]},
-  hinge_uni:{gate:null, rungs:["Bisagra de cadera (buenos días)","Peso muerto a una pierna con apoyo","Peso muerto a una pierna"]},
-  // BLOQUE A (20/11): isquiotibiales (una sola escalera de un peldaño; el curl con banda es su hermana) y aductores (asistida con poste -> libre)
-  isquio_a:{gate:null, rungs:["Peso muerto a una pierna con bajada lenta"]},
-  aductor_a:{gate:null, rungs:["Sentadilla cosaca asistida (agarrado de un poste)","Sentadilla cosaca"]},
-  core_antiext:{gate:null, rungs:["Dead bug","Plancha RKC","Hollow body con rodillas flexionadas","Hollow body"]},
+  hinge_uni:{gate:null, rungs:["Bisagra de cadera (buenos días)","Peso muerto a una pierna con apoyo","Peso muerto a una pierna","Peso muerto a una pierna con bajada lenta","Peso muerto a una pierna repeticiones y media","Peso muerto a una pierna con mochila"]},
+  glute:{gate:null, rungs:["Hip thrust a dos piernas","Hip thrust a una pierna","Hip thrust a una pierna con pausa"]},
+  calf:{gate:null, rungs:["Elevación de talones a dos piernas","Elevación de talones a una pierna","Elevación de talones a una pierna lenta","Saltitos a una pierna"]},
+  // Lateral (plaza 24/11): aductores. Es la escalera del aductor del Bloque A (cosaca asistida con poste -> libre -> con pausa -> de lado a lado). El descenso pélvico (glúteo medio) es su alternativa.
+  lateral:{gate:null, rungs:["Sentadilla cosaca asistida (agarrado de un poste)","Sentadilla cosaca","Sentadilla cosaca con pausa","Sentadilla cosaca de lado a lado"]},
+  core_antiext:{gate:null, rungs:["Plancha alta en banco","Toques de hombro en banco","Hollow colgado","Hollow colgado con piernas a 45°"]},   // estabilidad (plaza 24/11): es la anti-extensión obligatoria de cada sesión
   // Flexores de cadera COLGADO / PARALELAS (ancla fija del core, 06/11 v2): elevaciones de rodillas -> de piernas -> L-sit -> pies a la barra
-  core_colgado:{gate:null, rungs:["Knee raises en barra","L sit raises en barra","L-sit en paralelas","Leg raises en barra"]},
-  core_recto:{gate:null, rungs:["Crunches cortos en suelo","Leg raises en suelo","Dragon flag a 1 pierna","Dragon flag"]},
-  core_oblicuo:{gate:null, rungs:["Lateral kicks","Windshield wipers en suelo","Plancha a extensión"]},
-  core_lumbar:{gate:null, rungs:["Puente a una pierna","Crunches cortos lumbares"]},
-  core_estab:{gate:null, rungs:["Birdog","Plancha abdominal","L-sit a tuck (en paralelas)","L sit en anillas"]}
+  core_colgado:{gate:null, rungs:["Elevaciones de rodillas en paralelas","Knee raises en barra","Rodillas colgado enrollando la pelvis","L sit raises en barra","Toes to bar"]},
+  core_oblicuo:{gate:null, rungs:["Rodilla al codo cruzado de pie","Elevaciones de rodillas oblicuas colgado","Piernas estiradas al costado","Limpiaparabrisas tuck","Limpiaparabrisas colgado"]},   // giro (plaza 24/11)
+  core_lsit:{gate:null, rungs:["L-sit a tuck (en paralelas)","L-sit a una pierna","L-sit en paralelas"]}                // rama L-sit (la habilidad "L-Sit")
 };
 
 function wireLadders(){
@@ -1128,6 +1149,7 @@ const STATIC_EX_NAMES = new Set([
   "Plancha RKC","Hollow body con rodillas flexionadas","Hollow body",
   "Tucked front lever","Soporte en anillas (support hold)",
   "L sit en anillas","L-sit en paralelas","Hollow colgado","Hollow colgado con rodillas flexionadas","Hollow de pie contra la pared",
+  "Plancha alta en banco","Hollow colgado con piernas a 45°","L-sit a una pierna",   // plaza 24/11
   // Habilidades sostenidas (por tiempo)
   "Pino","Pino a una mano","Pseudo plancha","Advanced tucked planche",
   "Straddle planche","Pino a full planche","Front lever a 1 pierna",
@@ -1155,7 +1177,7 @@ const HABILIDADES = {
   planche:     { nombre:'Planche',      tipo:'empuje', equilibrio:false, etapas:['Pseudo push ups','Pseudo plancha','Advanced tucked planche','Straddle planche','Pino a full planche'] },
   handstand:   { nombre:'Handstand',    tipo:'empuje', equilibrio:true,  etapas:['Pino en pared (asistido)','Pino'] },
   hspu:        { nombre:'HSPU',         tipo:'empuje', equilibrio:false, etapas:['Pike push up','Flexiones a pino'] },
-  lsit:        { nombre:'L-Sit',        tipo:'empuje', equilibrio:false, etapas:['L-sit a tuck (en paralelas)','L sit en anillas'] },
+  lsit:        { nombre:'L-Sit',        tipo:'empuje', equilibrio:false, etapas:['L-sit a tuck (en paralelas)','L-sit a una pierna','L-sit en paralelas'] },   // rama L-sit (plaza 24/11): tuck 30 s -> una pierna 20 s por lado -> L-sit 20 s
   pistol:      { nombre:'Pistol Squat', tipo:'pierna', equilibrio:false, etapas:['Pistol squat asistido','Pistol squat'] }
 };
 const SKILL_REQ = {
@@ -1165,7 +1187,7 @@ const SKILL_REQ = {
   'Pseudo push ups':{v:12},              'Pseudo plancha':{v:20},               'Advanced tucked planche':{v:15},   'Straddle planche':{v:10},   'Pino a full planche':{v:10},
   'Pino en pared (asistido)':{v:30},     'Pino':{v:15},
   'Pike push up':{v:12},                 'Flexiones a pino':{v:5},
-  'L-sit a tuck (en paralelas)':{v:20},  'L sit en anillas':{v:15},
+  'L-sit a tuck (en paralelas)':{v:30},  'L-sit a una pierna':{v:20},  'L-sit en paralelas':{v:20},   'L sit en anillas':{v:15},
   'Pistol squat asistido':{v:6},         'Pistol squat':{v:3}
 };
 function skillStep(ex){ return isStatic(ex) ? 5 : 1; }   // escalones de marca: 5 s en isométricos, 1 rep en dinámicos
@@ -1346,19 +1368,17 @@ const PP_REF = {
   pull_activ:   { ref:0, u:'reps', q:'¿Cuántas retracciones escapulares colgado seguidas hacés?' },
   ring_support: { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el soporte en anillas?' },
   squat:        { ref:1, u:'reps', q:'¿Cuántas sentadillas seguidas hacés?' },
-  squat_uni:    { ref:1, u:'reps', q:'¿Cuántas sentadillas búlgaras por pierna hacés?' },
-  lunge:        { ref:0, u:'reps', q:'¿Cuántas zancadas por pierna seguidas hacés?' },
+  squat_uni:    { ref:2, u:'reps', q:'¿Cuántas sentadillas búlgaras por pierna hacés?' },
+  sissy:        { ref:0, u:'reps', q:'¿Cuántos sissy squats asistidos (rango parcial) hacés?' },
   power_legs:   { ref:0, u:'reps', q:'¿Cuántos saltos con sentadilla seguidos hacés?' },
-  hinge:        { ref:0, u:'reps', q:'¿Cuántos puentes cortos seguidos hacés?' },
   hinge_uni:    { ref:1, u:'reps', q:'¿Cuántos pesos muertos a una pierna con apoyo hacés por pierna?' },
-  isquio_a:     { ref:0, u:'reps', q:'¿Cuántos pesos muertos a una pierna con bajada lenta hacés por lado?' },
-  aductor_a:    { ref:1, u:'reps', q:'¿Cuántas sentadillas cosacas hacés por lado?' },
-  core_recto:   { ref:1, u:'reps', q:'¿Cuántas elevaciones de piernas en el suelo seguidas hacés?' },
-  core_oblicuo: { ref:0, u:'reps', q:'¿Cuántos lateral kicks seguidos hacés?' },
-  core_lumbar:  { ref:0, u:'reps', q:'¿Cuántos puentes a una pierna hacés por pierna?' },
-  core_estab:   { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la plancha?' },
-  core_antiext: { ref:3, u:'seg',  q:'¿Cuántos segundos aguantás en hollow body?' },
-  core_colgado: { ref:0, u:'reps', q:'¿Cuántas elevaciones de rodillas colgado hacés?' },
+  glute:        { ref:0, u:'reps', q:'¿Cuántos hip thrust a dos piernas seguidos hacés?' },
+  lateral:      { ref:1, u:'reps', q:'¿Cuántas sentadillas cosacas hacés por lado?' },
+  calf:         { ref:0, u:'reps', q:'¿Cuántas elevaciones de talones a dos piernas seguidas hacés?' },
+  core_lsit:    { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el L-sit agrupado (tuck)?' },
+  core_oblicuo: { ref:0, u:'reps', q:'¿Cuántas rodillas al codo cruzado de pie hacés por lado?' },
+  core_antiext: { ref:2, u:'seg',  q:'¿Cuántos segundos aguantás en hollow colgado?' },
+  core_colgado: { ref:1, u:'reps', q:'¿Cuántas elevaciones de rodillas colgado hacés?' },
   muscleup:     { ref:3, u:'reps', q:'¿Cuántos muscle-ups seguidos hacés?' },
   front_lever:  { ref:0, u:'seg',  q:'¿Cuántos segundos aguantás el front lever agrupado (tucked)?' },
   planche:      { ref:1, u:'seg',  q:'¿Cuántos segundos aguantás la pseudo plancha?' }
@@ -1450,10 +1470,11 @@ function getCeilings(ex){
   if(SKILL_REQ[ex.name]) return { bajo: skillStep(ex), medio: SKILL_REQ[ex.name].v };
   // Prevención de lesiones, bajo volumen (spec 23/9): pocas reps / poco tiempo por lado.
   if(ex.name === "Plancha RKC") return {bajo:10, medio:20};   // series cortas de máxima tensión: 10-20 s
-  // Bloque A (20/11): peso muerto lento 8 por lado, curl con banda 10, sentadilla cosaca 6-8
+  // Bloque A (20/11) y plaza (24/11): peso muerto lento 8 por lado, curl con banda 10, sentadilla cosaca 6-8; pantorrilla: 10-15 (saltitos 3×15)
   if(ex.name === 'Peso muerto a una pierna con bajada lenta') return {bajo:8, medio:12};
   if(ex.name === 'Curl femoral de pie con banda') return {bajo:10, medio:14};
-  if(ex.pattern === 'aductor_a') return {bajo:6, medio:8};
+  if(ex.pattern === 'lateral') return {bajo:6, medio:8};
+  if(ex.pattern === 'calf') return {bajo:10, medio:15};
   if(STATIC_EX_NAMES.has(ex.name)){
     const t = {2:{bajo:25,medio:40}, 3:{bajo:15,medio:25}, 4:{bajo:8,medio:15}, 5:{bajo:5,medio:10}};
     return t[d] || t[3];
@@ -1535,8 +1556,8 @@ function prevMonthKey(key){ const [y,m] = key.split('-').map(Number); const d = 
 const FAMILY_LABEL = {
   push_horiz:'flexiones', dips:'fondos', push_vert:'empuje vertical', planche:'planche',
   pull_vert:'dominadas', pull_horiz:'remos', muscleup:'muscle-up', front_lever:'front lever',
-  squat:'sentadillas', hinge:'puentes', squat_uni:'sentadillas a una pierna', hinge_uni:'bisagras a una pierna', isquio_a:'pesos muertos lentos', aductor_a:'sentadillas cosacas',
-  core_recto:'abdominales', core_colgado:'abdominales', core_oblicuo:'oblicuos', core_estab:'core', core_antiext:'core', core_lumbar:'lumbares'
+  squat:'sentadillas', squat_uni:'sentadillas a una pierna', sissy:'sissy squats', hinge_uni:'bisagras a una pierna', glute:'hip thrust', lateral:'sentadillas cosacas', calf:'pantorrillas',
+  core_recto:'abdominales', core_colgado:'abdominales', core_oblicuo:'oblicuos', core_antiext:'core', core_lsit:'abdominales'
 };
 function familyOf(name){ const ex = exByName(name); return ex ? (FAMILY_LABEL[ex.pattern] || 'otros') : 'otros'; }
 function familyTotals(map){
@@ -1611,7 +1632,7 @@ function mensajeVivo(){
 }
 const ZONES = ['piernas','empuje','tiron','core','movilidad'];
 // Todos los patrones que cuentan como "tren inferior" (una sola fuente de verdad).
-const PATRONES_PIERNA = ['squat','squat_uni','hinge','hinge_uni','lunge','power_legs','isquio_a','aductor_a'];
+const PATRONES_PIERNA = ['squat','squat_uni','sissy','hinge_uni','glute','lateral','calf','power_legs'];
 function ensureZones(){ ZONES.forEach(z => { if(typeof stats.lastZone[z] !== 'number') stats.lastZone[z] = Date.now(); }); }
 function zoneOf(pattern){
   if(['push_horiz','dips','push_vert','planche','triceps'].includes(pattern)) return 'empuje';
@@ -1740,8 +1761,8 @@ function ladderStatus(pat){
 const ZONA_GROUPS = [
   {title:"Empuje", icono:"💪", pats:["push_horiz","dips","push_vert","triceps"]},
   {title:"Tirón", icono:"🎯", pats:["pull_vert","pull_horiz","pull_activ","ring_support"]},
-  {title:"Pierna y cadena posterior", icono:"🦵", pats:["squat","squat_uni","lunge","power_legs","hinge","hinge_uni","isquio_a","aductor_a"]},
-  {title:"Core", icono:"🛡️", pats:["core_recto","core_colgado","core_oblicuo","core_lumbar","core_estab","core_antiext"]},
+  {title:"Pierna y cadena posterior", icono:"🦵", pats:["squat","squat_uni","sissy","power_legs","hinge_uni","glute","lateral","calf"]},
+  {title:"Core", icono:"🛡️", pats:["core_colgado","core_oblicuo","core_antiext","core_lsit"]},
   {title:"Habilidades", icono:"🌟", pats:["muscleup","front_lever","planche"]}
 ];
 
@@ -1850,7 +1871,7 @@ function perfilResumen(sec, g){
   let pat;
   if(g.title === 'Empuje') pat = 'push_horiz';
   else if(g.title === 'Tirón') pat = 'pull_vert';
-  else if(g.title === 'Core') pat = 'core_recto';
+  else if(g.title === 'Core') pat = 'core_colgado';
   else if(g.title === 'Habilidades') pat = g.pats.slice().sort((a, b) => ladderStatus(b).mastered - ladderStatus(a).mastered)[0];   // la más avanzada
   else pat = isUnlocked(exByName(LADDERS.squat_uni.rungs[0])) ? 'squat_uni' : 'squat';
   return sec.titulo + ' · ' + (g.title === 'Habilidades' ? (LADDER_LABEL[pat] || pat) + ': ' : '') + peldanoActualNombre(pat);
@@ -1929,7 +1950,7 @@ function isUnlocked(ex){
 // ===== Tu equipamiento =====
 // La app solo te da ejercicios que podés hacer con lo que tenés.
 // Por defecto están todos; se configura en "Tu nivel".
-let myEquip = ['Suelo', 'Barra', 'Paralelas', 'Anillas', 'Banda', 'Soga'];
+let myEquip = ['Suelo', 'Barra', 'Paralelas', 'Banco', 'Anillas', 'Soga'];
 function hasEquip(ex){
   if(typeof equipmentOf !== 'function') return true;
   const e = equipmentOf(ex);
@@ -2958,7 +2979,7 @@ renderProgress();
 // Siembra el estado "dominado" (mastered) para que un usuario con experiencia
 // no tenga que desbloquear lo básico. "Disponible" sale solo de lo dominado.
 function masteredMaxIdx(ladderId){
-  const rungs = LADDERS[ladderId].rungs;
+  const rungs = (LADDERS[ladderId] || { rungs:[] }).rungs;   // (plaza 24/11: algunos ejercicios de core ya no tienen escalera)
   let idx = -1;
   for(let i=0;i<rungs.length;i++){
     const st = progState[rungs[i]];
@@ -2985,10 +3006,9 @@ function mapReps(reps, map){
 // Asumimos un piso intermedio razonable —lo que hace casi cualquiera con recorrido— y
 // la regresión corrige si algo le queda grande. A un principiante NO se le aplica.
 function calibrarCore(){
-  masterUpTo('core_recto', 1);    // -> disponible: Knee raises en barra
+  masterUpTo('core_colgado', 0);  // -> disponible: Knee raises en barra
   masterUpTo('core_oblicuo', 0);  // -> disponible: Windshield wipers
-  masterUpTo('core_estab', 1);    // -> disponible: L-sit a tuck (en paralelas)
-  masterUpTo('core_lumbar', 0);   // -> disponible: Crunches cortos lumbares
+  masterUpTo('core_antiext', 0);  // -> disponible: Toques de hombro en banco
 }
 
 // Umbrales fijados por criterio de entrenador (heurísticos, recalibrables por el motor).
@@ -3001,10 +3021,10 @@ const ASSESS = [
 const EXPERIENCE = {
   nunca: {},
   poco:  {push_horiz:1, pull_vert:0, dips:0, squat:0},
-  meses: {push_horiz:2, pull_vert:2, dips:2, squat:1, core_recto:2, push_vert:0},
-  anos:  {push_horiz:4, pull_vert:6, dips:3, squat:3, core_recto:4, push_vert:3, hinge:0, pull_horiz:2}
+  meses: {push_horiz:2, pull_vert:2, dips:2, squat:1, core_colgado:2, push_vert:0},
+  anos:  {push_horiz:4, pull_vert:6, dips:3, squat:3, core_colgado:4, push_vert:3, hinge_uni:0, pull_horiz:2}
 };
-const ADV_LADDERS = ["push_horiz","dips","push_vert","pull_horiz","pull_vert","squat","hinge","core_recto","muscleup","front_lever","planche"];
+const ADV_LADDERS = ["push_horiz","dips","push_vert","pull_horiz","pull_vert","squat","hinge_uni","core_colgado","muscleup","front_lever","planche"];
 
 const onbox = () => document.getElementById("onboarding");
 
@@ -3109,9 +3129,10 @@ document.getElementById("onboarding-open").addEventListener("click", reconfigura
 
 /* ======================= BIBLIOTECA ======================= */
 const DIF_LABEL = {2:'Básico', 3:'Intermedio', 4:'Avanzado', 5:'Élite'};
-const EQUIP_OPTIONS = ['Suelo', 'Barra', 'Paralelas', 'Anillas', 'Banda', 'Soga', 'Poste vertical'];   // Poste vertical: opcional (Human Flag), NO viene marcado por defecto
+const EQUIP_OPTIONS = ['Suelo', 'Barra', 'Paralelas', 'Banco', 'Anillas', 'Banda', 'Soga', 'Poste vertical'];   // Poste vertical: opcional (Human Flag), NO viene marcado por defecto
 
 function equipmentOf(ex){
+  if(ex.equipo) return ex.equipo;                       // equipo explícito (plaza, 24/11): p. ej. 'Banco'
   const n = ex.name.toLowerCase();
   if(n.includes('human flag') || n.includes('bandera humana')) return 'Poste vertical';
   if(n.includes('anilla')) return 'Anillas';
@@ -3330,7 +3351,7 @@ function esReingreso(){
 function seriesAjustadas(n){ return esReingreso() ? Math.max(1, Math.round(n * 0.65)) : n; }
 // SERIES FIJAS (ENCARGO, corrección 28/10): anclas 4, accesorios 3, siempre. Descarga: 2. No se pueden sumar ni quitar.
 // (Habilidad y abdominales siguen en 3; el Bloque A de Piernas pasa a 3 series: isquios 3–4 y aductores 2–3.)
-const SERIES_POR_ROL = { ancla:4, acc:3, skill:3, core:3, bajoA:3 };   // bajoA = Bloque A de Piernas (20/11): 3 series (isquios 3–4, aductores 2–3)
+const SERIES_POR_ROL = { ancla:4, acc:3, skill:3, core:3, bajoA:3, calf:3 };   // bajoA = Bloque A de Piernas (20/11): 3 series (isquios 3–4, aductores 2–3); calf = pantorrilla (plaza 24/11): 3 series
 const SERIES_DESCARGA = 2;
 // Accesorios del grupo SECUNDARIO: tope de dificultad. dif 2 = lo más liviano de la escala (Korean dips y Pike push up son dif 3).
 const TOPE_DIF_SEC = 2;
@@ -3435,7 +3456,7 @@ function restText(ex){
   const mayor = profile.edad != null && profile.edad >= 45;   // recupera más lento
   const grande = profile.edad != null && profile.edad >= 58;
   const suave = cargaNivel() === 1;                            // primeras sesiones: sin apuro
-  if(ex.pattern === 'isquio_a' || ex.pattern === 'aductor_a') return grande ? '2:30 min' : '2 min';   // Bloque A de Piernas (20/11): calidad con descanso completo
+  if(ex._rol === 'bajoA' || ex._bloqueA) return grande ? '2:30 min' : '2 min';   // Bloque A de Piernas (20/11): calidad con descanso completo
   if(duro) return grande ? '2:30 min' : '2 min';
   return (mayor || suave) ? '2 min' : '90 s';
 }
@@ -3450,12 +3471,10 @@ const SIBLING_GROUPS = [
   {pattern:'pull_vert',  base:'Dominadas en anillas', hermanas:['Dominadas supinas en anillas']},
   {pattern:'squat',      base:'Sentadillas',          hermanas:['Sentadilla sumo']},
   {pattern:'push_vert',  base:'Pike push up',         hermanas:['Hindu push ups']},
-  {pattern:'core_recto', base:'Crunches cortos en suelo', hermanas:['Crunches completos en suelo', 'Tijeras en suelo']},
-  {pattern:'core_recto', base:'Leg raises en suelo',   hermanas:['ABS escuadra + leg raises en suelo']},
-  {pattern:'core_colgado', base:'Knee raises en barra',  hermanas:['L sit raises en fondos', 'Elevaciones de rodillas en paralelas']},
-  {pattern:'core_colgado', base:'Leg raises en barra',   hermanas:['Pullover']},
-  {pattern:'isquio_a', base:'Peso muerto a una pierna con bajada lenta', hermanas:['Curl femoral de pie con banda']},
-  {pattern:'core_oblicuo', base:'Lateral kicks',       hermanas:['Crunches oblicuos (codo a rodilla)', 'Bicicleta en suelo', 'Giro ruso sin carga', 'Plancha lateral']}
+  {pattern:'core_colgado', base:'Knee raises en barra',  hermanas:['L sit raises en fondos']},
+  {pattern:'core_colgado', base:'Toes to bar',          hermanas:['Pullover']},
+  {pattern:'core_oblicuo', base:'Rodilla al codo cruzado de pie', hermanas:['Lateral kicks', 'Windshield wipers en suelo', 'Plancha a extensión', 'Crunches oblicuos (codo a rodilla)', 'Bicicleta en suelo', 'Giro ruso sin carga', 'Plancha lateral']},
+  {pattern:'lateral', base:'Sentadilla cosaca asistida (agarrado de un poste)', hermanas:['Descenso pélvico']},
 ];
 // Índice por patrón: [base, ...hermanas] — lo que usa el generador de sesión.
 const SIBLINGS = {};
@@ -3473,8 +3492,9 @@ SIBLING_GROUPS.forEach(g => {
     if(base){ ex.rung = base.rung; ex.ladderLen = base.ladderLen; }
   });
 });
-// Bloque A (20/11): el curl femoral con banda es una ALTERNATIVA del peso muerto lento desde el primer día (no un peldaño posterior): no pide dominar nada.
-{ const curl = exByName('Curl femoral de pie con banda'); if(curl) curl.requires = undefined; }
+// Bloque A: el curl femoral con banda es una ALTERNATIVA de los isquios (peldaño actual de cadera) desde el primer día (no un peldaño posterior): no pide dominar nada.
+{ const curl = exByName('Curl femoral de pie con banda'); if(curl){ curl.pattern = 'hinge_uni'; curl.requires = undefined; }
+  const dp = exByName('Descenso pélvico'); if(dp) dp.requires = undefined; }       // Descenso pélvico: alternativa de glúteo medio, disponible desde el primer día
 // Elige una variante hermana según el mes/ciclo, si el usuario la tiene disponible.
 function monthlyVariant(pattern, ex){
   const group = SIBLINGS[pattern];
@@ -3511,6 +3531,10 @@ const UNILATERAL = new Set([
   // Tren inferior unilateral (spec 23/9): lado débil primero
   "Sentadilla a una pierna a caja", "Pistol squat asistido",
   "Peso muerto a una pierna con apoyo", "Peso muerto a una pierna",
+  // Plaza, Fase 1 (24/11)
+  "Subida al banco", "Zancada estática", "Búlgara lenta", "Pistol a banco", "Peso muerto a una pierna repeticiones y media", "Peso muerto a una pierna con mochila",
+  "Hip thrust a una pierna", "Hip thrust a una pierna con pausa", "Descenso pélvico", "Sentadilla cosaca con pausa",
+  "Elevación de talones a una pierna", "Elevación de talones a una pierna lenta", "Saltitos a una pierna", "L-sit a una pierna",
 ]);
 function isUnilateral(ex){ return UNILATERAL.has(ex.name); }
 
@@ -3606,9 +3630,11 @@ const CORE_PISO = new Set(['Dead bug', 'Plancha RKC', 'Hollow body con rodillas 
   'Tijeras en suelo', 'Plancha abdominal', 'Plancha lateral', 'Plancha a extensión', 'Windshield wipers en suelo', 'Crunches cortos lumbares',
   'ABS escuadra + leg raises en suelo', 'Leg raises en suelo', 'Dragon flag a 1 pierna', 'Dragon flag']);
 CORE.forEach(c => { c.piso = CORE_PISO.has(c.name); });
+// Floor del core que ya no es peldaño de ninguna escalera (plaza 24/11): quedan en el banco SOLO con "Piso apto".
+['Dead bug', 'Plancha RKC', 'Hollow body con rodillas flexionadas', 'Hollow body'].forEach(n => { const c = exByName(n); if(c && !c.pattern) c.pattern = 'core_antiext'; });
 const coreSinPisoOk = c => !c.piso || (typeof profile !== 'undefined' && profile && profile.pisoApto === true);
 // Nivel de anti-extensión de cada ejercicio (1 = lo más fácil, 4 = hollow): permite traducir el nivel de piso a su equivalente sin piso.
-const CORE_ANTI_NIVEL = { 'Dead bug':1, 'Hollow de pie contra la pared':1, 'Plancha RKC':2, 'Pallof press con banda':2, 'Hollow body con rodillas flexionadas':3, 'Hollow colgado con rodillas flexionadas':3, 'Hollow body':4, 'Hollow colgado':4 };
+const CORE_ANTI_NIVEL = { 'Dead bug':1, 'Hollow de pie contra la pared':1, 'Plancha alta en banco':1, 'Birdog':1, 'Plancha RKC':2, 'Plancha abdominal':2, 'Pallof press con banda':2, 'Toques de hombro en banco':2, 'Hollow body con rodillas flexionadas':2, 'Hollow colgado con rodillas flexionadas':2, 'Hollow body':3, 'Hollow colgado':3, 'Hollow colgado con piernas a 45°':4 };   // plaza 24/11: escalera de estabilidad = niveles 1 a 4
 function coreNivelAnti(){
   const s = ladderStatus('core_antiext'); if(s.allDone) return 4;
   const c = s.current || s.rungs[0];
@@ -3663,17 +3689,20 @@ function registrarCoreUsado(ses){
   stats.coreUso = stats.coreUso || {}; stats.coreUltimo = stats.coreUltimo || {};
   stats.coreN = (stats.coreN || 0) + 1;
   const core = (ses || []).filter(e => e._rol === 'core');
-  (ses || []).filter(e => e.pattern === 'isquio_a').forEach(e => { stats.coreUso[e.name] = stats.coreN; });   // el isquio del Bloque A alterna: se anota cuál fue
+  (ses || []).filter(e => e._isq).forEach(e => { stats.coreUso[e.name] = stats.coreN; });   // el isquio del Bloque A alterna: se anota cuál fue
   core.forEach(e => { stats.coreUso[e.name] = stats.coreN; });
   if(ses && ses.dia) stats.coreUltimo[ses.dia] = core.filter(e => !e._coreAncla).map(e => e.name);
 }
-// ISQUIOTIBIALES del Bloque A (20/11): peso muerto a una pierna con bajada lenta; si "Bandas" está marcado alterna con el curl femoral de pie con banda
+// ISQUIOTIBIALES del Bloque A (plaza 24/11): el peldaño ACTUAL de la escalera de cadera; si "Bandas" está marcado alterna con el curl femoral de pie con banda
 // (el que hace más tiempo que no se hace). No va en la plantilla del bloque mensual.
 function isquioElegido(){
-  const cand = ['Peso muerto a una pierna con bajada lenta'].concat(myEquip.includes('Banda') ? ['Curl femoral de pie con banda'] : []).map(exByName).filter(e => e && isDoable(e));
+  let top = topDelPatron('hinge_uni');                                  // el peldaño actual de la escalera de cadera (plaza 24/11: peso muerto lento = peldaño 4)
+  if(top){ const st = progState[top.name]; if(st && st.regressed && top.requires) top = applyRegression(top); }
+  const cand = [top].concat(myEquip.includes('Banda') ? [exByName('Curl femoral de pie con banda')] : []).filter(e => e && isDoable(e));
   if(!cand.length) return null;
   const uso = (stats && stats.coreUso) || {}, n = (stats && stats.coreN) || 0;
-  return cand.map((c, i) => ({ c, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % cand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r))[0].c;
+  const c = cand.map((c, i) => ({ c, u: (typeof uso[c.name] === 'number') ? uso[c.name] : -1, r: (i + n) % cand.length })).sort((a, b) => (a.u - b.u) || (a.r - b.r))[0].c;
+  return Object.assign({}, c, { _isq:true });                           // _isq: marca del isquio del Bloque A (no entra en la plantilla del bloque mensual)
 }
 function topDelPatron(p, tope){
   const l = LADDERS[p]; if(!l) return null;
@@ -3698,7 +3727,7 @@ function guardarPlantilla(dia, ses){
   const b = bloqueVigente();
   b.plantilla = b.plantilla || {};
   b.plantilla[claveDePlantilla(dia)] = {
-    slots: ses.filter(e => (e._rol !== 'core' || e._coreAncla) && e.pattern !== 'isquio_a').map(e => ({ coreAncla:!!e._coreAncla, name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
+    slots: ses.filter(e => (e._rol !== 'core' || e._coreAncla) && !e._isq).map(e => ({ coreAncla:!!e._coreAncla, name:e.name, pattern:e.pattern || null, rol:e._rol || null, libre:!!e._libre, skill:e._skill || null, actual:slotActual(e), tope:slotTope(e), topSnap:(e.isSibling && e.pattern && LADDERS[e.pattern]) ? ((topDelPatron(e.pattern, slotTope(e)) || {}).name || null) : null })),
     cambios: (ses.cargaCambios || []).slice()
   };
   try{ if(typeof saveState === 'function') saveState(); }catch(e){ /* no bloquear */ }
@@ -3733,7 +3762,7 @@ function materializarPlantilla(tpl, dia){
   const por = r => items.filter(e => e._rol === r);
   const coreOrd = por('core').filter(e => e.pattern === 'core_antiext').concat(por('core').filter(e => e.pattern !== 'core_antiext').sort(exig));
   let full;
-  if(dia === 'piernas') full = [].concat(por('skill'), por('bajoA').sort((a, b) => (b.pattern === 'isquio_a') - (a.pattern === 'isquio_a')), por('circ'), coreOrd);
+  if(dia === 'piernas') full = [].concat(por('skill'), por('bajoA').sort((a, b) => (!!b._isq) - (!!a._isq)), por('calf'), por('circ'), coreOrd);
   else full = [].concat(por('skill'), por('ancla').sort(exig), por('acc').sort(exig), coreOrd);
   if(full.length !== items.length) return null;
   full.dia = dia; full.descarga = esDescarga(dia); full.liviana = livianaHoy() && !descargaProgramada(dia);
@@ -3754,7 +3783,7 @@ function materializarPlantilla(tpl, dia){
 // Alternativas para "Cambiar ejercicio": mismo patrón y mismo nivel (si no hay, del nivel de abajo), que se puedan hacer con el equipo marcado
 // y que no estén ya en la sesión. Las habilidades, la soga y el salto de dosis fija no se cambian por acá.
 function alternativasDe(ex, ses){
-  if(!ex || ex._skill || ex._libre || !ex.pattern || ex._rol === 'core' || ex.pattern === 'isquio_a') return [];    // los abdominales ya rotan solos en cada sesión
+  if(!ex || ex._skill || ex._libre || !ex.pattern || ex._rol === 'core' || ex._isq) return [];    // los abdominales ya rotan solos en cada sesión
   const en = new Set((ses || []).map(e => e.name));
   const base = ALL_POOLS.filter(e => e.name !== ex.name && !en.has(e.name) && e.pattern === ex.pattern && isDoable(e) && !e._skill && !SKILL_REQ[e.name]);
   const mismo = base.filter(e => (e.dif || 0) === (ex.dif || 0));
@@ -3942,7 +3971,7 @@ function guardarRPEDespuesDeSesion(){
   const L = grupo(() => {
     if(dia !== 'piernas') return;
     pick([poolFor('squat_uni') ? 'squat_uni' : 'squat'], 1);
-    if(carga >= 2) pick([poolFor('hinge_uni') ? 'hinge_uni' : 'hinge'], 1);
+    if(carga >= 2) pick(['glute'], 1);                    // plaza 24/11: el hip thrust (glúteo) reemplaza al peso muerto del circuito; el peso muerto (cadera) pasa al Bloque A de isquios
   });
   // BLOQUE A (20/11, reemplaza a Nordic y Copenhagen; todo parado y sin piso): ISQUIOTIBIALES (peso muerto a una pierna con bajada lenta, o curl femoral de pie
   // con banda si hay bandas: alternan sesión a sesión) y ADUCTORES (sentadilla cosaca: asistida con poste hasta que se domine). Nunca se recortan por tiempo.
@@ -3950,9 +3979,20 @@ function guardarRPEDespuesDeSesion(){
   const A = grupo(() => {
     if(dia !== 'piernas') return;
     const h = isquioElegido(); if(h && !exs.some(e => e.name === h.name)) exs.push(h);
-    const PP = poolFor('aductor_a');
+    const PP = poolFor('lateral');                        // aductores: el peldaño actual de la escalera lateral (la cosaca asistida es el mínimo)
     if(PP){
       let ex = PP.actual;
+      const st = progState[ex.name];
+      if(st && st.regressed && ex.requires) ex = applyRegression(ex);
+      if(ex && !exs.some(e => e.name === ex.name)) exs.push(ex);
+    }
+  });
+  // PANTORRILLA (plaza 24/11): en el día de Piernas, después del Bloque A y antes del circuito. 3 series, el peldaño actual de su escalera.
+  const CF = grupo(() => {
+    if(dia !== 'piernas') return;
+    const PC = poolFor('calf');
+    if(PC){
+      let ex = PC.actual;
       const st = progState[ex.name];
       if(st && st.regressed && ex.requires) ex = applyRegression(ex);
       if(ex && !exs.some(e => e.name === ex.name)) exs.push(ex);
@@ -3978,11 +4018,12 @@ function guardarRPEDespuesDeSesion(){
   H.forEach(x => rol.set(x, 'skill'));
   core.forEach(x => rol.set(x, 'core'));
   if(dia === 'piernas'){
-    const sq = L.find(e => /^squat/.test(e.pattern)), bis = L.find(e => /^hinge/.test(e.pattern));
+    const sq = L.find(e => /^squat/.test(e.pattern)), bis = L.find(e => e.pattern === 'glute');
     const circ = [sq, salto, P[0], bis, Q[0], soga].filter(Boolean);
     A.forEach(x => rol.set(x, 'bajoA'));
+    CF.forEach(x => rol.set(x, 'calf'));
     circ.forEach(x => rol.set(x, 'circ'));
-    ordenFinal = [].concat(H, A, circ, coreOrd);
+    ordenFinal = [].concat(H, A, CF, circ, coreOrd);
   } else {
     const prin = (dia === 'tiron' ? Q : P).slice().sort(exig);
     const seg  = (dia === 'tiron' ? P : Q).slice().sort(exig);
@@ -4144,9 +4185,9 @@ const STRETCH_BY_ZONE = {
 const STRETCH_MAP = {
   push_horiz:['pecho'], dips:['pecho','triceps'], push_vert:['hombro','triceps'], triceps:['triceps'], planche:['pecho','hombro'],
   pull_vert:['dorsal'], pull_horiz:['dorsal','biceps'], pull_activ:['dorsal'], muscleup:['dorsal','hombro'], front_lever:['dorsal'],
-  squat:['cuadriceps','gluteo'], hinge:['isquios','gluteo'], lunge:['cuadriceps','flexor_cadera'], power_legs:['cuadriceps'],
-  squat_uni:['cuadriceps','gluteo'], hinge_uni:['isquios','gluteo'], isquio_a:['isquios'], aductor_a:['aductor'],
-  core_recto:['abdomen'], core_colgado:['abdomen'], core_oblicuo:['abdomen'], core_estab:['abdomen'], core_antiext:['abdomen'], core_lumbar:['flexor_cadera'],
+  squat:['cuadriceps','gluteo'], power_legs:['cuadriceps'], sissy:['cuadriceps'], glute:['gluteo'], calf:['gemelo'],
+  squat_uni:['cuadriceps','gluteo'], hinge_uni:['isquios','gluteo'], lateral:['aductor'],
+  core_colgado:['abdomen'], core_oblicuo:['abdomen'], core_antiext:['abdomen'], core_lsit:['abdomen'], core_recto:['abdomen'],
 };
 function dayStretch(session){
   const zonas = [];
@@ -4450,13 +4491,14 @@ const EQUIP_HELP = {
   'Suelo':'Siempre disponible',
   'Barra':'Dominadas, muscle-up, front lever',
   'Paralelas':'Fondos, L-sit, V-sit',
+  'Banco':'Subidas, búlgara, hip thrust, talones',
   'Anillas':'Variantes en anillas',
   'Banda':'Asistencia y prevención',
   'Soga':'Finisher de acondicionamiento',
   'Poste vertical':'Human Flag (opcional)'
 };
 // Cómo se nombra cada equipo en pantalla (la clave interna no cambia: la usan hasEquip/equipmentOf).
-const EQUIP_LABEL = { 'Suelo':'Suelo', 'Barra':'Barra', 'Paralelas':'Paralelas / parallettes', 'Anillas':'Anillas', 'Banda':'Bandas', 'Soga':'Soga', 'Poste vertical':'Poste vertical' };
+const EQUIP_LABEL = { 'Suelo':'Suelo', 'Barra':'Barra', 'Paralelas':'Paralelas / parallettes', 'Banco':'Banco o escalón', 'Anillas':'Anillas', 'Banda':'Bandas', 'Soga':'Soga', 'Poste vertical':'Poste vertical' };
 function renderEquip(){
   const el = document.getElementById('equip-picker'); if(!el) return;
   let h = '';
@@ -4807,7 +4849,7 @@ function buildBlocks(session){
   const dia = session.dia || dayFocus;
   const TIT = { tiron:'Tirón', empuje:'Empuje', piernas:'Tren inferior' };
   // El rol lo fija generateSession (`_rol`). Sin rol (sesiones armadas a mano) se deduce por el patrón, como antes.
-  const rolDe = e => e._skill ? 'skill' : (e._rol || (zoneOf(e.pattern) === 'core' ? 'core' : ['isquio_a', 'aductor_a'].includes(e.pattern) ? 'bajoA' : 'acc'));
+  const rolDe = e => e._skill ? 'skill' : (e._rol || (zoneOf(e.pattern) === 'core' ? 'core' : e._isq ? 'bajoA' : e.pattern === 'lateral' ? 'bajoA' : e.pattern === 'calf' ? 'calf' : 'acc'));
   const B = [];
   let ult = null;
   session.forEach(e => {
@@ -4819,6 +4861,7 @@ function buildBlocks(session){
       else if(k === 'ancla') B.push({tipo:'solo', titulo:TIT[dia] || 'Fuerza', nota:'De más difícil a más fácil. Descanso 2 min entre series.', exs:[], rondas:n});
       else if(k === 'acc') B.push({tipo:'solo', titulo:'Accesorios', nota:'Más livianos. Descanso de 60 a 90 s entre series.', exs:[], rondas:n});
       else if(k === 'bajoA') B.push({tipo:'calidad', titulo:'Calidad: isquios e ingle', nota:'Descanso completo de 2 min entre series. Pocas repeticiones, muy bien hechas.', exs:[], rondas:n});
+      else if(k === 'calf') B.push({tipo:'solo', titulo:'Pantorrillas', nota:'Descanso de 60 a 90 s entre series.', exs:[], rondas:n});
       else if(k === 'circ') B.push({tipo:'circuito', circuito:true, titulo:'Circuito', nota:'Sin descanso entre ejercicios. Descanso de 60 a 90 s entre rondas.', exs:[], rondas:rondasCircuito(session)});
       else B.push({tipo:'core', circuito:true, titulo:'Abdominales', nota:'En circuito: el anti-extensión primero, sin descanso entre ejercicios. Descanso de 60 s entre rondas.', exs:[], rondas:n});
     }
@@ -5232,9 +5275,9 @@ if(resetBtn) resetBtn.addEventListener('click', () => {
   try{ localStorage.removeItem(STORE_KEY); }catch(e){}
   progState = {};
   goal = null;
-  myEquip = ['Suelo','Barra','Paralelas','Anillas','Banda','Soga'];
+  myEquip = ['Suelo','Barra','Paralelas','Banco','Anillas','Soga'];
   onboarded = false;
-  onboardData = { equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
+  onboardData = { equip:['Suelo','Barra','Paralelas','Banco','Anillas','Soga'], nivel:null };
   stats = { lifetime:{}, week:{}, month:{}, sessions:0, weekSessions:0, monthSessions:0, records:{}, weekStart: Date.now(), monthStart: Date.now(), cycle:0, cycleStart: Date.now(), cycleJustAdvanced:false, lastZone:{}, weeks:{}, months:{}, coins:0, shields:0, shieldedWeeks:{}, lastRachaCheck:null };
   normalizeStats();
   sessionStarted = false;
@@ -5269,7 +5312,7 @@ let goal = null;
 let onboarded = false; // ¿ya pasó por la bienvenida?
 // Perfil que amolda la app a la persona. edad: para el descanso. diasHoy: cuántos días entrena
 // HOY (0-2 = arranque gradual, 3+ = ritmo completo). tiempoSesion: tope de minutos por sesión.
-let profile = { edad:null, diasHoy:null, tiempoSesion:null, weeklyGoal:null };
+let profile = { edad:null, diasHoy:null, tiempoSesion:null, weeklyGoal:null, migPlazaF1:true };   // migPlazaF1: los datos nuevos ya nacen en el formato de la plaza (ver migrarPlazaFase1)
 // Cargar configuración del motor de IA
 if(localStorage.getItem('configUsuarioIA')){
   const savedConfig = JSON.parse(localStorage.getItem('configUsuarioIA'));
@@ -5593,6 +5636,48 @@ function saveState(){
     localStorage.setItem(STORE_KEY, JSON.stringify({ progState, stats, goal, myEquip, onboarded, profile }));
   }catch(e){ /* almacenamiento no disponible en este contexto */ }
 }
+// ===== MIGRACIÓN PLAZA, FASE 1 (24/11): equipo + progreso guardado ===================================================================
+// Tabla de equivalencias APROBADA por Thomás (24/11). Conservadora: si el ejercicio viejo estaba DOMINADO, el peldaño nuevo equivalente
+// y todos los de abajo de su escalera quedan dominados. Nunca se sube de más. Los registros viejos (progState, marcas, estadísticas) NO se
+// borran: lo que ya no está en ninguna escalera queda guardado con su nombre. Se corre UNA vez por dispositivo (profile.migPlazaF1).
+// [ejercicio viejo, escalera nueva, nº de peldaño nuevo (1 = primero) hasta el que queda dominado]
+const MIGRACION_PLAZA_F1 = [
+  ['Sentadilla a una pierna a caja', 'squat_uni', 1], ['Zancadas', 'squat_uni', 2], ['Bulgarian squat', 'squat_uni', 3], ['Sentadilla corta a una pierna', 'squat_uni', 4],
+  ['Pistol squat asistido', 'squat_uni', 6], ['Pistol squat', 'squat_uni', 7],
+  ['Peso muerto a una pierna con bajada lenta', 'hinge_uni', 4],
+  ['Elevaciones de rodillas en paralelas', 'core_colgado', 1], ['Knee raises en barra', 'core_colgado', 2], ['L sit raises en barra', 'core_colgado', 4],
+  ['L-sit en paralelas', 'core_colgado', 4], ['Leg raises en barra', 'core_colgado', 4],
+  ['Lateral kicks', 'core_oblicuo', 1], ['Elevaciones de rodillas oblicuas colgado', 'core_oblicuo', 2], ['Windshield wipers en suelo', 'core_oblicuo', 3],
+  ['Plancha a extensión', 'core_oblicuo', 3], ['Limpiaparabrisas colgado', 'core_oblicuo', 5],
+  ['Dead bug', 'core_antiext', 1], ['Birdog', 'core_antiext', 1], ['Plancha RKC', 'core_antiext', 2], ['Plancha abdominal', 'core_antiext', 2],
+  ['Hollow body con rodillas flexionadas', 'core_antiext', 2], ['Hollow body', 'core_antiext', 3],
+  ['L sit en anillas', 'core_lsit', 3]
+];
+function migrarPlazaFase1(){
+  if(profile.migPlazaF1) return false;
+  // Equipo: "Banco o escalón" encendido; "Banda" apagada (Thomás no tiene).
+  if(!myEquip.includes('Banco')) myEquip.push('Banco');
+  myEquip = myEquip.filter(e => e !== 'Banda');
+  // El "L-sit en paralelas" viejo era un peldaño del colgado: en la rama L-sit empieza de cero (se limpia antes de aplicar la tabla).
+  const antes = {};
+  MIGRACION_PLAZA_F1.forEach(([viejo]) => { antes[viejo] = !!(progState[viejo] && progState[viejo].mastered); });
+  const lsitParo = progState['L-sit en paralelas'];
+  if(lsitParo && lsitParo.mastered){ lsitParo.mastered = false; lsitParo.best = 0; lsitParo.reqSes = 0; }
+  MIGRACION_PLAZA_F1.forEach(([viejo, esc, hasta]) => {
+    if(!antes[viejo]) return;
+    const L = LADDERS[esc]; if(!L) return;
+    L.rungs.forEach((nm, i) => {
+      if(i >= hasta) return;
+      const ex = exByName(nm); if(!ex) return;
+      const st = ensureProg(ex);
+      st.mastered = true; st.regressed = false;
+      if(SKILL_REQ[nm]){ st.best = Math.max(st.best || 0, SKILL_REQ[nm].v); }
+    });
+  });
+  if(stats && stats.bloque) delete stats.bloque.plantilla;       // las plantillas fijas del bloque se arman de nuevo con las escaleras nuevas
+  profile.migPlazaF1 = true;
+  return true;
+}
 function loadState(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -5604,6 +5689,7 @@ function loadState(){
     if(Array.isArray(d.myEquip)) myEquip = d.myEquip;
     if(typeof d.onboarded === 'boolean') onboarded = d.onboarded;
     if(d.profile && typeof d.profile === 'object') profile = Object.assign(profile, d.profile);
+    if(!(d.profile && d.profile.migPlazaF1)){ profile.migPlazaF1 = false; migrarPlazaFase1(); }   // datos guardados antes de la plaza (Fase 1): se migran una sola vez
     // Migración: bajar objetivos guardados que superen el nuevo tope.
     Object.keys(progState).forEach(name => {
       const ex = exByName(name);
@@ -5628,7 +5714,7 @@ window.addEventListener('load', renderDay);
 window.addEventListener('load', restaurarUltimaTab);
 
 /* ======================= ONBOARDING DE BIENVENIDA (primera vez) ======================= */
-let onboardData = { equip:['Suelo','Barra','Paralelas','Anillas','Banda','Soga'], nivel:null };
+let onboardData = { equip:['Suelo','Barra','Paralelas','Banco','Anillas','Soga'], nivel:null };
 let reconfigMode = false;
 // Reconfigurar nivel desde la Home: flujo enfocado (equipamiento + test juntos), sin saltar de pestaña.
 function reconfigurarNivel(){
@@ -5643,7 +5729,7 @@ function reconfigurarNivel(){
 function applyStartingLevel(nivel){
   // Nivel aproximado para que la primera sesión no sea ni trivial ni imposible.
   // Se mide de verdad entrenando; esto es solo un punto de partida.
-  const mains = ['push_horiz','pull_vert','dips','squat','core_recto','core_oblicuo','core_estab'];
+  const mains = ['push_horiz','pull_vert','dips','squat','core_colgado','core_oblicuo','core_antiext'];
   let upTo = -1;
   if(nivel === 'algo') upTo = 0;      // dominás el primer peldaño de cada base
   else if(nivel === 'experiencia') upTo = 1; // dominás los dos primeros
@@ -5678,9 +5764,9 @@ function renderOnboarding(step){
       '<button class="primary ob-next" style="width:100%; padding:16px; font-size:16px;">Empezar</button>' +
       '</div>');
   } else if(step === 1){
-    const opts = ['Barra','Paralelas','Anillas','Banda','Soga'];
+    const opts = ['Barra','Paralelas','Banco','Anillas','Banda','Soga'];
     h = obCard(etiqueta + titulo('¿Con qué entrenás?') +
-      opts.map(eq => obBtn('eq:' + eq, eq, onboardData.equip.includes(eq))).join('') + obBtn('eq:__piso', 'Piso apto', !!onboardData.pisoApto) +
+      opts.map(eq => obBtn('eq:' + eq, eq === 'Banco' ? 'Banco o escalón' : eq, onboardData.equip.includes(eq))).join('') + obBtn('eq:__piso', 'Piso apto', !!onboardData.pisoApto) +
       '<button class="primary ob-next" style="width:100%; padding:15px; font-size:16px; margin-top:8px;">Seguir</button>');
   } else if(step === 2){
     h = obCard(etiqueta + titulo('Punto de partida') + '<div id="ob-pp"></div>' +
